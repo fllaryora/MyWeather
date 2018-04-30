@@ -28,34 +28,6 @@
         android:id="@+id/skyLabel"
         android:layout_gravity="center_horizontal"
         android:textSize="40sp"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Humidity"
-        android:id="@+id/humidityLabel"
-        android:layout_gravity="start"
-        android:textSize="20sp"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Wind"
-        android:id="@+id/windLabel"
-        android:layout_gravity="start"
-        android:textSize="20sp"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Pressure"
-        android:id="@+id/pressureLabel"
-        android:layout_gravity="start"
-        android:textSize="20sp"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Visibility"
-        android:id="@+id/visibilityLabel"
-        android:layout_gravity="start"
-        android:textSize="20sp"/>
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
