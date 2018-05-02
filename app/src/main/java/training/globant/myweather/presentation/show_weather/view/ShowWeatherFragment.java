@@ -11,7 +11,6 @@ import training.globant.myweather.presentation.show_weather.ShowWeatherContract;
  */
 
 public class ShowWeatherFragment extends Fragment implements ShowWeatherContract.View {
-
     /**
      * Used by Activity
      * @return
