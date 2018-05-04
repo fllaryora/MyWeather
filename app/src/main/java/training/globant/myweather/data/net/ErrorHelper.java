@@ -16,7 +16,7 @@ import training.globant.myweather.data.model.ErrorInfo;
 public class ErrorHelper {
 
     static public ErrorInfo parseError(Response<?> response) {
-        Retrofit retrofit = WeatherClient.provideRestClient();
+        Retrofit retrofit = WeatherAPIClient.provideRestClient();
         Converter<ResponseBody, ErrorInfo> converter =
                 retrofit.responseBodyConverter(ErrorInfo.class, new Annotation[0]);
 
