@@ -4,62 +4,61 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- *  UI model of a Weather.
+ * UI model of a Weather.
  * Parcelable data to transfer between fragments and to save/restore on orientation changes.
  * Created by francisco on 29/04/18.
  */
 
 public class WeatherUI implements Parcelable {
 
-    private String cityLabel;
-    private String temperatureLabel;
-    private String skyLabel;
-
-    public WeatherUI(String cityLabel, String temperatureLabel, String skyLabel) {
-        this.cityLabel = cityLabel;
-        this.temperatureLabel = temperatureLabel;
-        this.skyLabel = skyLabel;
-    }
-
-    public String getCityLabel() {
-        return cityLabel;
-    }
-
-    public String getTemperatureLabel() {
-        return temperatureLabel;
-    }
-
-    public String getSkyLabel() {
-        return skyLabel;
+  public static final Creator<WeatherUI> CREATOR = new Creator<WeatherUI>() {
+    @Override
+    public WeatherUI createFromParcel(Parcel in) {
+      return new WeatherUI(in);
     }
 
     @Override
-    public int describeContents() {
-        return 0;
+    public WeatherUI[] newArray(int size) {
+      return new WeatherUI[size];
     }
+  };
+  private String cityLabel;
+  private String temperatureLabel;
+  private String skyLabel;
 
-    protected WeatherUI(Parcel in) {
-        cityLabel = in.readString();
-        temperatureLabel = in.readString();
-        skyLabel = in.readString();
-    }
+  public WeatherUI(String cityLabel, String temperatureLabel, String skyLabel) {
+    this.cityLabel = cityLabel;
+    this.temperatureLabel = temperatureLabel;
+    this.skyLabel = skyLabel;
+  }
 
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(cityLabel);
-        parcel.writeString(temperatureLabel);
-        parcel.writeString(skyLabel);
-    }
+  protected WeatherUI(Parcel in) {
+    cityLabel = in.readString();
+    temperatureLabel = in.readString();
+    skyLabel = in.readString();
+  }
 
-    public static final Creator<WeatherUI> CREATOR = new Creator<WeatherUI>() {
-        @Override
-        public WeatherUI createFromParcel(Parcel in) {
-            return new WeatherUI(in);
-        }
+  public String getCityLabel() {
+    return cityLabel;
+  }
 
-        @Override
-        public WeatherUI[] newArray(int size) {
-            return new WeatherUI[size];
-        }
-    };
+  public String getTemperatureLabel() {
+    return temperatureLabel;
+  }
+
+  public String getSkyLabel() {
+    return skyLabel;
+  }
+
+  @Override
+  public int describeContents() {
+    return 0;
+  }
+
+  @Override
+  public void writeToParcel(Parcel parcel, int i) {
+    parcel.writeString(cityLabel);
+    parcel.writeString(temperatureLabel);
+    parcel.writeString(skyLabel);
+  }
 }

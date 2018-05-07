@@ -1,94 +1,115 @@
 package training.globant.myweather.presentation.show_weather.presenter;
 
+import android.text.TextUtils;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
-
 import training.globant.myweather.data.WeatherCallback;
 import training.globant.myweather.data.model.WeatherInfo;
+import training.globant.myweather.data.utils.Constant;
 import training.globant.myweather.domain.SearchWeatherInteractor;
 import training.globant.myweather.presentation.show_weather.ShowWeatherContract;
 import training.globant.myweather.presentation.show_weather.model.WeatherUI;
 
 /**
- * Presenter that handles user actions from {@link training.globant.myweather.presentation.show_weather.view.ShowWeatherFragment} view,
- * show....
- * <p>
- * Notice that Presenter knows nothing about Android framework.
- * Created by francisco on 29/04/18.
+ * Presenter that handles user actions from {@link training.globant.myweather.presentation.show_weather.view.ShowWeatherFragment}
+ * view, show.... <p> Notice that Presenter knows nothing about Android framework. Created by
+ * francisco on 29/04/18.
  */
 
-public class ShowWeatherPresenter implements ShowWeatherContract.Presenter,WeatherCallback {
+public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, WeatherCallback {
 
-    private ShowWeatherPresenter(){}
+  private ShowWeatherContract.View view;
+  private WeatherUI uiModel;
 
-    static private ShowWeatherPresenter myInstance = null;
+  @Override
+  public void attachView(ShowWeatherContract.View view) {
+    this.view = view;
+  }
 
-    static public ShowWeatherPresenter getInstance(){
-        if(myInstance == null){
-            myInstance = new ShowWeatherPresenter();
-        }
-        return myInstance;
+  @Override
+  public boolean isViewAttached() {
+    return view != null;
+  }
+
+  @Override
+  public void loadWeather(Map<String, String> parameters) {
+    SearchWeatherInteractor searchWeatherInteractor = new SearchWeatherInteractor();
+    String query = parameters.get(Constant.API_PARAMETER_QUERY);
+    if (isQueryValid(query)) {
+      searchWeatherInteractor.execute(parameters, this);
+    } else {
+      if (isViewAttached()) {
+        view.showError("Invalid Query");
+      }
+    }
+  }
+
+  public void loadWeather() {
+    Map<String, String> parameters = new HashMap<String, String>();
+    //TODO HARDCODED PARAMS - USE GPS IN FUTURE
+    parameters.put(Constant.API_PARAMETER_QUERY, "Córdoba,AR");
+    SearchWeatherInteractor searchWeatherInteractor = new SearchWeatherInteractor();
+    searchWeatherInteractor.execute(parameters, this);
+  }
+
+  private boolean isQueryValid(String query) {
+    if (query == null) {
+      return false;
+    }
+    query = query.trim();
+    if (TextUtils.isEmpty(query)) {
+      return false;
+    }
+    return query.length() > 4;
+  }
+
+  @Override
+  public WeatherUI transformModelToUiModel(WeatherInfo model) {
+    //TODO change DEScription and add icons
+    //https://openweathermap.org/weather-conditions
+    String cityName = "";
+    String description = "";
+    String temperatureInfo = "";
+
+    if (model.getMetaInfo() != null && model.getMetaInfo().size() > 0) {
+      description = model.getMetaInfo().get(0).getDescription();
     }
 
-    private ShowWeatherContract.View view;
-    private WeatherUI uiModel;
-
-    @Override
-    public void attachView(ShowWeatherContract.View view) {
-        this.view = view;
+    if (model.getTemperatureInfo() != null) {
+      //https://stackoverflow.com/questions/14389349/android-get-current-locale-not-default
+      DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.getDefault());
+      symbols.setDecimalSeparator(',');
+      DecimalFormat formatter = new DecimalFormat("##.#", symbols);
+      temperatureInfo = formatter.format(model.getTemperatureInfo().getTemperature());
     }
 
-    @Override
-    public boolean isViewAttached() {
-        return view != null;
+    if (model.getName() != null) {
+      cityName = model.getName();
     }
 
-    @Override
-    public void loadWeather(Map<String,String> parameters) {
-        SearchWeatherInteractor searchWeatherInteractor = new SearchWeatherInteractor();
-        searchWeatherInteractor.execute(parameters,this);
+    return new WeatherUI(cityName, temperatureInfo, description);
+  }
+
+  @Override
+  public WeatherUI getUiModel() {
+    return uiModel;
+  }
+
+  @Override
+  public void onResponse(WeatherInfo weatherInfo) {
+    if (isViewAttached()) {
+      uiModel = transformModelToUiModel(weatherInfo);
+      view.showWeather(uiModel);
     }
+  }
 
-    @Override
-    public WeatherUI transformModelToUiModel(WeatherInfo model) {
-        //TODO change DEScription and add icons
-        //https://openweathermap.org/weather-conditions
-        String cityName = "No name";
-        String description = "No description";
-        String temperatureInfo = "No Temp";
-        if(model != null){
-            if( model.getMetaInfo() != null && model.getMetaInfo().size() > 0 ){
-                description = model.getMetaInfo().get(0).getDescription();
-            }
-
-            if( model.getTemperatureInfo() != null ){
-                temperatureInfo = model.getTemperatureInfo().getTemperature()+"";
-            }
-            if(model.getName() != null){
-                cityName = model.getName();
-            }
-        }
-
-        return new WeatherUI( cityName, temperatureInfo, description );
+  @Override
+  public void onError(String error) {
+    if (isViewAttached()) {
+      view.showError(error);
     }
-
-    @Override
-    public WeatherUI getUiModel() {
-        return uiModel;
-    }
-
-
-    @Override
-    public void onResponse(WeatherInfo weatherInfo) {
-        if (isViewAttached()) {
-            uiModel = transformModelToUiModel(weatherInfo);
-            view.showWeather(uiModel);
-        }
-    }
-
-    @Override
-    public void onError(String error) {
-        if (isViewAttached()) {
-            view.showError(error);
-        }
-    }
+  }
 }

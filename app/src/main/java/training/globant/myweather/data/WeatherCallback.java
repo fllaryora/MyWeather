@@ -8,6 +8,8 @@ import training.globant.myweather.data.model.WeatherInfo;
  */
 
 public interface WeatherCallback {
-    void onResponse(WeatherInfo weatherInfo);
-    void onError(String error);
+
+  void onResponse(WeatherInfo weatherInfo);
+
+  void onError(String error);
 }

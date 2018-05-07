@@ -1,7 +1,6 @@
 package training.globant.myweather.presentation.show_weather;
 
 import java.util.Map;
-
 import training.globant.myweather.data.model.WeatherInfo;
 import training.globant.myweather.presentation.show_weather.model.WeatherUI;
 
@@ -11,19 +10,26 @@ import training.globant.myweather.presentation.show_weather.model.WeatherUI;
  */
 
 public interface ShowWeatherContract {
-    interface View {
-        void showWeather(WeatherUI uiModel);
-        void showError(String error);
-        //actions that now idk
-    }
-    interface Presenter {
 
-        void attachView(ShowWeatherContract.View view);
-        boolean isViewAttached();
+  interface View {
 
-        void loadWeather(Map<String,String> parameters);
-        WeatherUI transformModelToUiModel(WeatherInfo model);
-        WeatherUI getUiModel();
-        //actions that now idk
-    }
+    void showWeather(WeatherUI uiModel);
+
+    void showError(String error);
+    void searchWeather(String textSubmitted);
+    //actions that now idk
+  }
+
+  interface Presenter {
+
+    void attachView(ShowWeatherContract.View view);
+    boolean isViewAttached();
+
+    void loadWeather(Map<String, String> parameters);
+    void loadWeather(); //called by onResume
+    WeatherUI transformModelToUiModel(WeatherInfo model);
+
+    WeatherUI getUiModel();
+    //actions that now idk
+  }
 }
