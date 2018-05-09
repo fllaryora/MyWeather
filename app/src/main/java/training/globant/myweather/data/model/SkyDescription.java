@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
  * Created by francisco on 01/05/18.
  */
 
-public class MetaInfo {
+public class SkyDescription {
 
   @SerializedName("id")
   private int id;
@@ -17,21 +17,16 @@ public class MetaInfo {
   @SerializedName("description")
   private String description;
 
-  @SerializedName("icon")
-  private String icon;
-
-  public MetaInfo() {
+  public SkyDescription() {
     this.id = 0;
     this.name = "";
     this.description = "";
-    this.icon = "";
   }
 
-  public MetaInfo(int id, String name, String description, String icon) {
+  public SkyDescription(int id, String name, String description) {
     this.id = id;
     this.name = name;
     this.description = description;
-    this.icon = icon;
   }
 
   public int getId() {
@@ -46,7 +41,4 @@ public class MetaInfo {
     return description;
   }
 
-  public String getIcon() {
-    return icon;
-  }
 }

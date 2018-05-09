@@ -1,5 +1,8 @@
 package training.globant.myweather.presentation.show_weather.presenter;
 
+import static training.globant.myweather.data.utils.Constant.DECIMAL_FORMAT_PATTERN;
+import static training.globant.myweather.data.utils.Constant.DECIMAL_SEPARATOR;
+
 import android.text.TextUtils;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -11,6 +14,7 @@ import training.globant.myweather.data.model.WeatherInfo;
 import training.globant.myweather.data.utils.Constant;
 import training.globant.myweather.domain.SearchWeatherInteractor;
 import training.globant.myweather.presentation.show_weather.ShowWeatherContract;
+import training.globant.myweather.presentation.show_weather.model.IconMapper;
 import training.globant.myweather.presentation.show_weather.model.WeatherUI;
 
 /**
@@ -73,24 +77,31 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
     String cityName = "";
     String description = "";
     String temperatureInfo = "";
+    String maxTemperatureInfo = "";
+    String minTemperatureInfo = "";
+    int icon = 0;
 
-    if (model.getMetaInfo() != null && model.getMetaInfo().size() > 0) {
-      description = model.getMetaInfo().get(0).getDescription();
+    if (model.getSkyDescription() != null && model.getSkyDescription().size() > 0) {
+      description = model.getSkyDescription().get(0).getDescription();
+      icon = IconMapper.fromInt(model.getSkyDescription().get(0).getId()).getIcon();
     }
 
     if (model.getTemperatureInfo() != null) {
       //https://stackoverflow.com/questions/14389349/android-get-current-locale-not-default
       DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.getDefault());
-      symbols.setDecimalSeparator(',');
-      DecimalFormat formatter = new DecimalFormat("##.#", symbols);
+      symbols.setDecimalSeparator(DECIMAL_SEPARATOR);
+      DecimalFormat formatter = new DecimalFormat(DECIMAL_FORMAT_PATTERN, symbols);
       temperatureInfo = formatter.format(model.getTemperatureInfo().getTemperature());
+      maxTemperatureInfo = formatter.format(model.getTemperatureInfo().getMaximalTemperature());
+      minTemperatureInfo = formatter.format(model.getTemperatureInfo().getMinimalTemperature());
     }
 
     if (model.getName() != null) {
       cityName = model.getName();
     }
 
-    return new WeatherUI(cityName, temperatureInfo, description);
+    return new WeatherUI(cityName, maxTemperatureInfo, minTemperatureInfo, temperatureInfo,
+        description, icon);
   }
 
   @Override

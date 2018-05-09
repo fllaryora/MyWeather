@@ -10,5 +10,6 @@ public class Constant {
   public static final String API_PARAMETER_APP_ID = "APPID";
   public static final String API_PARAMETER_TEMPETATURE_UNITS = "units";
   public static final String API_VALUE_DEGREES_CELSIUS = "metric";
-
+  public static final char DECIMAL_SEPARATOR = ',';
+  public static final String DECIMAL_FORMAT_PATTERN = "##.#";
 }

@@ -4,4 +4,6 @@
   <string name="temperature_units">metric</string>
   <string name="degrees_celsius">°C</string>
   <string name="search_title">search</string>
+  <string name="min_temperature">Minimal:</string>
+  <string name="max_temperature">Maximal:</string>
 </resources>

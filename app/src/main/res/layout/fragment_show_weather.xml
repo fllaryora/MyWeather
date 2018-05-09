@@ -12,23 +12,55 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
-    android:textSize="40sp" />
+    android:textSize="46sp" />
   <TextView
     android:id="@+id/temperatureLabel"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
-    android:textSize="80sp" />
+    android:textSize="75sp" />
+  <RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentStart="true"
+      android:text="@string/min_temperature"
+      android:textSize="30sp" />
+    <TextView
+      android:id="@+id/minTemperatureLabel"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentEnd="true"
+      android:textSize="30sp" />
+  </RelativeLayout>
+  <RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentStart="true"
+      android:text="@string/max_temperature"
+      android:textSize="30sp" />
+    <TextView
+      android:id="@+id/maxTemperatureLabel"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentEnd="true"
+      android:textSize="30sp" />
+  </RelativeLayout>
+  <ImageView
+    android:id="@+id/refreshImageView"
+    android:layout_width="200dp"
+    android:layout_height="200dp"
+    android:layout_gravity="center_horizontal" />
   <TextView
     android:id="@+id/skyLabel"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
-    android:textSize="40sp" />
-  <ImageView
-    android:id="@+id/refreshImageView"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="bottom|center_horizontal"
-    android:src="@drawable/cloud" />
+    android:textSize="20sp" />
 </LinearLayout>

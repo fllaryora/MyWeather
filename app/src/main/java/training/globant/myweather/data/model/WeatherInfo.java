@@ -12,19 +12,19 @@ public class WeatherInfo {
   @SerializedName("name")
   private String name;
   @SerializedName("weather")
-  private List<MetaInfo> metaInfo;
+  private List<SkyDescription> skyDescription;
   @SerializedName("main")
   private TemperatureInfo temperatureInfo;
 
-  public WeatherInfo(String name, List<MetaInfo> metaInfo, TemperatureInfo temperatureInfo) {
+  public WeatherInfo(String name, List<SkyDescription> skyDescription, TemperatureInfo temperatureInfo) {
     this.name = name;
-    this.metaInfo = metaInfo;
+    this.skyDescription = skyDescription;
     this.temperatureInfo = temperatureInfo;
   }
 
   public WeatherInfo() {
     this.name = "";
-    this.metaInfo = null;
+    this.skyDescription = null;
     this.temperatureInfo = null;
   }
 
@@ -32,8 +32,8 @@ public class WeatherInfo {
     return name;
   }
 
-  public List<MetaInfo> getMetaInfo() {
-    return metaInfo;
+  public List<SkyDescription> getSkyDescription() {
+    return skyDescription;
   }
 
   public TemperatureInfo getTemperatureInfo() {

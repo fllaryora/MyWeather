@@ -22,20 +22,31 @@ public class WeatherUI implements Parcelable {
       return new WeatherUI[size];
     }
   };
+
   private String cityLabel;
   private String temperatureLabel;
+  private String maxTemperatureLabel;
+  private String minTemperatureLabel;
   private String skyLabel;
+  private int icon;
 
-  public WeatherUI(String cityLabel, String temperatureLabel, String skyLabel) {
+  public WeatherUI(String cityLabel, String maxTemperatureLabel, String minTemperatureLabel,
+      String temperatureLabel, String skyLabel, int icon) {
     this.cityLabel = cityLabel;
+    this.maxTemperatureLabel = maxTemperatureLabel;
+    this.minTemperatureLabel = minTemperatureLabel;
     this.temperatureLabel = temperatureLabel;
     this.skyLabel = skyLabel;
+    this.icon = icon;
   }
 
   protected WeatherUI(Parcel in) {
     cityLabel = in.readString();
+    maxTemperatureLabel = in.readString();
+    minTemperatureLabel = in.readString();
     temperatureLabel = in.readString();
     skyLabel = in.readString();
+    icon = in.readInt();
   }
 
   public String getCityLabel() {
@@ -50,6 +61,18 @@ public class WeatherUI implements Parcelable {
     return skyLabel;
   }
 
+  public String getMaxTemperatureLabel() {
+    return maxTemperatureLabel;
+  }
+
+  public String getMinTemperatureLabel() {
+    return minTemperatureLabel;
+  }
+
+  public int getIcon() {
+    return icon;
+  }
+
   @Override
   public int describeContents() {
     return 0;
@@ -58,7 +81,10 @@ public class WeatherUI implements Parcelable {
   @Override
   public void writeToParcel(Parcel parcel, int i) {
     parcel.writeString(cityLabel);
+    parcel.writeString(maxTemperatureLabel);
+    parcel.writeString(minTemperatureLabel);
     parcel.writeString(temperatureLabel);
     parcel.writeString(skyLabel);
+    parcel.writeInt(icon);
   }
 }

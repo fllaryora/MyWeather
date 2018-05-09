@@ -1,87 +1,87 @@
 package training.globant.myweather.presentation.show_weather.model;
 //https://github.com/ikromin/jphotoframe/blob/c687a1e4b536f15d457c30ffc8e26dd376d8b9b0/src/main/java/net/igorkromin/jphotoframe/weather/WeatherConditionCodes.java
-
+import training.globant.myweather.R;
 //http://erikflowers.github.io/weather-icons/
 public enum IconMapper {
-  THUNDERSTORM_WITH_LIGHT_RAIN(200, 0xf01e, "Thunder", "Thunder storm with light rain"),
-  THUNDERSTORM_WITH_RAIN(201, 0xf01e, "Thunder", "Thunder storm with rain"),
-  THUNDERSTORM_WITH_HEAVY_RAIN(202, 0xf01e, "Thunder", "Thunder storm with heavy rain"),
-  LIGHT_THUNDERSTORM(210, 0xf01e, "Thunder", "Light thunder storm"),
-  THUNDERSTORM(211, 0xf01e, "Thunder", "Thunder storm"),
-  HEAVY_THUNDERSTORM(212, 0xf01e, "Thunder", "Heavy thunder storm"),
-  RAGGED_THUNDERSTORM(221, 0xf01e, "Thunder", "Ragged thunder storm"),
-  THUNDERSTORM_WITH_LIGHT_DRIZZLE(230, 0xf01e, "Thunder", "Thunder storm with light drizzle"),
-  THUNDERSTORM_WITH_DRIZZLE(231, 0xf01e, "Thunder", "Thunder storm with drizzle"),
-  THUNDERSTORM_WITH_HEAVY_DRIZZLE(232, 0xf01e, "Thunder", "Thunder storm with heavy drizzle"),
+  THUNDERSTORM_WITH_LIGHT_RAIN(200, R.drawable.wi_thunderstorm, "Thunder", "Thunder storm with light rain"),
+  THUNDERSTORM_WITH_RAIN(201, R.drawable.wi_thunderstorm, "Thunder", "Thunder storm with rain"),
+  THUNDERSTORM_WITH_HEAVY_RAIN(202, R.drawable.wi_thunderstorm, "Thunder", "Thunder storm with heavy rain"),
+  LIGHT_THUNDERSTORM(210, R.drawable.wi_thunderstorm, "Thunder", "Light thunder storm"),
+  THUNDERSTORM(211, R.drawable.wi_thunderstorm, "Thunder", "Thunder storm"),
+  HEAVY_THUNDERSTORM(212, R.drawable.wi_thunderstorm, "Thunder", "Heavy thunder storm"),
+  RAGGED_THUNDERSTORM(221, R.drawable.wi_thunderstorm, "Thunder", "Ragged thunder storm"),
+  THUNDERSTORM_WITH_LIGHT_DRIZZLE(230, R.drawable.wi_thunderstorm, "Thunder", "Thunder storm with light drizzle"),
+  THUNDERSTORM_WITH_DRIZZLE(231, R.drawable.wi_thunderstorm, "Thunder", "Thunder storm with drizzle"),
+  THUNDERSTORM_WITH_HEAVY_DRIZZLE(232, R.drawable.wi_thunderstorm, "Thunder", "Thunder storm with heavy drizzle"),
 
-  LIGHT_INTENSITY_DRIZZLE(300, 0xf04e, "Drizzle", "Light drizzle"),
-  DRIZZLE(301, 0xf04e, "Drizzle", "Drizzle"),
-  HEAVY_INTENSITY_DRIZZLE(302, 0xf04e, "Drizzle", "Heavy drizzle"),
-  LIGHT_INTENSITY_DRIZZLE_RAIN(310, 0xf04e, "Drizzle", "Ligh drizzle and rain"),
-  DRIZZLE_RAIN(311, 0xf04e, "Drizzle", "Drizzle and rain"),
-  HEAVY_INTENSITY_DRIZZLE_RAIN(312, 0xf04e, "Drizzle", "Heavy drizzle and rain"),
-  SHOWER_RAIN_DRIZZLE(313, 0xf04e, "Drizzle", "Shower, rain and drizzle"),
-  HEAVY_SHOWER_RAIN_DRIZZLE(314, 0xf04e, "Drizzle", "Heavy shower, rain and drizzle"),
-  SHOWER_DRIZZLE(321, 0xf04e, "Drizzle", "Shower and drizzle"),
+  LIGHT_INTENSITY_DRIZZLE(300, R.drawable.wi_raindrops, "Drizzle", "Light drizzle"),
+  DRIZZLE(301, R.drawable.wi_raindrops, "Drizzle", "Drizzle"),
+  HEAVY_INTENSITY_DRIZZLE(302, R.drawable.wi_raindrops, "Drizzle", "Heavy drizzle"),
+  LIGHT_INTENSITY_DRIZZLE_RAIN(310, R.drawable.wi_raindrops, "Drizzle", "Ligh drizzle and rain"),
+  DRIZZLE_RAIN(311, R.drawable.wi_raindrops, "Drizzle", "Drizzle and rain"),
+  HEAVY_INTENSITY_DRIZZLE_RAIN(312, R.drawable.wi_raindrops, "Drizzle", "Heavy drizzle and rain"),
+  SHOWER_RAIN_DRIZZLE(313, R.drawable.wi_raindrops, "Drizzle", "Shower, rain and drizzle"),
+  HEAVY_SHOWER_RAIN_DRIZZLE(314, R.drawable.wi_raindrops, "Drizzle", "Heavy shower, rain and drizzle"),
+  SHOWER_DRIZZLE(321, R.drawable.wi_raindrops, "Drizzle", "Shower and drizzle"),
 
-  LIGHT_RAIN(500, 0xf019, "Rain", "Light rain"),
-  MODERATE_RAIN(501, 0xf019, "Rain", "Moderate rain"),
-  HEAVY_INTENSITY_RAIN(502, 0xf019, "Rain", "Heavy rain"),
-  VERY_HEAVY_RAIN(503, 0xf019, "Rain", "Very heavy rain"),
-  EXTREME_RAIN(504, 0xf019, "Rain", "Extreme rain"),
-  FREEZING_RAIN(511, 0xf019, "Rain", "Freezing rain"),
-  LIGHT_INTENSITY_SHOWER_RAIN(520, 0xf019, "Rain", "Light shower rain"),
-  SHOWER_RAIN(521, 0xf019, "Rain", "Shower rain"),
-  HEAVY_INTENSITY_SHOWER_RAIN(522, 0xf019, "Rain", "Heavy shower rain"),
-  RAGGED_SHOWER_RAIN(531, 0xf019, "Rain", "Ragged shower rain"),
+  LIGHT_RAIN(500, R.drawable.wi_rain, "Rain", "Light rain"),
+  MODERATE_RAIN(501, R.drawable.wi_rain, "Rain", "Moderate rain"),
+  HEAVY_INTENSITY_RAIN(502, R.drawable.wi_rain, "Rain", "Heavy rain"),
+  VERY_HEAVY_RAIN(503, R.drawable.wi_rain, "Rain", "Very heavy rain"),
+  EXTREME_RAIN(504, R.drawable.wi_rain, "Rain", "Extreme rain"),
+  FREEZING_RAIN(511, R.drawable.wi_rain, "Rain", "Freezing rain"),
+  LIGHT_INTENSITY_SHOWER_RAIN(520, R.drawable.wi_rain, "Rain", "Light shower rain"),
+  SHOWER_RAIN(521, R.drawable.wi_rain, "Rain", "Shower rain"),
+  HEAVY_INTENSITY_SHOWER_RAIN(522, R.drawable.wi_rain, "Rain", "Heavy shower rain"),
+  RAGGED_SHOWER_RAIN(531, R.drawable.wi_rain, "Rain", "Ragged shower rain"),
 
-  LIGHT_SNOW(600, 0xf01b, "Snow", "Light snow"),
-  SNOW(601, 0xf01b, "Snow", "Snow"),
-  HEAVY_SNOW(602, 0xf01b, "Snow", "Heavy snow"),
-  SLEET(611, 0xf01b, "Snow", "Sleet"),
-  SHOWER_SLEET(612, 0xf01b, "Snow", "Shower and sleet"),
-  LIGHT_RAIN_SNOW(615, 0xf01b, "Snow", "Light rain and snow"),
-  RAIN_SNOW(616, 0xf01b, "Snow", "Rain and snow"),
-  LIGHT_SHOWER_SNOW(620, 0xf01b, "Snow", "Light shower and snow"),
-  SHOWER_SNOW(621, 0xf01b, "Snow", "Shower and snow"),
-  HEAVY_SHOWER_SNOW(622, 0xf01b, "Snow", "Heavy shower and snow"),
+  LIGHT_SNOW(600, R.drawable.wi_snow, "Snow", "Light snow"),
+  SNOW(601, R.drawable.wi_snow, "Snow", "Snow"),
+  HEAVY_SNOW(602, R.drawable.wi_snow, "Snow", "Heavy snow"),
+  SLEET(611, R.drawable.wi_snow, "Snow", "Sleet"),
+  SHOWER_SLEET(612, R.drawable.wi_snow, "Snow", "Shower and sleet"),
+  LIGHT_RAIN_SNOW(615, R.drawable.wi_snow, "Snow", "Light rain and snow"),
+  RAIN_SNOW(616, R.drawable.wi_snow, "Snow", "Rain and snow"),
+  LIGHT_SHOWER_SNOW(620, R.drawable.wi_snow, "Snow", "Light shower and snow"),
+  SHOWER_SNOW(621, R.drawable.wi_snow, "Snow", "Shower and snow"),
+  HEAVY_SHOWER_SNOW(622, R.drawable.wi_snow, "Snow", "Heavy shower and snow"),
 
-  MIST(701, 0xf014, "Mist", "Mist"),
-  SMOKE(711, 0xf062, "Smoke", "Smoke"),
-  HAZE(721, 0xf0b6, "Haze", "Haze"),
-  SAND_OR_DUST_WHIRLS(731, 0xf063, "Dust", "Sand or dust whirls"),
-  FOG(741, 0xf014, "Fog", "Fog"),
-  SAND(751, 0xf063, "Sand", "Sand"),
-  DUST(761, 0xf063, "Dust", "Dust"),
-  VOLCANIC_ASH(762, 0xf063, "Ash", "Volcanic ash"),
-  TORNADO1(781, 0xf056, "Tornado", "Tornado"),
+  MIST(701, R.drawable.wi_fog, "Mist", "Mist"),
+  SMOKE(711, R.drawable.wi_smoke, "Smoke", "Smoke"),
+  HAZE(721, R.drawable.wi_day_haze, "Haze", "Haze"),
+  SAND_OR_DUST_WHIRLS(731, R.drawable.wi_dust, "Dust", "Sand or dust whirls"),
+  FOG(741, R.drawable.wi_fog, "Fog", "Fog"),
+  SAND(751, R.drawable.wi_dust, "Sand", "Sand"),
+  DUST(761, R.drawable.wi_dust, "Dust", "Dust"),
+  VOLCANIC_ASH(762, R.drawable.wi_dust, "Ash", "Volcanic ash"),
+  TORNADO1(781, R.drawable.wi_tornado, "Tornado", "Tornado"),
 
-  SKY_IS_CLEAR(800, 0xf00d, "Clear", "Clear sky"),
-  FEW_CLOUDS(801, 0xf013, "Clouds", "Few clouds"),
-  SCATTERED_CLOUDS(802, 0xf013, "Clouds", "Scattered clouds"),
-  BROKEN_CLOUDS(803, 0xf013, "Clouds", "Broken clouds"),
-  OVERCAST_CLOUDS(804, 0xf013, "Clouds", "Overcast clouds"),
+  SKY_IS_CLEAR(800, R.drawable.wi_day_sunny, "Clear", "Clear sky"),
+  FEW_CLOUDS(801, R.drawable.wi_cloudy, "Clouds", "Few clouds"),
+  SCATTERED_CLOUDS(802, R.drawable.wi_cloudy, "Clouds", "Scattered clouds"),
+  BROKEN_CLOUDS(803, R.drawable.wi_cloudy, "Clouds", "Broken clouds"),
+  OVERCAST_CLOUDS(804, R.drawable.wi_cloudy, "Clouds", "Overcast clouds"),
 
-  TORNADO2(900, 0xf056, "Tornado", "Tornado"),
-  TROPICAL_STORM(901, 0xf01d, "Storm", "Tropical storm"),
-  HURRICANE(902, 0xf073, "Hurricane", "Hurricane"),
-  COLD(903, 0xf076, "Cold", "Extreme cold"),
-  HOT(904, 0xf072, "Hot", "Extreme heat"),
-  WINDY(905, 0xf021, "Wind", "Extreme wind"),
-  HAIL(906, 0xf015, "Hail", "Extreme hail"),
+  TORNADO2(900, R.drawable.wi_tornado, "Tornado", "Tornado"),
+  TROPICAL_STORM(901, R.drawable.wi_storm_showers, "Storm", "Tropical storm"),
+  HURRICANE(902, R.drawable.wi_hurricane, "Hurricane", "Hurricane"),
+  COLD(903, R.drawable.wi_snowflake_cold, "Cold", "Extreme cold"),
+  HOT(904, R.drawable.wi_hot, "Hot", "Extreme heat"),
+  WINDY(905, R.drawable.wi_windy, "Wind", "Extreme wind"),
+  HAIL(906, R.drawable.wi_hail, "Hail", "Extreme hail"),
 
-  NOT_AVAILABLE(3200, 0xf075, "N/A", "N/A"),
+  NOT_AVAILABLE(3200, R.drawable.wi_na, "N/A", "N/A"),
 
-  NO_CONNECTION(-1, 0xf0c6, "No Connection", "No Connection");
+  NO_CONNECTION(-1, R.drawable.wi_na, "No Connection", "No Connection");
 
   int code;
-  int character;//cambiar esto por el ID de un recurso visual
+  int icon;
   String info;
   String detailedInfo;
 
-  IconMapper(int code, int character, String info, String detailedInfo) {
+  IconMapper(int code, int icon, String info, String detailedInfo) {
     this.code = code;
-    this.character = character;
+    this.icon = icon;
     this.info = info;
     this.detailedInfo = detailedInfo;
   }
@@ -105,7 +105,11 @@ public enum IconMapper {
     return detailedInfo;
   }
 
+  public int getIcon() {
+    return icon;
+  }
+
   public String toString() {
-    return Character.toString((char) character);
+    return Character.toString((char) icon);
   }
 }

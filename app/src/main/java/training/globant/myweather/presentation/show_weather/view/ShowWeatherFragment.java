@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,8 +26,11 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
 
   ShowWeatherPresenter presenter;
   private TextView city;
+  private TextView maxTemperature;
+  private TextView minTemperature;
   private TextView temperature;
   private TextView sky;
+  private ImageView refreshImageView;
 
   /**
    * Used by Activity
@@ -48,8 +52,11 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
       @Nullable Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_show_weather, container, false);
     city = (TextView) view.findViewById(R.id.cityLabel);
+    maxTemperature = (TextView) view.findViewById(R.id.maxTemperatureLabel);
+    minTemperature = (TextView) view.findViewById(R.id.minTemperatureLabel);
     temperature = (TextView) view.findViewById(R.id.temperatureLabel);
     sky = (TextView) view.findViewById(R.id.skyLabel);
+    refreshImageView = (ImageView) view.findViewById(R.id.refreshImageView);
     return view;
   }
 
@@ -68,9 +75,13 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
   @Override
   public void showWeather(WeatherUI uiModel) {
     city.setText(uiModel.getCityLabel());
+    maxTemperature
+        .setText(uiModel.getMaxTemperatureLabel() + " " + getString(R.string.degrees_celsius));
+    minTemperature
+        .setText(uiModel.getMinTemperatureLabel() + " " + getString(R.string.degrees_celsius));
     temperature.setText(uiModel.getTemperatureLabel() + " " + getString(R.string.degrees_celsius));
     sky.setText(uiModel.getSkyLabel());
-
+    refreshImageView.setImageResource(uiModel.getIcon());
   }
 
   @Override
