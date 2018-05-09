@@ -6,7 +6,6 @@ import static training.globant.myweather.data.utils.Constant.DECIMAL_SEPARATOR;
 import android.text.TextUtils;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import training.globant.myweather.data.WeatherCallback;
@@ -39,6 +38,11 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
   }
 
   @Override
+  public void dettachView() {
+    this.view = null;
+  }
+
+  @Override
   public void loadWeather(Map<String, String> parameters) {
     SearchWeatherInteractor searchWeatherInteractor = new SearchWeatherInteractor();
     String query = parameters.get(Constant.API_PARAMETER_QUERY);
@@ -49,14 +53,6 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
         view.showError("Invalid Query");
       }
     }
-  }
-
-  public void loadWeather() {
-    Map<String, String> parameters = new HashMap<String, String>();
-    //TODO HARDCODED PARAMS - USE GPS IN FUTURE
-    parameters.put(Constant.API_PARAMETER_QUERY, "Córdoba,AR");
-    SearchWeatherInteractor searchWeatherInteractor = new SearchWeatherInteractor();
-    searchWeatherInteractor.execute(parameters, this);
   }
 
   private boolean isQueryValid(String query) {
@@ -72,7 +68,7 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
 
   @Override
   public WeatherUI transformModelToUiModel(WeatherInfo model) {
-    //TODO change DEScription and add icons
+    //TODO change DEScription
     //https://openweathermap.org/weather-conditions
     String cityName = "";
     String description = "";

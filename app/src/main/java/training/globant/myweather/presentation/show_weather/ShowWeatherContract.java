@@ -16,17 +16,19 @@ public interface ShowWeatherContract {
     void showWeather(WeatherUI uiModel);
 
     void showError(String error);
-    void searchWeather(String textSubmitted);
     //actions that now idk
   }
 
   interface Presenter {
 
     void attachView(ShowWeatherContract.View view);
+
     boolean isViewAttached();
 
+    void dettachView();
+
     void loadWeather(Map<String, String> parameters);
-    void loadWeather(); //called by onResume
+
     WeatherUI transformModelToUiModel(WeatherInfo model);
 
     WeatherUI getUiModel();
