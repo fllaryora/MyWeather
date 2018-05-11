@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="min_temperature">Mínima:</string>
-  <string name="max_temperature">Máxima:</string>
+  <string name="min_temperature">Mín:</string>
+  <string name="max_temperature">Máx:</string>
+  <string name="search_hint">Por favor, busque su ubicación</string>
+  <string name="can_not_load_message">No se pudo cargar la información del clima</string>
 </resources>

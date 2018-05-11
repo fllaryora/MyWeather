@@ -9,6 +9,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import training.globant.myweather.R;
 
+/**
+ * Represents a Activity that contains the main fragments
+ * @author Francisco Llaryora
+ * @version 1.0
+ * @since 1.0
+ */
 public class ShowWeatherActivity extends AppCompatActivity {
 
   private Toolbar toolbar;

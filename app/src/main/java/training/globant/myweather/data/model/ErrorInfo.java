@@ -3,12 +3,15 @@ package training.globant.myweather.data.model;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by francisco on 01/05/18.
+ * Represents a json error message from rest service
+ *
+ * @author Francisco Llaryora
+ * @version 1.0
+ * @since 1.0
  */
 
 public class ErrorInfo {
 
-  @SerializedName("message")
   private String message;
   @SerializedName("cod")
   private int errorCode;

@@ -4,19 +4,23 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 /**
- * Created by francisco on 01/05/18.
+ * Represents a json that describes the weather from rest service
+ *
+ * @author Francisco Llaryora
+ * @version 1.0
+ * @since 1.0
  */
 
 public class WeatherInfo {
 
-  @SerializedName("name")
   private String name;
   @SerializedName("weather")
   private List<SkyDescription> skyDescription;
   @SerializedName("main")
   private TemperatureInfo temperatureInfo;
 
-  public WeatherInfo(String name, List<SkyDescription> skyDescription, TemperatureInfo temperatureInfo) {
+  public WeatherInfo(String name, List<SkyDescription> skyDescription,
+      TemperatureInfo temperatureInfo) {
     this.name = name;
     this.skyDescription = skyDescription;
     this.temperatureInfo = temperatureInfo;

@@ -2,8 +2,10 @@
   <string name="app_name">MyWeather</string>
   <string name="action_settings">Settings</string>
   <string name="temperature_units">metric</string>
-  <string name="degrees_celsius">°C</string>
+  <string name="temperature_template">%1$s °C</string>
   <string name="search_title">search</string>
-  <string name="min_temperature">Minimal:</string>
-  <string name="max_temperature">Maximal:</string>
+  <string name="min_temperature">Min:</string>
+  <string name="max_temperature">Max:</string>
+  <string name="search_hint">Please find your location</string>
+  <string name="can_not_load_message">Cannot load the weather</string>
 </resources>

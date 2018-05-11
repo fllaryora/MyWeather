@@ -3,39 +3,44 @@ package training.globant.myweather.data.model;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by francisco on 01/05/18.
+ * Represents a json that describes the temperature from rest service
+ *
+ * @author Francisco Llaryora
+ * @version 1.0
+ * @since 1.0
  */
+
 public class TemperatureInfo {
 
   @SerializedName("temp")
   private double temperature;
   @SerializedName("temp_min")
-  private double minimalTemperature;
+  private double minimum;
   @SerializedName("temp_max")
-  private double maximalTemperature;
+  private double maximum;
 
-  public TemperatureInfo(double temperature, double minimalTemperature, double maximalTemperature) {
+  public TemperatureInfo(double temperature, double minimum, double maximum) {
     this.temperature = temperature;
-    this.minimalTemperature = minimalTemperature;
-    this.maximalTemperature = maximalTemperature;
+    this.minimum = minimum;
+    this.maximum = maximum;
   }
 
   public TemperatureInfo() {
     this.temperature = 0.0;
-    this.minimalTemperature = 0.0;
-    this.maximalTemperature = 0.0;
+    this.minimum = 0.0;
+    this.maximum = 0.0;
   }
 
   public double getTemperature() {
     return temperature;
   }
 
-  public double getMinimalTemperature() {
-    return minimalTemperature;
+  public double getMinimum() {
+    return minimum;
   }
 
-  public double getMaximalTemperature() {
-    return maximalTemperature;
+  public double getMaximum() {
+    return maximum;
   }
 
 }

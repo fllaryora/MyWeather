@@ -17,9 +17,12 @@ import training.globant.myweather.presentation.show_weather.model.IconMapper;
 import training.globant.myweather.presentation.show_weather.model.WeatherUI;
 
 /**
- * Presenter that handles user actions from {@link training.globant.myweather.presentation.show_weather.view.ShowWeatherFragment}
- * view, show.... <p> Notice that Presenter knows nothing about Android framework. Created by
- * francisco on 29/04/18.
+ * {@link ShowWeatherContract.Presenter} that controls communication between views and view models
+ * of the presentation layer.
+ *
+ * @author Francisco Llaryora
+ * @version 1.0
+ * @since 1.0
  */
 
 public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, WeatherCallback {
@@ -27,21 +30,39 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
   private ShowWeatherContract.View view;
   private WeatherUI uiModel;
 
+  /**
+   * Holds ShowWeatherContract.View view in a member
+   *
+   * @param view instance
+   */
   @Override
   public void attachView(ShowWeatherContract.View view) {
     this.view = view;
   }
 
+  /**
+   * Returns true if the view is attached
+   *
+   * @return true if the view is attached
+   */
   @Override
   public boolean isViewAttached() {
     return view != null;
   }
 
+  /**
+   * Dettaches the view
+   */
   @Override
   public void dettachView() {
     this.view = null;
   }
 
+  /**
+   * Load the weather using parameters
+   *
+   * @param parameters pair key-value data that describe a location
+   */
   @Override
   public void loadWeather(Map<String, String> parameters) {
     SearchWeatherInteractor searchWeatherInteractor = new SearchWeatherInteractor();
@@ -66,45 +87,42 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
     return query.length() > 4;
   }
 
+  /**
+   * Transforms one data model into view model
+   *
+   * @param model data model instance
+   * @return view model instance
+   */
   @Override
   public WeatherUI transformModelToUiModel(WeatherInfo model) {
-    //TODO change DEScription
-    //https://openweathermap.org/weather-conditions
-    String cityName = "";
-    String description = "";
-    String temperatureInfo = "";
-    String maxTemperatureInfo = "";
-    String minTemperatureInfo = "";
-    int icon = 0;
-
-    if (model.getSkyDescription() != null && model.getSkyDescription().size() > 0) {
-      description = model.getSkyDescription().get(0).getDescription();
-      icon = IconMapper.fromInt(model.getSkyDescription().get(0).getId()).getIcon();
+    if( model == null){
+      return null;
     }
 
-    if (model.getTemperatureInfo() != null) {
-      //https://stackoverflow.com/questions/14389349/android-get-current-locale-not-default
-      DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.getDefault());
-      symbols.setDecimalSeparator(DECIMAL_SEPARATOR);
-      DecimalFormat formatter = new DecimalFormat(DECIMAL_FORMAT_PATTERN, symbols);
-      temperatureInfo = formatter.format(model.getTemperatureInfo().getTemperature());
-      maxTemperatureInfo = formatter.format(model.getTemperatureInfo().getMaximalTemperature());
-      minTemperatureInfo = formatter.format(model.getTemperatureInfo().getMinimalTemperature());
-    }
-
-    if (model.getName() != null) {
-      cityName = model.getName();
-    }
+    String cityName = model.getName();
+    String description = model.getSkyDescription().get(0).getDescription();
+    String temperatureInfo = getTemperatueFormated(model.getTemperatureInfo().getTemperature());
+    String maxTemperatureInfo = getTemperatueFormated(model.getTemperatureInfo().getMaximum());
+    String minTemperatureInfo = getTemperatueFormated(model.getTemperatureInfo().getMinimum());
+    int icon = IconMapper.fromInt(model.getSkyDescription().get(0).getId()).getIcon();
 
     return new WeatherUI(cityName, maxTemperatureInfo, minTemperatureInfo, temperatureInfo,
         description, icon);
   }
 
-  @Override
-  public WeatherUI getUiModel() {
-    return uiModel;
+  private String getTemperatueFormated(double temperature){
+    //https://stackoverflow.com/questions/14389349/android-get-current-locale-not-default
+    DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.getDefault());
+    symbols.setDecimalSeparator(DECIMAL_SEPARATOR);
+    DecimalFormat formatter = new DecimalFormat(DECIMAL_FORMAT_PATTERN, symbols);
+    return formatter.format(temperature);
   }
 
+  /**
+   * Connect the data model to the view after a successful response
+   *
+   * @param weatherInfo data model of the weather
+   */
   @Override
   public void onResponse(WeatherInfo weatherInfo) {
     if (isViewAttached()) {
@@ -113,6 +131,11 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
     }
   }
 
+  /**
+   * Connect the data model to the view after a failure response
+   *
+   * @param error description
+   */
   @Override
   public void onError(String error) {
     if (isViewAttached()) {

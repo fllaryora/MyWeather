@@ -9,11 +9,21 @@ import retrofit2.Retrofit;
 import training.globant.myweather.data.model.ErrorInfo;
 
 /**
- * Created by francisco on 01/05/18.
+ * Represents a Error Helper for a rest API service
+ *
+ * @author Francisco Llaryora
+ * @version 1.0
+ * @since 1.0
  */
 
 public class ErrorHelper {
 
+  /**
+   * Parses a response from one type to other type
+   *
+   * @param response message with wrong data type
+   * @return error data model instance
+   */
   static public ErrorInfo parseError(Response<?> response) {
     Retrofit retrofit = WeatherAPIClient.provideRestClient();
     Converter<ResponseBody, ErrorInfo> converter =

@@ -1,5 +1,7 @@
 package training.globant.myweather.domain;
 
+import static training.globant.myweather.data.utils.Constant.ERROR_MESSAGES_FORMAT;
+
 import java.util.Map;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -13,12 +15,21 @@ import training.globant.myweather.data.net.WeatherAPIClient;
 import training.globant.myweather.data.utils.Constant;
 
 /**
- * Search Weather use cases
- * Created by francisco on 01/05/18.
+ * Represents a use case for searching the weather of the location.
+ *
+ * @author Francisco Llaryora
+ * @version 1.0
+ * @since 1.0
  */
 
 public class SearchWeatherInteractor {
 
+  /**
+   * Executes the current use case (SearchWeather).
+   *
+   * @param parameters description of the location and so on.
+   * @param callback Called when an asynchronous rest api call completes.
+   */
   public void execute(final Map<String, String> parameters, final WeatherCallback callback) {
     //TODO: looking up for cached results here
     //TODO call repository with both parameters
@@ -26,7 +37,9 @@ public class SearchWeatherInteractor {
     String query = parameters.get(Constant.API_PARAMETER_QUERY);
     String apiKey = BuildConfig.APP_ID;
     String temperatureUnits = Constant.API_VALUE_DEGREES_CELSIUS;
-    Call<WeatherInfo> call = weatherClient.searchWeatherByCity(query, apiKey, temperatureUnits);
+    String lang = Constant.API_VALUE_LANG_SPANISH;
+    Call<WeatherInfo> call = weatherClient
+        .searchWeatherByCity(query, apiKey, temperatureUnits, lang);
     call.enqueue(new Callback<WeatherInfo>() {
       @Override
       public void onResponse(Call<WeatherInfo> call, Response<WeatherInfo> response) {
@@ -36,7 +49,10 @@ public class SearchWeatherInteractor {
         } else {
           // Error such as resource not found
           ErrorInfo errorResponse = ErrorHelper.parseError(response);
-          callback.onError(errorResponse.getErrorCode() + " " + errorResponse.getMessage());
+          callback.onError(
+              String.format(ERROR_MESSAGES_FORMAT, errorResponse.getErrorCode(),
+                  errorResponse.getMessage())
+          );
         }
       }
 

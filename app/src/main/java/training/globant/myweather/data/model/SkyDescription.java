@@ -3,18 +3,19 @@ package training.globant.myweather.data.model;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by francisco on 01/05/18.
+ * Represents a json that describes the sky from rest service
+ *
+ * @author Francisco Llaryora
+ * @version 1.0
+ * @since 1.0
  */
-
 public class SkyDescription {
 
-  @SerializedName("id")
   private int id;
 
   @SerializedName("main")
   private String name;
 
-  @SerializedName("description")
   private String description;
 
   public SkyDescription() {
