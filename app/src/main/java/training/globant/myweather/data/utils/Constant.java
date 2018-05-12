@@ -9,6 +9,7 @@ package training.globant.myweather.data.utils;
  */
 
 public class Constant {
+  public static final String KEY_WEATHER = "KEY_WEATHER";
 
   public static final String API_PARAMETER_QUERY = "q";
   public static final String API_PARAMETER_APP_ID = "APPID";

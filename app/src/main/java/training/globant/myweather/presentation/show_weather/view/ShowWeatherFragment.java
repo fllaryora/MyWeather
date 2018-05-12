@@ -131,17 +131,16 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
   @Override
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
-
     if (savedInstanceState != null) {
-      // ReposByUsernameUI reposByUsernameUI = savedInstanceState.getParcelable(KEY_REPOS_BY_USERNAME);
-      // presenter.restoreStateAndShowRepos(reposByUsernameUI);
+      WeatherUI uiModel = savedInstanceState.getParcelable(Constant.KEY_WEATHER);
+      presenter.restoreStateAndShowWeather(uiModel);
     }
   }
 
   @Override
   public void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
-    //outState.putParcelable(KEY_REPOS_BY_USERNAME, presenter.getUiModel());
+    outState.putParcelable(Constant.KEY_WEATHER, presenter.getUiModel());
   }
 
   @Override

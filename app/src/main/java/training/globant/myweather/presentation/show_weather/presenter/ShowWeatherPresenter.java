@@ -110,6 +110,31 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
         description, icon);
   }
 
+  /**
+   * Returns the view model
+   *
+   * @return view model instance
+   */
+  @Override
+  public WeatherUI getUiModel() {
+    return uiModel;
+  }
+
+  /**
+   * Restores the state and show weather model.
+   * Shows the view model if it exists.
+   * @param uiModel view model
+   */
+  @Override
+  public void restoreStateAndShowWeather(WeatherUI uiModel) {
+    if (isViewAttached()) {
+      if (uiModel != null) {
+        this.uiModel = uiModel;
+        view.showWeather(uiModel);
+      }
+    }
+  }
+
   private String getTemperatueFormated(double temperature){
     //https://stackoverflow.com/questions/14389349/android-get-current-locale-not-default
     DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.getDefault());

@@ -68,6 +68,20 @@ public interface ShowWeatherContract {
      * @return view model instance
      */
     WeatherUI transformModelToUiModel(WeatherInfo model);
+
+    /**
+     * Return the view model instance.
+     * The view onSaveInstanceState will ask the presenter for the current view model.
+     * @return view model instance
+     */
+    WeatherUI getUiModel();
+
+    /**
+     * Restores the state and show weather model.
+     * The view onActivityCreated will try restore the old view model if it exists.
+     * @param uiModel view model
+     */
+    void restoreStateAndShowWeather(WeatherUI uiModel);
     //actions that now idk
   }
 }
