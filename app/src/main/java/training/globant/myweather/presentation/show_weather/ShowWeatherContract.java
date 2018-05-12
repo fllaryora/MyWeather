@@ -30,6 +30,14 @@ public interface ShowWeatherContract {
      */
 
     void showError(String error);
+
+    /**
+     * Stops the Refreshing action of  SwipeRefreshLayout
+     *
+     * @param showEmpty background
+     */
+    void stopRefreshing(boolean showEmpty);
+
     //actions that now idk
   }
 
@@ -72,6 +80,7 @@ public interface ShowWeatherContract {
     /**
      * Return the view model instance.
      * The view onSaveInstanceState will ask the presenter for the current view model.
+     *
      * @return view model instance
      */
     WeatherUI getUiModel();
@@ -79,9 +88,17 @@ public interface ShowWeatherContract {
     /**
      * Restores the state and show weather model.
      * The view onActivityCreated will try restore the old view model if it exists.
+     *
      * @param uiModel view model
      */
     void restoreStateAndShowWeather(WeatherUI uiModel);
+
+    /**
+     * Refresh the weather using lastParameters
+     *
+     * @param lastParameters pair key-value data that describe a location
+     */
+    void refreshWeather(Map<String, String> lastParameters);
     //actions that now idk
   }
 }

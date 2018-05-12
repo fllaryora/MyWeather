@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.view.LayoutInflater;
@@ -26,6 +27,7 @@ import training.globant.myweather.presentation.show_weather.presenter.ShowWeathe
 /**
  * Represents a View in a model view presenter (MVP) pattern.
  * In this case is used as a view of {@link WeatherUI}.
+ *
  * @author Francisco Llaryora
  * @version 1.0
  * @since 1.0
@@ -42,6 +44,8 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
   private TextView temperature;
   private TextView sky;
   private ImageView refreshImageView;
+  private SwipeRefreshLayout swipeRefreshLayout;
+  private Map<String, String> lastQuery;
   private ProgressDialog progressDialog;
 
   public static ShowWeatherFragment newInstance() {
@@ -51,13 +55,13 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setHasOptionsMenu(true);
     presenter = new ShowWeatherPresenter();
     presenter.attachView(this);
     progressDialog = new ProgressDialog(getContext());
     progressDialog.setTitle("Loading...");
     progressDialog.setMessage("Please wait.");
     progressDialog.setCancelable(false);
+
   }
 
   @Override
@@ -71,6 +75,7 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
   public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_show_weather, container, false);
+    swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh);
     hintLabel = (TextView) view.findViewById(R.id.hintLabel);
     city = (TextView) view.findViewById(R.id.cityLabel);
     maxTemperature = (TextView) view.findViewById(R.id.maxTemperatureLabel);
@@ -80,6 +85,10 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
     temperature = (TextView) view.findViewById(R.id.temperatureLabel);
     sky = (TextView) view.findViewById(R.id.skyLabel);
     refreshImageView = (ImageView) view.findViewById(R.id.refreshImageView);
+
+    setHasOptionsMenu(true);
+    setUpSwipeToRefresh();
+
     return view;
   }
 
@@ -90,6 +99,7 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
 
   /**
    * Shows uiModel Weather in the view
+   *
    * @param uiModel is the view model
    */
   @Override
@@ -112,10 +122,12 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
     sky.setText(uiModel.getSkyLabel());
     refreshImageView.setImageResource(uiModel.getIcon());
     progressDialog.dismiss();
+    stopRefreshing(false);
   }
 
   /**
    * Shows error in the view
+   *
    * @param error is the message/description of an error
    */
   @Override
@@ -123,6 +135,7 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
     View showWeatherView = getView();
     if (showWeatherView != null) {
       progressDialog.dismiss();
+      stopRefreshing(true);
       Snackbar.make(showWeatherView, R.string.can_not_load_message, Snackbar.LENGTH_LONG).show();
     }
   }
@@ -150,6 +163,7 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
 
     //https://stackoverflow.com/questions/45335853/cant-set-onactionexpandlistener-this-is-not-supported-use-menuitemcompat-seto/45431091
     final SearchView searchView = (SearchView) mSearchItem.getActionView();
+
     //TODO ADD ADAPTER TO ADD SUGGESTIONS
     //searchView.setSuggestionsAdapter(mAdapter);
     searchView.setOnQueryTextListener(new OnQueryTextListener() {
@@ -158,7 +172,9 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
         progressDialog.show();
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(Constant.API_PARAMETER_QUERY, textSubmitted);
+        lastQuery = parameters;
         presenter.loadWeather(parameters);
+        mSearchItem.collapseActionView();
         //true if the query has been handled by the listener,
         // false to let the SearchView perform the default action.
         return true;
@@ -181,6 +197,35 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
       }
     });
 
+  }
+
+  private void setUpSwipeToRefresh() {
+    swipeRefreshLayout.setOnRefreshListener(
+        new SwipeRefreshLayout.OnRefreshListener() {
+          @Override
+          public void onRefresh() {
+            presenter.refreshWeather(lastQuery);
+          }
+        }
+    );
+    swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
+  }
+
+  /**
+   * Stops the Refreshing action of  SwipeRefreshLayout
+   *
+   * @param showEmpty background
+   */
+  @Override
+  public void stopRefreshing(boolean showEmpty) {
+    swipeRefreshLayout.setRefreshing(false);
+    if (showEmpty) {
+      //showEmptyUsernameError();
+      //TODO for the love of god bring to another fragment the message when I have time
+      hintLabel.setVisibility(View.VISIBLE);
+      maxLabel.setVisibility(View.GONE);
+      minLabel.setVisibility(View.GONE);
+    }
   }
 
 }

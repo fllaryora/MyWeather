@@ -95,7 +95,7 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
    */
   @Override
   public WeatherUI transformModelToUiModel(WeatherInfo model) {
-    if( model == null){
+    if (model == null) {
       return null;
     }
 
@@ -123,6 +123,7 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
   /**
    * Restores the state and show weather model.
    * Shows the view model if it exists.
+   *
    * @param uiModel view model
    */
   @Override
@@ -135,7 +136,7 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
     }
   }
 
-  private String getTemperatueFormated(double temperature){
+  private String getTemperatueFormated(double temperature) {
     //https://stackoverflow.com/questions/14389349/android-get-current-locale-not-default
     DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.getDefault());
     symbols.setDecimalSeparator(DECIMAL_SEPARATOR);
@@ -167,4 +168,23 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
       view.showError(error);
     }
   }
+
+  /**
+   * Refresh the weather loading the weather again using lastParameters
+   *
+   * @param lastParameters pair key-value data that describe a location
+   */
+  @Override
+  public void refreshWeather(Map<String, String> lastParameters) {
+    if (isViewAttached()) {
+      if (lastParameters != null && !lastParameters.isEmpty()) {
+        //TODO ADD CONTROL CACHE TO BE SURE THAT WE HAVE A NETWORK RESPONSE
+        loadWeather(lastParameters);
+      } else {
+        view.stopRefreshing(true);
+      }
+    }
+  }
+
+
 }
