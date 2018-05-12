@@ -127,7 +127,6 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
     }
   }
 
-
   @Override
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);

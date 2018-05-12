@@ -1,11 +1,13 @@
 package training.globant.myweather.data.net;
 
+import java.util.Map;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.Query;
+import retrofit2.http.QueryMap;
 import training.globant.myweather.data.model.WeatherInfo;
 import training.globant.myweather.data.utils.Constant;
 
@@ -54,19 +56,17 @@ public class WeatherAPIClient {
   public interface OpenWeatherMap {
 
     /**
-     * Searches the weather by city
-     * @param q query
-     * @param appId app id
-     * @param temperatureUnits
-     * @param lang language of the description
+     * earches the weather by options
+     * @param options is a map that could contain:
+     * - q -query
+     * - APPID -app id
+     * - units - temperatureUnits
+     * - lang- language of the description
      * @return a callable with WeatherInfo
      */
     @Headers("User-Agent: MyWeather-App")
     @GET("weather")
-    Call<WeatherInfo> searchWeatherByCity(@Query(Constant.API_PARAMETER_QUERY) String q,
-        @Query(Constant.API_PARAMETER_APP_ID) String appId,
-        @Query(Constant.API_PARAMETER_TEMPETATURE_UNITS) String temperatureUnits,
-        @Query(Constant.API_PARAMETER_LANG) String lang);
+    Call<WeatherInfo> searchWeatherByOptions(@QueryMap(encoded = true) Map<String, String> options);
   }
 
 }

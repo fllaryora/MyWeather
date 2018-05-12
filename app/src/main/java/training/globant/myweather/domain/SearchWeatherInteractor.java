@@ -34,12 +34,10 @@ public class SearchWeatherInteractor {
     //TODO: looking up for cached results here
     //TODO call repository with both parameters
     WeatherAPIClient.OpenWeatherMap weatherClient = WeatherAPIClient.provideWeatherAPIClient();
-    String query = parameters.get(Constant.API_PARAMETER_QUERY);
-    String apiKey = BuildConfig.APP_ID;
-    String temperatureUnits = Constant.API_VALUE_DEGREES_CELSIUS;
-    String lang = Constant.API_VALUE_LANG_SPANISH;
-    Call<WeatherInfo> call = weatherClient
-        .searchWeatherByCity(query, apiKey, temperatureUnits, lang);
+    parameters.put( Constant.API_PARAMETER_APP_ID, BuildConfig.APP_ID);
+    parameters.put( Constant.API_PARAMETER_TEMPETATURE_UNITS, Constant.API_VALUE_DEGREES_CELSIUS);
+    parameters.put( Constant.API_PARAMETER_LANG, Constant.API_VALUE_LANG_SPANISH);
+    Call<WeatherInfo> call = weatherClient.searchWeatherByOptions(parameters);
     call.enqueue(new Callback<WeatherInfo>() {
       @Override
       public void onResponse(Call<WeatherInfo> call, Response<WeatherInfo> response) {
