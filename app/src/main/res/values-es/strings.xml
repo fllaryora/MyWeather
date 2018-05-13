@@ -4,4 +4,8 @@
   <string name="max_temperature">Máx:</string>
   <string name="search_hint">Por favor, busque su ubicación</string>
   <string name="can_not_load_message">No se pudo cargar la información del clima</string>
+  <string name="permission_wont_granted">Permission was not granted</string>
+  <string name="explanation">explanation</string>
+  <string name="enable_gps_message">service to find current location.  Click OK to go to</string>
+  <string name="ok">OK</string>
 </resources>

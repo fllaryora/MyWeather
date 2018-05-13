@@ -1,5 +1,6 @@
 package training.globant.myweather.presentation.show_weather;
 
+import android.content.Context;
 import java.util.Map;
 import training.globant.myweather.data.model.WeatherInfo;
 import training.globant.myweather.presentation.show_weather.model.WeatherUI;
@@ -68,6 +69,13 @@ public interface ShowWeatherContract {
      * @param parameters pair key-value data that describe a location
      */
     void loadWeather(Map<String, String> parameters);
+
+    /**
+     * Loads the weather using gps
+     *
+     * @param context of application
+     */
+    void loadWeather(Context context);
 
     /**
      * Transforms the model into a view model instance.

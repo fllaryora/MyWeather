@@ -1,11 +1,22 @@
 package training.globant.myweather.presentation.show_weather.view;
 
+import android.Manifest;
+import android.Manifest.permission;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.view.LayoutInflater;
@@ -16,10 +27,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import java.util.HashMap;
 import java.util.Map;
 import training.globant.myweather.R;
 import training.globant.myweather.data.utils.Constant;
+import training.globant.myweather.device.utils.DeviceConstant;
+import training.globant.myweather.device.utils.DeviceConstant.RequestCodes;
 import training.globant.myweather.presentation.show_weather.ShowWeatherContract;
 import training.globant.myweather.presentation.show_weather.model.WeatherUI;
 import training.globant.myweather.presentation.show_weather.presenter.ShowWeatherPresenter;
@@ -95,6 +109,7 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
   @Override
   public void onResume() {
     super.onResume();
+    tryLocation();
   }
 
   /**
@@ -227,5 +242,105 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
       minLabel.setVisibility(View.GONE);
     }
   }
+
+  /*************** GPS *********************/
+  public void tryLocation() {
+    if (hasSystemGPS()) {
+      if(isProviderEnabled()){
+        if (validatePermission()) {
+          if (shouldWeShowAnExplanation()) {
+            Toast.makeText(getActivity(), R.string.explanation, Toast.LENGTH_SHORT).show();
+          }
+          requestPermissionsToUser();
+          //The callback method (onRequestPermissionsResult) gets the result of the request.
+          return;
+        }
+        progressDialog.show();
+        presenter.loadWeather(getActivity());
+      } else {
+        displayPromptForEnablingGPS();
+      }
+
+    }
+  }
+
+  @Override
+  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+      @NonNull int[] grantResults) {
+    if (requestCode == RequestCodes.REQUEST_GPS.getRequestCode()) {
+      boolean permissionGranted = true;
+
+      for(int i = 0; i < permissions.length ; i++){
+        if(DeviceConstant.isAccessInAccessLocation(permissions[i])
+            && grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+            permissionGranted = false;
+            break;
+          }
+      }
+
+      if(permissionGranted){
+        progressDialog.show();
+        presenter.loadWeather(getActivity());
+      } else {
+        Toast.makeText(getActivity(), R.string.permission_wont_granted, Toast.LENGTH_SHORT).show();
+        //show empty
+        //TODO for the love of god bring to another fragment the message when I have time
+        hintLabel.setVisibility(View.VISIBLE);
+        maxLabel.setVisibility(View.GONE);
+        minLabel.setVisibility(View.GONE);
+      }
+    } else {
+      super.onRequestPermissionsResult( requestCode, permissions, grantResults);
+    }
+  }
+
+  private boolean validatePermission() {
+    return ActivityCompat
+        .checkSelfPermission(getActivity(), permission.ACCESS_FINE_LOCATION)
+        != PackageManager.PERMISSION_GRANTED
+        && ActivityCompat
+        .checkSelfPermission(getActivity(), permission.ACCESS_COARSE_LOCATION)
+        != PackageManager.PERMISSION_GRANTED;
+  }
+
+  private boolean shouldWeShowAnExplanation() {
+    return shouldShowRequestPermissionRationale( Manifest.permission.ACCESS_COARSE_LOCATION) &&
+        shouldShowRequestPermissionRationale( Manifest.permission.ACCESS_FINE_LOCATION);
+  }
+
+  private void requestPermissionsToUser() {
+    requestPermissions(DeviceConstant.accessLocations,
+            RequestCodes.REQUEST_GPS.getRequestCode()
+        );
+  }
+
+  private boolean isProviderEnabled() {
+    LocationManager locationManager = (LocationManager) getActivity()
+        .getSystemService(Context.LOCATION_SERVICE);
+    return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+  }
+
+  private boolean hasSystemGPS() {
+    return getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
+  }
+
+  private void displayPromptForEnablingGPS() {
+    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+    final String action = Settings.ACTION_LOCATION_SOURCE_SETTINGS;
+    final String message = getString(R.string.enable_gps_message);
+
+    builder.setMessage(message)
+        .setPositiveButton(getString(R.string.ok),
+            new DialogInterface.OnClickListener() {
+              public void onClick(DialogInterface d, int id) {
+                getActivity().startActivity(new Intent(action));
+                d.dismiss();
+              }
+            });
+
+    builder.create().show();
+  }
+
+  /*************** GPS *********************/
 
 }

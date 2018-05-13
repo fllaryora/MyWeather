@@ -3,6 +3,7 @@ package training.globant.myweather.presentation.show_weather.presenter;
 import static training.globant.myweather.data.utils.Constant.DECIMAL_FORMAT_PATTERN;
 import static training.globant.myweather.data.utils.Constant.DECIMAL_SEPARATOR;
 
+import android.content.Context;
 import android.text.TextUtils;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -74,6 +75,12 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
         view.showError("Invalid Query");
       }
     }
+  }
+
+  @Override
+  public void loadWeather(Context context) {
+    SearchWeatherInteractor searchWeatherInteractor = new SearchWeatherInteractor();
+    searchWeatherInteractor.execute(context, this);
   }
 
   private boolean isQueryValid(String query) {
