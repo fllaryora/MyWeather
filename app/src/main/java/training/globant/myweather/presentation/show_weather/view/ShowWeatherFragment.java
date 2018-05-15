@@ -32,6 +32,7 @@ import training.globant.myweather.presentation.show_weather.presenter.ShowWeathe
  * @version 1.0
  * @since 1.0
  */
+
 public class ShowWeatherFragment extends Fragment implements ShowWeatherContract.View {
 
   private ShowWeatherPresenter presenter;
@@ -95,6 +96,7 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
   @Override
   public void onResume() {
     super.onResume();
+    presenter.attachView(this);
   }
 
   /**
@@ -122,7 +124,7 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
     sky.setText(uiModel.getSkyLabel());
     refreshImageView.setImageResource(uiModel.getIcon());
     progressDialog.dismiss();
-    stopRefreshing(false);
+    stopRefreshing();
   }
 
   /**
@@ -135,7 +137,7 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
     View showWeatherView = getView();
     if (showWeatherView != null) {
       progressDialog.dismiss();
-      stopRefreshing(true);
+      stopRefreshing();
       Snackbar.make(showWeatherView, R.string.can_not_load_message, Snackbar.LENGTH_LONG).show();
     }
   }
@@ -213,19 +215,10 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
 
   /**
    * Stops the Refreshing action of  SwipeRefreshLayout
-   *
-   * @param showEmpty background
    */
   @Override
-  public void stopRefreshing(boolean showEmpty) {
+  public void stopRefreshing() {
     swipeRefreshLayout.setRefreshing(false);
-    if (showEmpty) {
-      //showEmptyUsernameError();
-      //TODO for the love of god bring to another fragment the message when I have time
-      hintLabel.setVisibility(View.VISIBLE);
-      maxLabel.setVisibility(View.GONE);
-      minLabel.setVisibility(View.GONE);
-    }
   }
 
 }

@@ -33,10 +33,8 @@ public interface ShowWeatherContract {
 
     /**
      * Stops the Refreshing action of  SwipeRefreshLayout
-     *
-     * @param showEmpty background
      */
-    void stopRefreshing(boolean showEmpty);
+    void stopRefreshing();
 
     //actions that now idk
   }

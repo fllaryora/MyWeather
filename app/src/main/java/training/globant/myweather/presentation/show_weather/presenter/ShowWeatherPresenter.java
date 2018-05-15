@@ -71,7 +71,7 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
       searchWeatherInteractor.execute(parameters, this);
     } else {
       if (isViewAttached()) {
-        view.showError("Invalid Query");
+        view.showError(Constant.INVALID_QUERY);
       }
     }
   }
@@ -181,7 +181,7 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
         //TODO ADD CONTROL CACHE TO BE SURE THAT WE HAVE A NETWORK RESPONSE
         loadWeather(lastParameters);
       } else {
-        view.stopRefreshing(true);
+        view.stopRefreshing();
       }
     }
   }
