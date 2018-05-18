@@ -174,6 +174,8 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
         progressDialog.show();
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(Constant.API_PARAMETER_QUERY, textSubmitted);
+        parameters.put( Constant.API_PARAMETER_TEMPETATURE_UNITS, getApiValueDegreesTypeString());
+        parameters.put( Constant.API_PARAMETER_LANG, getApiValueLangString());
         lastQuery = parameters;
         presenter.loadWeather(parameters);
         mSearchItem.collapseActionView();
@@ -219,6 +221,22 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
   @Override
   public void stopRefreshing() {
     swipeRefreshLayout.setRefreshing(false);
+  }
+
+  /**** String Resources *****/
+  @Override
+  public String getInvalidQueryString(){
+    return getString(R.string.invalid_query);
+  }
+
+  @Override
+  public String getApiValueDegreesTypeString() {
+    return getString(R.string.api_value_degrees_type);
+  }
+
+  @Override
+  public String getApiValueLangString() {
+    return getString(R.string.api_value_lang);
   }
 
 }

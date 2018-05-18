@@ -35,8 +35,6 @@ public class SearchWeatherInteractor {
     //TODO call repository with both parameters
     WeatherAPIClient.OpenWeatherMap weatherClient = WeatherAPIClient.provideWeatherAPIClient();
     parameters.put( Constant.API_PARAMETER_APP_ID, BuildConfig.APP_ID);
-    parameters.put( Constant.API_PARAMETER_TEMPETATURE_UNITS, Constant.API_VALUE_DEGREES_CELSIUS);
-    parameters.put( Constant.API_PARAMETER_LANG, Constant.API_VALUE_LANG_SPANISH);
     Call<WeatherInfo> call = weatherClient.searchWeatherByOptions(parameters);
     call.enqueue(new Callback<WeatherInfo>() {
       @Override

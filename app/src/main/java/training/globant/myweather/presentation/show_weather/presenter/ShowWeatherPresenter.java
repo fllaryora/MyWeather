@@ -3,7 +3,6 @@ package training.globant.myweather.presentation.show_weather.presenter;
 import static training.globant.myweather.data.utils.Constant.DECIMAL_FORMAT_PATTERN;
 import static training.globant.myweather.data.utils.Constant.DECIMAL_SEPARATOR;
 
-import android.text.TextUtils;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
@@ -71,7 +70,7 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
       searchWeatherInteractor.execute(parameters, this);
     } else {
       if (isViewAttached()) {
-        view.showError(Constant.INVALID_QUERY);
+        view.showError(view.getInvalidQueryString());
       }
     }
   }
@@ -81,10 +80,7 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
       return false;
     }
     query = query.trim();
-    if (TextUtils.isEmpty(query)) {
-      return false;
-    }
-    return query.length() > 4;
+    return !query.isEmpty() && query.length() > Constant.MIN_QUERY_LEN;
   }
 
   /**

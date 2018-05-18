@@ -35,8 +35,29 @@ public interface ShowWeatherContract {
      * Stops the Refreshing action of  SwipeRefreshLayout
      */
     void stopRefreshing();
-
     //actions that now idk
+
+    /**
+     * Returns Invalid Query String Resource
+     *
+     * @return Invalid Query String Resource
+     */
+    String getInvalidQueryString();
+
+    /**
+     * Returns Api Value Degrees Type String Resource
+     *
+     * @return Api Value Degrees Type String Resource
+     */
+    String getApiValueDegreesTypeString();
+
+    /**
+     * REturns Api Value Lang String Resource
+     *
+     * @return Api Value Lang String Resource
+     */
+    String getApiValueLangString();
+    //+string resources
   }
 
   interface Presenter {
