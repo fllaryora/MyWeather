@@ -8,6 +8,9 @@
   <string name="max_temperature">Max:</string>
   <string name="search_hint">Please find your location</string>
   <string name="can_not_load_message">Cannot load the weather</string>
+  <string name="invalid_query">Invalid Query</string>
+  <string name="api_value_degrees_type">metric</string>
+  <string name="api_value_lang">es</string>
   <string name="permission_wont_granted">Permission was not granted</string>
   <string name="explanation">explanation</string>
   <string name="enable_gps_message">Enable either GPS or any other location service to find current location.  Click OK to go to location services settings to let you do so.</string>

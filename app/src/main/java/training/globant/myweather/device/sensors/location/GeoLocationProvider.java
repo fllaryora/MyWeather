@@ -26,8 +26,7 @@ public class GeoLocationProvider {
   private Context context;
   private ProviderType type;
 
-  public GeoLocationProvider(LocationListener listener, Context context, ProviderType type) {
-    this.listener = listener;
+  public GeoLocationProvider(Context context, ProviderType type) {
     this.context = context;
     this.type = type;
     switch (type) {
@@ -47,8 +46,20 @@ public class GeoLocationProvider {
     locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
   }
 
+  /**
+   * Sets the Listener callback
+   * @param listener callback
+   */
+  public void setListener(LocationListener listener) {
+    this.listener = listener;
+  }
+
+  /**
+   * Fetchs Location just Once, when it come the listener will be triggered
+   * @throws LocationException
+   */
   public void fetchLocationOnce() throws LocationException {
-    if (hasSystemFeature() && isProviderEnabled() && isSecure()) {
+    if ( listener != null && hasSystemFeature() && isProviderEnabled() && isSecure()) {
       try {
         locationManager.requestSingleUpdate(provider, listener, null);
         return;
@@ -57,13 +68,17 @@ public class GeoLocationProvider {
         throw new LocationException(se);
       }
     } else {
-      throw new LocationException(hasSystemFeature(), isProviderEnabled(), isSecure());
+      throw new LocationException(listener != null, hasSystemFeature(), isProviderEnabled(), isSecure());
     }
 
   }
 
+  /**
+   * Fetchs Location multiple times, each time the listener will be triggered
+   * @throws LocationException
+   */
   public void fetchLocation() throws LocationException {
-    if (hasSystemFeature() && isProviderEnabled() && isSecure()) {
+    if (listener != null && hasSystemFeature() && isProviderEnabled() && isSecure()) {
       try {
         locationManager.requestLocationUpdates(provider, DeviceConstant.MIN_TIME_BW_UPDATES,
             DeviceConstant.MIN_DISTANCE_CHANGE_FOR_UPDATES, listener);
@@ -73,7 +88,7 @@ public class GeoLocationProvider {
         throw new LocationException(se);
       }
     } else {
-      throw new LocationException(hasSystemFeature(), isProviderEnabled(), isSecure());
+      throw new LocationException(listener != null , hasSystemFeature(), isProviderEnabled(), isSecure());
     }
 
   }

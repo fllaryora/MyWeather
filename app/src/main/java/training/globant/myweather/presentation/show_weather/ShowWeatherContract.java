@@ -3,6 +3,7 @@ package training.globant.myweather.presentation.show_weather;
 import android.content.Context;
 import java.util.Map;
 import training.globant.myweather.data.model.WeatherInfo;
+import training.globant.myweather.device.sensors.location.GeoLocationProvider;
 import training.globant.myweather.presentation.show_weather.model.WeatherUI;
 
 /**
@@ -34,12 +35,37 @@ public interface ShowWeatherContract {
 
     /**
      * Stops the Refreshing action of  SwipeRefreshLayout
-     *
-     * @param showEmpty background
      */
-    void stopRefreshing(boolean showEmpty);
+    void stopRefreshing();
 
+    /**
+     * Returns provider of location
+     * @return provider of location
+     */
+    GeoLocationProvider getGPSGeoLocationProvider();
     //actions that now idk
+
+    /**
+     * Returns Invalid Query String Resource
+     *
+     * @return Invalid Query String Resource
+     */
+    String getInvalidQueryString();
+
+    /**
+     * Returns Api Value Degrees Type String Resource
+     *
+     * @return Api Value Degrees Type String Resource
+     */
+    String getApiValueDegreesTypeString();
+
+    /**
+     * REturns Api Value Lang String Resource
+     *
+     * @return Api Value Lang String Resource
+     */
+    String getApiValueLangString();
+    //+string resources
   }
 
   interface Presenter {
@@ -73,9 +99,9 @@ public interface ShowWeatherContract {
     /**
      * Loads the weather using gps
      *
-     * @param context of application
+     * @param parameters pair key-value data that describe a location
      */
-    void loadWeather(Context context);
+    void loadWeatherGPS(Map<String, String> parameters);
 
     /**
      * Transforms the model into a view model instance.

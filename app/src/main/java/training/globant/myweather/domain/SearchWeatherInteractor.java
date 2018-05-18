@@ -1,12 +1,8 @@
 package training.globant.myweather.domain;
 
-import static training.globant.myweather.data.utils.Constant.ERROR_MESSAGES_FORMAT;
-
-import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
-import java.util.HashMap;
 import java.util.Map;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -19,7 +15,6 @@ import training.globant.myweather.data.net.ErrorHelper;
 import training.globant.myweather.data.net.WeatherAPIClient;
 import training.globant.myweather.data.utils.Constant;
 import training.globant.myweather.device.sensors.location.GeoLocationProvider;
-import training.globant.myweather.device.sensors.location.GeoLocationProvider.ProviderType;
 import training.globant.myweather.device.sensors.location.LocationException;
 import training.globant.myweather.device.utils.DeviceConstant;
 
@@ -33,6 +28,16 @@ import training.globant.myweather.device.utils.DeviceConstant;
 
 public class SearchWeatherInteractor {
 
+  private GeoLocationProvider geoLocationProvider;
+
+  /**
+   * Constructor of SearchWeatherInteractor
+   * @param geoLocationProvider instance of the geo-location provider
+   */
+  public SearchWeatherInteractor( GeoLocationProvider geoLocationProvider) {
+    this.geoLocationProvider = geoLocationProvider;
+  }
+
   /**
    * Executes the current use case (SearchWeather).
    *
@@ -41,9 +46,7 @@ public class SearchWeatherInteractor {
    */
   public void execute(final Map<String, String> parameters, final WeatherCallback callback) {
     WeatherAPIClient.OpenWeatherMap weatherClient = WeatherAPIClient.provideWeatherAPIClient();
-    parameters.put(Constant.API_PARAMETER_APP_ID, BuildConfig.APP_ID);
-    parameters.put(Constant.API_PARAMETER_TEMPETATURE_UNITS, Constant.API_VALUE_DEGREES_CELSIUS);
-    parameters.put(Constant.API_PARAMETER_LANG, Constant.API_VALUE_LANG_SPANISH);
+    parameters.put( Constant.API_PARAMETER_APP_ID, BuildConfig.APP_ID);
     Call<WeatherInfo> call = weatherClient.searchWeatherByOptions(parameters);
     call.enqueue(new Callback<WeatherInfo>() {
       @Override
@@ -55,7 +58,7 @@ public class SearchWeatherInteractor {
           // Error such as resource not found
           ErrorInfo errorResponse = ErrorHelper.parseError(response);
           callback.onError(
-              String.format(ERROR_MESSAGES_FORMAT, errorResponse.getErrorCode(),
+              String.format(Constant.ERROR_MESSAGES_FORMAT, errorResponse.getErrorCode(),
                   errorResponse.getMessage())
           );
         }
@@ -72,14 +75,14 @@ public class SearchWeatherInteractor {
   /**
    * Executes the current use case (SearchWeather) from locator.
    *
+   * @param parameters description of the location and so on.
    * @param callback Called when an asynchronous rest api call completes.
    */
-  public void execute(Context context, final WeatherCallback callback) {
+  public void executeGPS(final Map<String, String> parameters, final WeatherCallback callback) {
 
     LocationListener listener = new LocationListener() {
       @Override
       public void onLocationChanged(Location location) {
-        Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(Constant.API_PARAMETER_LATITUDE, String.valueOf(location.getLatitude()));
         parameters.put(Constant.API_PARAMETER_LONGITUDE, String.valueOf(location.getLongitude()));
         execute(parameters, callback);
@@ -99,8 +102,10 @@ public class SearchWeatherInteractor {
     };
 
     try {
-      new GeoLocationProvider(listener, context, ProviderType.GPS).fetchLocationOnce();
+      this.geoLocationProvider.setListener(listener);
+      this.geoLocationProvider.fetchLocationOnce();
     } catch (LocationException e) {
+      //TODO PASS tO STRING RESOURCE
       callback.onError(String.format(DeviceConstant.FAIL_MESSAGE, e));
     }
 

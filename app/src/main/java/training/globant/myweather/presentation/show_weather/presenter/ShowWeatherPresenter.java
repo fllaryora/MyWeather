@@ -1,10 +1,6 @@
 package training.globant.myweather.presentation.show_weather.presenter;
 
-import static training.globant.myweather.data.utils.Constant.DECIMAL_FORMAT_PATTERN;
-import static training.globant.myweather.data.utils.Constant.DECIMAL_SEPARATOR;
-
 import android.content.Context;
-import android.text.TextUtils;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
@@ -66,21 +62,21 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
    */
   @Override
   public void loadWeather(Map<String, String> parameters) {
-    SearchWeatherInteractor searchWeatherInteractor = new SearchWeatherInteractor();
+    SearchWeatherInteractor searchWeatherInteractor = new SearchWeatherInteractor(view.getGPSGeoLocationProvider());
     String query = parameters.get(Constant.API_PARAMETER_QUERY);
     if (isQueryValid(query)) {
       searchWeatherInteractor.execute(parameters, this);
     } else {
       if (isViewAttached()) {
-        view.showError("Invalid Query");
+        view.showError(view.getInvalidQueryString());
       }
     }
   }
 
   @Override
-  public void loadWeather(Context context) {
-    SearchWeatherInteractor searchWeatherInteractor = new SearchWeatherInteractor();
-    searchWeatherInteractor.execute(context, this);
+  public void loadWeatherGPS(Map<String, String> parameters) {
+    SearchWeatherInteractor searchWeatherInteractor = new SearchWeatherInteractor(view.getGPSGeoLocationProvider());
+    searchWeatherInteractor.executeGPS(parameters, this);
   }
 
   private boolean isQueryValid(String query) {
@@ -88,10 +84,7 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
       return false;
     }
     query = query.trim();
-    if (TextUtils.isEmpty(query)) {
-      return false;
-    }
-    return query.length() > 4;
+    return !query.isEmpty() && query.length() > Constant.MIN_QUERY_LEN;
   }
 
   /**
@@ -146,8 +139,8 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
   private String getTemperatueFormated(double temperature) {
     //https://stackoverflow.com/questions/14389349/android-get-current-locale-not-default
     DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.getDefault());
-    symbols.setDecimalSeparator(DECIMAL_SEPARATOR);
-    DecimalFormat formatter = new DecimalFormat(DECIMAL_FORMAT_PATTERN, symbols);
+    symbols.setDecimalSeparator(Constant.DECIMAL_SEPARATOR);
+    DecimalFormat formatter = new DecimalFormat(Constant.DECIMAL_FORMAT_PATTERN, symbols);
     return formatter.format(temperature);
   }
 
@@ -188,7 +181,7 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
         //TODO ADD CONTROL CACHE TO BE SURE THAT WE HAVE A NETWORK RESPONSE
         loadWeather(lastParameters);
       } else {
-        view.stopRefreshing(true);
+        view.stopRefreshing();
       }
     }
   }

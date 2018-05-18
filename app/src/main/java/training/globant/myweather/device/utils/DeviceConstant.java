@@ -14,8 +14,9 @@ import java.util.List;
 
 public class DeviceConstant {
 
+  //TODO PASS TO STRING RESOURCE
   public static String FAIL_MESSAGE = "GeoLocationProvider fail, cause: %s";
-  public static String EXCEPTION_FORMAT = "hasSystemFeature: %s isProviderEnabled: %sisSecure: %s";
+  public static String EXCEPTION_FORMAT = "isListenerNull: %s hasSystemFeature: %s isProviderEnabled: %sisSecure: %s";
   public enum RequestCodes {
     REQUEST_GPS(1),
     NOT_AVAILABLE(0);

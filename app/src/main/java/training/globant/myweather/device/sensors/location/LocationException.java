@@ -12,8 +12,9 @@ import training.globant.myweather.device.utils.DeviceConstant;
 
 public class LocationException extends Exception {
 
-  public LocationException(boolean hasSystemFeature, boolean isProviderEnabled, boolean isSecure) {
-    super(String.format(DeviceConstant.EXCEPTION_FORMAT, hasSystemFeature,
+  public LocationException(boolean isListenerNull, boolean hasSystemFeature,
+      boolean isProviderEnabled, boolean isSecure) {
+    super(String.format(DeviceConstant.EXCEPTION_FORMAT, isListenerNull, hasSystemFeature,
         isProviderEnabled, isSecure));
   }
 

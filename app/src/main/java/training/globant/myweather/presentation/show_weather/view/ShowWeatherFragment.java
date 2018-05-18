@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 import training.globant.myweather.R;
 import training.globant.myweather.data.utils.Constant;
+import training.globant.myweather.device.sensors.location.GeoLocationProvider;
 import training.globant.myweather.device.utils.DeviceConstant;
 import training.globant.myweather.device.utils.DeviceConstant.RequestCodes;
 import training.globant.myweather.presentation.show_weather.ShowWeatherContract;
@@ -46,6 +47,7 @@ import training.globant.myweather.presentation.show_weather.presenter.ShowWeathe
  * @version 1.0
  * @since 1.0
  */
+
 public class ShowWeatherFragment extends Fragment implements ShowWeatherContract.View {
 
   private ShowWeatherPresenter presenter;
@@ -61,6 +63,7 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
   private SwipeRefreshLayout swipeRefreshLayout;
   private Map<String, String> lastQuery;
   private ProgressDialog progressDialog;
+  private GeoLocationProvider geoLocationProvider;
 
   public static ShowWeatherFragment newInstance() {
     return new ShowWeatherFragment();
@@ -109,6 +112,7 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
   @Override
   public void onResume() {
     super.onResume();
+    presenter.attachView(this);
     tryLocation();
   }
 
@@ -137,7 +141,7 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
     sky.setText(uiModel.getSkyLabel());
     refreshImageView.setImageResource(uiModel.getIcon());
     progressDialog.dismiss();
-    stopRefreshing(false);
+    stopRefreshing();
   }
 
   /**
@@ -150,7 +154,7 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
     View showWeatherView = getView();
     if (showWeatherView != null) {
       progressDialog.dismiss();
-      stopRefreshing(true);
+      stopRefreshing();
       Snackbar.make(showWeatherView, R.string.can_not_load_message, Snackbar.LENGTH_LONG).show();
     }
   }
@@ -187,6 +191,8 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
         progressDialog.show();
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(Constant.API_PARAMETER_QUERY, textSubmitted);
+        parameters.put( Constant.API_PARAMETER_TEMPETATURE_UNITS, getApiValueDegreesTypeString());
+        parameters.put( Constant.API_PARAMETER_LANG, getApiValueLangString());
         lastQuery = parameters;
         presenter.loadWeather(parameters);
         mSearchItem.collapseActionView();
@@ -228,22 +234,42 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
 
   /**
    * Stops the Refreshing action of  SwipeRefreshLayout
-   *
-   * @param showEmpty background
    */
   @Override
-  public void stopRefreshing(boolean showEmpty) {
+  public void stopRefreshing() {
     swipeRefreshLayout.setRefreshing(false);
-    if (showEmpty) {
-      //showEmptyUsernameError();
-      //TODO for the love of god bring to another fragment the message when I have time
-      hintLabel.setVisibility(View.VISIBLE);
-      maxLabel.setVisibility(View.GONE);
-      minLabel.setVisibility(View.GONE);
-    }
+  }
+
+  /**** String Resources *****/
+  @Override
+  public String getInvalidQueryString(){
+    return getString(R.string.invalid_query);
+  }
+
+  @Override
+  public String getApiValueDegreesTypeString() {
+    return getString(R.string.api_value_degrees_type);
+  }
+
+  @Override
+  public String getApiValueLangString() {
+    return getString(R.string.api_value_lang);
   }
 
   /*************** GPS *********************/
+
+  /**
+   * Returns a GPS GeoLocation Provider
+   * @return a GPS GeoLocation Provider
+   */
+  @Override
+  public GeoLocationProvider getGPSGeoLocationProvider() {
+    if(geoLocationProvider == null){
+      geoLocationProvider = new GeoLocationProvider(getActivity(), GeoLocationProvider.ProviderType.GPS);
+    }
+    return geoLocationProvider;
+  }
+
   public void tryLocation() {
     if (hasSystemGPS()) {
       if(isProviderEnabled()){
@@ -256,7 +282,10 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
           return;
         }
         progressDialog.show();
-        presenter.loadWeather(getActivity());
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put( Constant.API_PARAMETER_TEMPETATURE_UNITS, getApiValueDegreesTypeString());
+        parameters.put( Constant.API_PARAMETER_LANG, getApiValueLangString());
+        presenter.loadWeatherGPS(parameters);
       } else {
         displayPromptForEnablingGPS();
       }
@@ -280,14 +309,10 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
 
       if(permissionGranted){
         progressDialog.show();
-        presenter.loadWeather(getActivity());
-      } else {
-        Toast.makeText(getActivity(), R.string.permission_wont_granted, Toast.LENGTH_SHORT).show();
-        //show empty
-        //TODO for the love of god bring to another fragment the message when I have time
-        hintLabel.setVisibility(View.VISIBLE);
-        maxLabel.setVisibility(View.GONE);
-        minLabel.setVisibility(View.GONE);
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put( Constant.API_PARAMETER_TEMPETATURE_UNITS, getApiValueDegreesTypeString());
+        parameters.put( Constant.API_PARAMETER_LANG, getApiValueLangString());
+        presenter.loadWeatherGPS(parameters);
       }
     } else {
       super.onRequestPermissionsResult( requestCode, permissions, grantResults);
