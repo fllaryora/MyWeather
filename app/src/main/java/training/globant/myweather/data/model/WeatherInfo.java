@@ -1,0 +1,47 @@
+package training.globant.myweather.data.model;
+
+import com.google.gson.annotations.SerializedName;
+import java.util.List;
+
+/**
+ * Represents a json that describes the weather from rest service
+ *
+ * @author Francisco Llaryora
+ * @version 1.0
+ * @since 1.0
+ */
+
+public class WeatherInfo {
+
+  private String name;
+  @SerializedName("weather")
+  private List<SkyDescription> skyDescription;
+  @SerializedName("main")
+  private TemperatureInfo temperatureInfo;
+
+  public WeatherInfo(String name, List<SkyDescription> skyDescription,
+      TemperatureInfo temperatureInfo) {
+    this.name = name;
+    this.skyDescription = skyDescription;
+    this.temperatureInfo = temperatureInfo;
+  }
+
+  public WeatherInfo() {
+    this.name = "";
+    this.skyDescription = null;
+    this.temperatureInfo = null;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public List<SkyDescription> getSkyDescription() {
+    return skyDescription;
+  }
+
+  public TemperatureInfo getTemperatureInfo() {
+    return temperatureInfo;
+  }
+
+}
