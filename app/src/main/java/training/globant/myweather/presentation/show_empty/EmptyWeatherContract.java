@@ -1,20 +1,15 @@
-package training.globant.myweather.presentation.show_weather;
+package training.globant.myweather.presentation.show_empty;
 
 import java.util.Map;
 import training.globant.myweather.data.model.WeatherInfo;
-import training.globant.myweather.device.sensors.location.GeoLocationProvider;
 import training.globant.myweather.device.sensors.location.PermissionsHelper;
 import training.globant.myweather.presentation.show_weather.model.WeatherUI;
 
 /**
- * Represents a contract between the view and the presenter.
- *
- * @author Francisco Llaryora
- * @version 1.0
- * @since 1.0
+ * Created by francisco on 19/05/18.
  */
 
-public interface ShowWeatherContract {
+public interface EmptyWeatherContract {
 
   interface View {
 
@@ -23,7 +18,7 @@ public interface ShowWeatherContract {
      *
      * @param uiModel is the view model
      */
-    void showWeather(WeatherUI uiModel);
+    void navigateToShowWeather(WeatherUI uiModel);
 
     /**
      * Shows the error in view.
@@ -32,11 +27,6 @@ public interface ShowWeatherContract {
      */
 
     void showError(String error);
-
-    /**
-     * Stops the Refreshing action of  SwipeRefreshLayout
-     */
-    void stopRefreshing();
 
     /**
      * Returns PermissionsHelper
@@ -62,7 +52,7 @@ public interface ShowWeatherContract {
      *
      * @param view instance
      */
-    void attachView(ShowWeatherContract.View view);
+    void attachView(EmptyWeatherContract.View view);
 
     /**
      * Returns true if this presenter has the view attached.
@@ -77,11 +67,11 @@ public interface ShowWeatherContract {
     void dettachView();
 
     /**
-     * Loads the weather using parameters
+     * Goes to weather using parameters
      *
      * @param parameters pair key-value data that describe a location
      */
-    void loadWeather(Map<String, String> parameters);
+    void goToWeather(Map<String, String> parameters);
 
     /**
      * Transforms the model into a view model instance.
@@ -91,28 +81,7 @@ public interface ShowWeatherContract {
      */
     WeatherUI transformModelToUiModel(WeatherInfo model);
 
-    /**
-     * Return the view model instance.
-     * The view onSaveInstanceState will ask the presenter for the current view model.
-     *
-     * @return view model instance
-     */
-    WeatherUI getUiModel();
-
-    /**
-     * Restores the state and show weather model.
-     * The view onActivityCreated will try restore the old view model if it exists.
-     *
-     * @param uiModel view model
-     */
-    void restoreStateAndShowWeather(WeatherUI uiModel);
-
-    /**
-     * Refresh the weather using lastParameters
-     *
-     * @param lastParameters pair key-value data that describe a location
-     */
-    void refreshWeather(Map<String, String> lastParameters);
     //actions that now idk
   }
+
 }

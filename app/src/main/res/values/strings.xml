@@ -15,4 +15,5 @@
   <string name="explanation">explanation</string>
   <string name="enable_gps_message">Enable either GPS or any other location service to find current location.  Click OK to go to location services settings to let you do so.</string>
   <string name="ok">OK</string>
+  <string name="must_implement_interface">%s must implement TextClicked</string>
 </resources>
