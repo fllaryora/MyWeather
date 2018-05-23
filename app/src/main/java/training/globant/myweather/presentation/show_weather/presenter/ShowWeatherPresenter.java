@@ -5,6 +5,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 import java.util.Map;
 import training.globant.myweather.data.WeatherCallback;
+import training.globant.myweather.data.model.ForecastInfo;
 import training.globant.myweather.data.model.WeatherInfo;
 import training.globant.myweather.data.utils.Constant;
 import training.globant.myweather.domain.SearchWeatherInteractor;
@@ -151,6 +152,11 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
       uiModel = transformModelToUiModel(weatherInfo);
       view.showWeather(uiModel);
     }
+  }
+
+  @Override
+  public void onResponse(ForecastInfo weatherInfo) {
+
   }
 
   /**
