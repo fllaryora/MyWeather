@@ -33,6 +33,7 @@ public class PermissionsHelper {
   private final Fragment fragment;
   private GeoLocationProvider geoLocationProvider;
 
+
   public PermissionsHelper(Fragment fragment) {
     this.fragment = fragment;
     this.geoLocationProvider = new GeoLocationProvider(this.fragment.getContext(), GeoLocationProvider.ProviderType.GPS);
@@ -52,9 +53,9 @@ public class PermissionsHelper {
   public void tryLocation(PermissionHelperCallback callback) {
     if (hasSystemGPS()) {
       if(isProviderEnabled()){
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP && validatePermission()) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1 && validatePermission()) {
           if (shouldWeShowAnExplanation()) {
-            Toast.makeText(this.fragment.getContext(), R.string.explanation, Toast.LENGTH_SHORT).show();
+            callback.onShowAnExplanation();
           }
           requestPermissionsToUser();
           //The callback method (onRequestPermissionsResult) gets the result of the request.
@@ -64,6 +65,8 @@ public class PermissionsHelper {
       } else {
         displayPromptForEnablingGPS();
       }
+    } else {
+      callback.onHasntSystemFeature();
     }
   }
 
@@ -129,12 +132,13 @@ public class PermissionsHelper {
           break;
         }
       }
-
       if(permissionGranted){
         permission.onResponse();
+      } else {
+        permission.onPermissionDenied();
       }
     } else {
-      permission.onError();
+      permission.onRequestPermissionsResultFail(requestCode, permissions, grantResults);
     }
   }
 

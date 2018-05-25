@@ -18,4 +18,5 @@
   <string name="must_implement_interface">%s must implement TextClicked</string>
   <string name="tab_label_today">Today</string>
   <string name="tab_label_forecast">5 Days</string>
+  <string name="hasnt_system_feature">This device doesn\'t have GPS</string>
 </resources>

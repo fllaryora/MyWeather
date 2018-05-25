@@ -15,7 +15,6 @@ import training.globant.myweather.data.model.WeatherInfo;
 import training.globant.myweather.data.net.ErrorHelper;
 import training.globant.myweather.data.net.WeatherAPIClient;
 import training.globant.myweather.data.utils.Constant;
-import training.globant.myweather.device.sensors.location.GeoLocationProvider;
 import training.globant.myweather.device.sensors.location.LocationException;
 import training.globant.myweather.device.sensors.location.PermissionsHelper;
 import training.globant.myweather.device.utils.DeviceConstant;
