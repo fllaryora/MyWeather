@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import java.util.HashMap;
 import java.util.Map;
 import training.globant.myweather.R;
@@ -50,6 +51,7 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
   private Map<String, String> lastQuery;
   private ProgressDialog progressDialog;
   private PermissionsHelper permissionsHelper;
+  private PermissionHelperCallback helperCallback;
 
   public static ShowWeatherFragment newInstance() {
     return new ShowWeatherFragment();
@@ -79,13 +81,12 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
     temperature = (TextView) view.findViewById(R.id.temperatureLabel);
     sky = (TextView) view.findViewById(R.id.skyLabel);
     refreshImageView = (ImageView) view.findViewById(R.id.refreshImageView);
+    createHelperPermissionCallBack();
     setHasOptionsMenu(true);
     setUpSwipeToRefresh();
     if (savedInstanceState != null) {
       WeatherUI uiModel = savedInstanceState.getParcelable(Constant.KEY_WEATHER);
-      if(uiModel != null){
-        presenter.restoreStateAndShowWeather(uiModel);
-      }
+      presenter.restoreStateAndShowWeather(uiModel);
     }
     return view;
   }
@@ -95,9 +96,7 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
     super.onActivityCreated(savedInstanceState);
     if (savedInstanceState != null) {
       WeatherUI uiModel = savedInstanceState.getParcelable(Constant.KEY_WEATHER);
-      if(uiModel != null){
-        presenter.restoreStateAndShowWeather(uiModel);
-      }
+      presenter.restoreStateAndShowWeather(uiModel);
     }
   }
 
@@ -106,19 +105,7 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
     super.onResume();
     presenter.attachView(this);
     if (presenter.getUiModel() == null) {
-      PermissionHelperCallback permission = new PermissionHelperCallback() {
-        @Override
-        public void onResponse() {
-          progressDialog.show();
-          presenter.loadWeather(null);
-        }
-
-        @Override
-        public void onError() {
-
-        }
-      };
-      permissionsHelper.tryLocation(permission);
+      permissionsHelper.tryLocation(helperCallback);
     }
   }
 
@@ -142,15 +129,15 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
         lastQuery = parameters;
         presenter.loadWeather(parameters);
         mSearchItem.collapseActionView();
-        //true if the query has been handled by the listener,
+        //true when the query has been handled by the listener,
         // false to let the SearchView perform the default action.
         return true;
       }
 
       @Override
       public boolean onQueryTextChange(String s) {
-        //false if the SearchView should perform the default action of showing any suggestions if available,
-        // true if the action was handled by the listener.
+        //false when the SearchView should perform the default action of showing any suggestions when is available,
+        // true when the action was handled by the listener.
         return true;
       }
     });
@@ -158,7 +145,7 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
     searchView.setOnCloseListener(new SearchView.OnCloseListener() {
       @Override
       public boolean onClose() {
-        // true if the listener wants to override the default behavior
+        // true when the listener wants to override the default behavior
         // of clearing the text field and dismissing it, false otherwise.
         return false;
       }
@@ -186,7 +173,20 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
      * Sometimes is called after onPause and before onResult
      */
     presenter.attachView(this);
-    PermissionHelperCallback permission = new PermissionHelperCallback() {
+    permissionsHelper.onRequestPermissionsResult(requestCode,permissions,grantResults, helperCallback);
+
+  }
+
+  /***************** HELPER LIFE-CYCLE FUNCTIONS ************************/
+
+  private void createHelperPermissionCallBack(){
+    helperCallback = new PermissionHelperCallback() {
+      @Override
+      public void onRequestPermissionsResultFail(int requestCode,
+          @NonNull String[] permissions, @NonNull int[] grantResults) {
+        ShowWeatherFragment.super.onRequestPermissionsResult( requestCode, permissions, grantResults);
+      }
+
       @Override
       public void onResponse() {
         progressDialog.show();
@@ -194,15 +194,21 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
       }
 
       @Override
-      public void onError() {
-        ShowWeatherFragment.super.onRequestPermissionsResult( requestCode, permissions, grantResults);
+      public void onPermissionDenied() {
+        Toast.makeText(getContext(), R.string.permission_wont_granted, Toast.LENGTH_SHORT).show();
+      }
+
+      @Override
+      public void onHasntSystemFeature() {
+        Toast.makeText(getContext(), R.string.hasnt_system_feature, Toast.LENGTH_SHORT).show();
+      }
+
+      @Override
+      public void onShowAnExplanation() {
+        Toast.makeText(getContext(), R.string.explanation, Toast.LENGTH_SHORT).show();
       }
     };
-    permissionsHelper.onRequestPermissionsResult(requestCode,permissions,grantResults,permission);
-
   }
-
-  /***************** HELPER LIFE-CYCLE FUNCTIONS ************************/
 
   private void progressDialogSetup() {
     progressDialog = new ProgressDialog(getContext());
@@ -269,11 +275,7 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
   public void showError(String error) {
     View showWeatherView = getView();
     if (showWeatherView != null) {
-      if(error != null){
-        Snackbar.make(showWeatherView, R.string.can_not_load_message, Snackbar.LENGTH_LONG).show();
-      } else {
-        Snackbar.make(showWeatherView, R.string.can_not_load_message, Snackbar.LENGTH_LONG).show();
-      }
+      Snackbar.make(showWeatherView, (error != null)?error: getString(R.string.can_not_load_message) , Snackbar.LENGTH_LONG).show();
     }
     progressDialog.dismiss();
     stopRefreshing();
