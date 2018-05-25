@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 import java.util.HashMap;
 import java.util.Map;
 import training.globant.myweather.R;
@@ -23,6 +24,7 @@ import training.globant.myweather.device.sensors.location.PermissionsHelper;
 import training.globant.myweather.presentation.show_empty.EmptyWeatherContract;
 import training.globant.myweather.presentation.show_weather.model.WeatherUI;
 import training.globant.myweather.presentation.show_empty.presenter.ShowEmptyPresenter;
+import training.globant.myweather.presentation.show_weather.view.ShowWeatherFragment;
 
 
 /**
@@ -36,6 +38,7 @@ import training.globant.myweather.presentation.show_empty.presenter.ShowEmptyPre
 public class ShowEmptyFragment extends Fragment implements EmptyWeatherContract.View{
   private ShowEmptyPresenter presenter;
   private PermissionsHelper permissionsHelper;
+  private PermissionHelperCallback helperCallback;
   private ProgressDialog progressDialog;
 
   public static ShowEmptyFragment newInstance() {
@@ -56,6 +59,7 @@ public class ShowEmptyFragment extends Fragment implements EmptyWeatherContract.
   public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.empty_weather_view, container, false);
+    createHelperPermissionCallBack();
     setHasOptionsMenu(true);
     return view;
   }
@@ -76,18 +80,7 @@ public class ShowEmptyFragment extends Fragment implements EmptyWeatherContract.
   public void onResume() {
     super.onResume();
     presenter.attachView(this);
-    PermissionHelperCallback permission = new PermissionHelperCallback() {
-      @Override
-      public void onResponse() {
-        presenter.goToWeather(null);
-      }
-
-      @Override
-      public void onError() {
-
-      }
-    };
-    permissionsHelper.tryLocation(permission);
+    permissionsHelper.tryLocation(helperCallback);
   }
 
   @Override
@@ -106,15 +99,15 @@ public class ShowEmptyFragment extends Fragment implements EmptyWeatherContract.
         parameters.put(Constant.API_PARAMETER_QUERY, textSubmitted);
         presenter.goToWeather(parameters);
         mSearchItem.collapseActionView();
-        //true if the query has been handled by the listener,
+        //true when the query has been handled by the listener,
         // false to let the SearchView perform the default action.
         return true;
       }
 
       @Override
       public boolean onQueryTextChange(String s) {
-        //false if the SearchView should perform the default action of showing any suggestions if available,
-        // true if the action was handled by the listener.
+        //false when the SearchView should perform the default action of showing any suggestions when it is available,
+        // true when the action was handled by the listener.
         return true;
       }
     });
@@ -122,7 +115,7 @@ public class ShowEmptyFragment extends Fragment implements EmptyWeatherContract.
     searchView.setOnCloseListener(new SearchView.OnCloseListener() {
       @Override
       public boolean onClose() {
-        // true if the listener wants to override the default behavior
+        // true when the listener wants to override the default behavior
         // of clearing the text field and dismissing it, false otherwise.
         return false;
       }
@@ -143,18 +136,7 @@ public class ShowEmptyFragment extends Fragment implements EmptyWeatherContract.
      * Sometimes is called after onPause and before onResult
      */
     presenter.attachView(this);
-    PermissionHelperCallback permission = new PermissionHelperCallback() {
-      @Override
-      public void onResponse() {
-        presenter.goToWeather(null);
-      }
-
-      @Override
-      public void onError() {
-        ShowEmptyFragment.super.onRequestPermissionsResult( requestCode, permissions, grantResults);
-      }
-    };
-    permissionsHelper.onRequestPermissionsResult(requestCode,permissions,grantResults,permission);
+    permissionsHelper.onRequestPermissionsResult(requestCode,permissions,grantResults,helperCallback);
 
   }
 
@@ -167,6 +149,36 @@ public class ShowEmptyFragment extends Fragment implements EmptyWeatherContract.
     progressDialog.setCancelable(false);
   }
 
+  private void createHelperPermissionCallBack(){
+    helperCallback = new PermissionHelperCallback() {
+      @Override
+      public void onRequestPermissionsResultFail(int requestCode,
+          @NonNull String[] permissions, @NonNull int[] grantResults) {
+        ShowEmptyFragment.super.onRequestPermissionsResult( requestCode, permissions, grantResults);
+      }
+
+      @Override
+      public void onResponse() {
+        progressDialog.show();
+        presenter.goToWeather(null);
+      }
+
+      @Override
+      public void onPermissionDenied() {
+        Toast.makeText(getContext(), R.string.permission_wont_granted, Toast.LENGTH_SHORT).show();
+      }
+
+      @Override
+      public void onHasntSystemFeature() {
+        Toast.makeText(getContext(), R.string.hasnt_system_feature, Toast.LENGTH_SHORT).show();
+      }
+
+      @Override
+      public void onShowAnExplanation() {
+        Toast.makeText(getContext(), R.string.explanation, Toast.LENGTH_SHORT).show();
+      }
+    };
+  }
 
   /***************** VIEW FUNCTIONS ************************/
 
@@ -185,11 +197,7 @@ public class ShowEmptyFragment extends Fragment implements EmptyWeatherContract.
   public void showError(String error) {
     View showWeatherView = getView();
     if (showWeatherView != null) {
-      if(error != null){
-        Snackbar.make(showWeatherView, R.string.can_not_load_message, Snackbar.LENGTH_LONG).show();
-      } else {
-        Snackbar.make(showWeatherView, R.string.can_not_load_message, Snackbar.LENGTH_LONG).show();
-      }
+      Snackbar.make(showWeatherView, (error != null)?error: getString(R.string.can_not_load_message) , Snackbar.LENGTH_LONG).show();
     }
   }
 
