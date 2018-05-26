@@ -14,6 +14,8 @@ import java.util.List;
 
 public class ForecastItem {
 
+  @SerializedName("dt")
+  private Long dateTime;
   @SerializedName("main")
   private TemperatureInfo temperatureInfo;
   @SerializedName("weather")
@@ -27,12 +29,14 @@ public class ForecastItem {
   }
 
   /**
-   * @param skyDescriptions
+   * @param dateTime
    * @param temperatureInfo
+   * @param skyDescriptions
    */
-  public ForecastItem(TemperatureInfo temperatureInfo, List<SkyDescription> skyDescriptions) {
+  public ForecastItem(Long dateTime, TemperatureInfo temperatureInfo, List<SkyDescription> skyDescriptions) {
     this.temperatureInfo = temperatureInfo;
     this.skyDescriptions = skyDescriptions;
+    this.dateTime = dateTime;
 
   }
 
@@ -40,8 +44,11 @@ public class ForecastItem {
     return temperatureInfo;
   }
 
-  public List<SkyDescription> getWeather() {
-    return skyDescriptions;
+  public Long getDateTime() {
+    return dateTime;
   }
 
+  public List<SkyDescription> getSkyDescriptions() {
+    return skyDescriptions;
+  }
 }

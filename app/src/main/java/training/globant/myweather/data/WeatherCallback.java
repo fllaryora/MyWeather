@@ -23,9 +23,9 @@ public interface WeatherCallback {
   /**
    * Called when an asynchronous call completes successfully.
    *
-   * @param weatherInfo data model of the weather
+   * @param forecastInfo data model of the forecast
    */
-  void onResponse(ForecastInfo weatherInfo);
+  void onResponse(ForecastInfo forecastInfo);
 
   /**
    * Called when an asynchronous call fails to complete normally.

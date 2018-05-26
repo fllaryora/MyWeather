@@ -7,6 +7,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import training.globant.myweather.R;
+import training.globant.myweather.presentation.show_forecast.view.ShowForecastFragment;
 
 /**
  * Represents a Activity that contains the main fragments
@@ -41,8 +42,8 @@ public class ShowWeatherActivity extends AppCompatActivity {
   private void setupViewPager(ViewPager viewPager) {
     mAdapter = new TabsPagerAdapter(getSupportFragmentManager());
 
-    mAdapter.addFrag(ShowWeatherFragment.newInstance(), getString(R.string.tab_label_today));
-    mAdapter.addFrag(ShowWeatherFragment.newInstance(), getString(R.string.tab_label_forecast));
+    mAdapter.addPage(ShowWeatherFragment.newInstance(), getString(R.string.tab_label_today));
+    mAdapter.addPage(ShowForecastFragment.newInstance(), getString(R.string.tab_label_forecast));
 
     viewPager.setAdapter(mAdapter);
   }

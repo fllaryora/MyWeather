@@ -69,8 +69,7 @@
         android:id="@+id/temperatureMax"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/temperatureMin"
-        android:orientation="horizontal">
+        android:layout_below="@+id/temperatureMin">
         <TextView
           android:id="@+id/maxLabel"
           android:textStyle="bold"

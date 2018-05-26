@@ -98,9 +98,9 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
     }
     String cityName = model.getName();
     String description = model.getSkyDescription().get(0).getDescription();
-    String temperatureInfo = getTemperatueFormated(model.getTemperatureInfo().getTemperature());
-    String maxTemperatureInfo = getTemperatueFormated(model.getTemperatureInfo().getMaximum());
-    String minTemperatureInfo = getTemperatueFormated(model.getTemperatureInfo().getMinimum());
+    String temperatureInfo = getTemperatueFormatted(model.getTemperatureInfo().getTemperature());
+    String maxTemperatureInfo = getTemperatueFormatted(model.getTemperatureInfo().getMaximum());
+    String minTemperatureInfo = getTemperatueFormatted(model.getTemperatureInfo().getMinimum());
     int icon = IconMapper.fromInt(model.getSkyDescription().get(0).getId()).getIcon();
 
     return new WeatherUI(cityName, maxTemperatureInfo, minTemperatureInfo, temperatureInfo,
@@ -133,7 +133,7 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
     }
   }
 
-  private String getTemperatueFormated(double temperature) {
+  private String getTemperatueFormatted(double temperature) {
     //https://stackoverflow.com/questions/14389349/android-get-current-locale-not-default
     DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.getDefault());
     symbols.setDecimalSeparator(Constant.DECIMAL_SEPARATOR);
@@ -155,7 +155,7 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
   }
 
   @Override
-  public void onResponse(ForecastInfo weatherInfo) {
+  public void onResponse(ForecastInfo forecastInfo) {
 
   }
 

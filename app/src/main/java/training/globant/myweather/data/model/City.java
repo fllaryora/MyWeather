@@ -12,11 +12,8 @@ import java.util.List;
  */
 public class City {
 
-
-  @SerializedName("cnt")
-  private long forecastAmount;
-  @SerializedName("list")
-  private java.util.List<ForecastItem> list = null;
+  @SerializedName("name")
+  private String cityName;
 
   /**
    * No args constructor for use in serialization
@@ -25,21 +22,13 @@ public class City {
   }
 
   /**
-   * @param forecastAmount
-   * @param list
+   * @param cityName
    */
-  public City(long forecastAmount, List<ForecastItem> list) {
-
-    this.forecastAmount = forecastAmount;
-    this.list = list;
+  public City(String cityName) {
+    this.cityName = cityName;
   }
 
-  public long getForecastAmount() {
-    return forecastAmount;
+  public String getCityName() {
+    return cityName;
   }
-
-  public List<ForecastItem> getList() {
-    return list;
-  }
-
 }
