@@ -11,4 +11,10 @@
   <string name="invalid_query">Invalid Query</string>
   <string name="api_value_degrees_type">metric</string>
   <string name="api_value_lang">es</string>
+  <string name="permission_wont_granted">Permission was not granted</string>
+  <string name="explanation">explanation</string>
+  <string name="enable_gps_message">Enable either GPS or any other location service to find current location.  Click OK to go to location services settings to let you do so.</string>
+  <string name="ok">OK</string>
+  <string name="must_implement_interface">%s must implement TextClicked</string>
+  <string name="hasnt_system_feature">This device doesn\'t have GPS</string>
 </resources>

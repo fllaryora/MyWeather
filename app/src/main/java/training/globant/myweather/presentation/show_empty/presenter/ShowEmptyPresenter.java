@@ -1,4 +1,4 @@
-package training.globant.myweather.presentation.show_weather.presenter;
+package training.globant.myweather.presentation.show_empty.presenter;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -8,22 +8,21 @@ import training.globant.myweather.data.WeatherCallback;
 import training.globant.myweather.data.model.WeatherInfo;
 import training.globant.myweather.data.utils.Constant;
 import training.globant.myweather.domain.SearchWeatherInteractor;
-import training.globant.myweather.presentation.show_weather.ShowWeatherContract;
+import training.globant.myweather.presentation.show_empty.EmptyWeatherContract;
 import training.globant.myweather.presentation.show_weather.model.IconMapper;
 import training.globant.myweather.presentation.show_weather.model.WeatherUI;
 
 /**
- * {@link ShowWeatherContract.Presenter} that controls communication between views and view models
+ * {@link EmptyWeatherContract.Presenter} that controls communication between views and view models
  * of the presentation layer.
  *
  * @author Francisco Llaryora
  * @version 1.0
  * @since 1.0
  */
+public class ShowEmptyPresenter implements EmptyWeatherContract.Presenter, WeatherCallback {
 
-public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, WeatherCallback {
-
-  private ShowWeatherContract.View view;
+  private EmptyWeatherContract.View view;
   private WeatherUI uiModel;
 
   /**
@@ -32,7 +31,7 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
    * @param view instance
    */
   @Override
-  public void attachView(ShowWeatherContract.View view) {
+  public void attachView(EmptyWeatherContract.View view) {
     this.view = view;
   }
 
@@ -55,12 +54,37 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
   }
 
   /**
-   * Load the weather using parameters
+   * Connect the data model to the view after a successful response
+   *
+   * @param weatherInfo data model of the weather
+   */
+  @Override
+  public void onResponse(WeatherInfo weatherInfo) {
+    if (isViewAttached()) {
+      uiModel = transformModelToUiModel(weatherInfo);
+      view.navigateToShowWeather(uiModel);
+    }
+  }
+
+  /**
+   * Connect the data model to the view after a failure response
+   *
+   * @param error description
+   */
+  @Override
+  public void onError(String error) {
+    if (isViewAttached()) {
+      view.showError(error);
+    }
+  }
+
+  /**
+   * Gets the weather using parameters to go to weather view
    *
    * @param parameters pair key-value data that describe a location
    */
   @Override
-  public void loadWeather(Map<String, String> parameters) {
+  public void goToWeather(Map<String, String> parameters) {
     SearchWeatherInteractor searchWeatherInteractor = new SearchWeatherInteractor();
     if (parameters == null) {
       searchWeatherInteractor.executeGPS(view.getPermissionHelper(), this);
@@ -95,6 +119,7 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
     if (model == null) {
       return null;
     }
+
     String cityName = model.getName();
     String description = model.getSkyDescription().get(0).getDescription();
     String temperatureInfo = getTemperatueFormated(model.getTemperatureInfo().getTemperature());
@@ -106,32 +131,6 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
         description, icon);
   }
 
-  /**
-   * Returns the view model
-   *
-   * @return view model instance
-   */
-  @Override
-  public WeatherUI getUiModel() {
-    return uiModel;
-  }
-
-  /**
-   * Restores the state and show weather model.
-   * Shows the view model if it exists.
-   *
-   * @param uiModel view model
-   */
-  @Override
-  public void restoreStateAndShowWeather(WeatherUI uiModel) {
-    if (isViewAttached()) {
-      if (uiModel != null) {
-        this.uiModel = uiModel;
-        view.showWeather(uiModel);
-      }
-    }
-  }
-
   private String getTemperatueFormated(double temperature) {
     //https://stackoverflow.com/questions/14389349/android-get-current-locale-not-default
     DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.getDefault());
@@ -139,48 +138,5 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
     DecimalFormat formatter = new DecimalFormat(Constant.DECIMAL_FORMAT_PATTERN, symbols);
     return formatter.format(temperature);
   }
-
-  /**
-   * Connect the data model to the view after a successful response
-   *
-   * @param weatherInfo data model of the weather
-   */
-  @Override
-  public void onResponse(WeatherInfo weatherInfo) {
-    if (isViewAttached()) {
-      uiModel = transformModelToUiModel(weatherInfo);
-      view.showWeather(uiModel);
-    }
-  }
-
-  /**
-   * Connect the data model to the view after a failure response
-   *
-   * @param error description
-   */
-  @Override
-  public void onError(String error) {
-    if (isViewAttached()) {
-      view.showError(error);
-    }
-  }
-
-  /**
-   * Refresh the weather loading the weather again using lastParameters
-   *
-   * @param lastParameters pair key-value data that describe a location
-   */
-  @Override
-  public void refreshWeather(Map<String, String> lastParameters) {
-    if (isViewAttached()) {
-      if (lastParameters != null && !lastParameters.isEmpty()) {
-        //TODO ADD CONTROL CACHE TO BE SURE THAT WE HAVE A NETWORK RESPONSE
-        loadWeather(lastParameters);
-      } else {
-        view.stopRefreshing();
-      }
-    }
-  }
-
 
 }
