@@ -42,6 +42,11 @@ public interface ShowWeatherContract {
      * @return PermissionsHelper
      */
     PermissionsHelper getPermissionHelper();
+
+    /**
+     * Loads the weather using parameters
+     */
+    void onLocationChange();
     //actions that now idk
 
     /**

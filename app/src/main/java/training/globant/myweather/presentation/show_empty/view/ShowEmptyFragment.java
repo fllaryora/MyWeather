@@ -6,19 +6,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-import java.util.HashMap;
-import java.util.Map;
 import training.globant.myweather.R;
-import training.globant.myweather.data.utils.Constant;
 import training.globant.myweather.device.PermissionHelperCallback;
 import training.globant.myweather.device.sensors.location.PermissionsHelper;
 import training.globant.myweather.presentation.show_empty.EmptyWeatherContract;
@@ -58,7 +50,6 @@ public class ShowEmptyFragment extends Fragment implements EmptyWeatherContract.
       @Nullable Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_empty_weather_view, container, false);
     createHelperPermissionCallBack();
-    setHasOptionsMenu(true);
     return view;
   }
 
@@ -79,46 +70,6 @@ public class ShowEmptyFragment extends Fragment implements EmptyWeatherContract.
     super.onResume();
     presenter.attachView(this);
     permissionsHelper.tryLocation(helperCallback);
-  }
-
-  @Override
-  public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-    super.onCreateOptionsMenu(menu, inflater);
-    inflater.inflate(R.menu.menu_main, menu);
-    final MenuItem mSearchItem = (MenuItem) menu.findItem(R.id.m_search);
-    final SearchView searchView = (SearchView) mSearchItem.getActionView();
-
-    //TODO ADD ADAPTER TO ADD SUGGESTIONS
-    //searchView.setSuggestionsAdapter(mAdapter);
-    searchView.setOnQueryTextListener(new OnQueryTextListener() {
-      @Override
-      public boolean onQueryTextSubmit(String textSubmitted) {
-        Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put(Constant.API_PARAMETER_QUERY, textSubmitted);
-        presenter.goToWeather(parameters);
-        mSearchItem.collapseActionView();
-        //true when the query has been handled by the listener,
-        // false to let the SearchView perform the default action.
-        return true;
-      }
-
-      @Override
-      public boolean onQueryTextChange(String s) {
-        //false when the SearchView should perform the default action of showing any suggestions when it is available,
-        // true when the action was handled by the listener.
-        return true;
-      }
-    });
-
-    searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-      @Override
-      public boolean onClose() {
-        // true when the listener wants to override the default behavior
-        // of clearing the text field and dismissing it, false otherwise.
-        return false;
-      }
-    });
-
   }
 
   @Override

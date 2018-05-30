@@ -31,7 +31,6 @@ import training.globant.myweather.presentation.show_weather.model.IconMapper;
  */
 
 public class ShowForecastPresenter implements ShowForecastContract.Presenter, WeatherCallback {
-
   private ShowForecastContract.View view;
   private CityUI uiModel;
 

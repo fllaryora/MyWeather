@@ -10,6 +10,7 @@ package training.globant.myweather.data.utils;
 
 public class Constant {
 
+  public static final String KEY_LAST_SEARCH = "KEY_LAST_SEARCH";
   public static final String KEY_WEATHER = "KEY_WEATHER";
   public static final String KEY_FORECAST = "KEY_FORECAST";
 

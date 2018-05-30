@@ -1,6 +1,9 @@
 package training.globant.myweather.presentation.show_forecast.view;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.app.ProgressDialog;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,12 +14,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -49,9 +47,9 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
   private TextView hintLabel;
   private TextView city;
   private PermissionHelperCallback helperCallback;
-  private Map<String, String> lastQuery;
   private RecyclerView recyclerView;
   private ForecastAdapter forecastAdapter;
+
   public static ShowForecastFragment newInstance() {
     return new ShowForecastFragment();
   }
@@ -76,7 +74,6 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
     city = (TextView) view.findViewById(R.id.cityLabel);
     recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
     createHelperPermissionCallBack();
-    setHasOptionsMenu(true);
     setUpSwipeToRefresh();
     if (savedInstanceState != null) {
       CityUI uiModel = savedInstanceState.getParcelable(Constant.KEY_FORECAST);
@@ -104,48 +101,14 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
   }
 
   @Override
-  public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-    super.onCreateOptionsMenu(menu, inflater);
-    inflater.inflate(R.menu.menu_main, menu);
-    final MenuItem mSearchItem = (MenuItem) menu.findItem(R.id.m_search);
-
-    //https://stackoverflow.com/questions/45335853/cant-set-onactionexpandlistener-this-is-not-supported-use-menuitemcompat-seto/45431091
-    final SearchView searchView = (SearchView) mSearchItem.getActionView();
-
-    //TODO ADD ADAPTER TO ADD SUGGESTIONS
-    //searchView.setSuggestionsAdapter(mAdapter);
-    searchView.setOnQueryTextListener(new OnQueryTextListener() {
-      @Override
-      public boolean onQueryTextSubmit(String textSubmitted) {
-        progressDialog.show();
-        Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put(Constant.API_PARAMETER_QUERY, textSubmitted);
-        lastQuery = parameters;
-        presenter.loadForecast(parameters);
-        mSearchItem.collapseActionView();
-        //true when the query has been handled by the listener,
-        // false to let the SearchView perform the default action.
-        return true;
-      }
-
-      @Override
-      public boolean onQueryTextChange(String s) {
-        //false when the SearchView should perform the default action of showing any suggestions when is available,
-        // true when the action was handled by the listener.
-        return true;
-      }
-    });
-
-    searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-      @Override
-      public boolean onClose() {
-        // true when the listener wants to override the default behavior
-        // of clearing the text field and dismissing it, false otherwise.
-        return false;
-      }
-    });
-
+  public void onLocationChange() {
+    progressDialog.show();
+    SharedPreferences sharedPref = getActivity().getSharedPreferences(Constant.KEY_LAST_SEARCH, MODE_PRIVATE);
+    Map<String, String> lastQuery = new HashMap<String, String>();
+    lastQuery.put(Constant.API_PARAMETER_QUERY,sharedPref.getString(Constant.API_PARAMETER_QUERY,null));
+    presenter.loadForecast(lastQuery);
   }
+
   @Override
   public void onPause() {
     super.onPause();
@@ -175,8 +138,8 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
 
   private void progressDialogSetup() {
     progressDialog = new ProgressDialog(getContext());
-    progressDialog.setTitle("Loading...");
-    progressDialog.setMessage("Please wait.");
+    progressDialog.setTitle(getString(R.string.loading));
+    progressDialog.setMessage(getString(R.string.please_wait));
     progressDialog.setCancelable(false);
   }
 
@@ -217,6 +180,9 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
         new SwipeRefreshLayout.OnRefreshListener() {
           @Override
           public void onRefresh() {
+            SharedPreferences sharedPref = getActivity().getSharedPreferences(Constant.KEY_LAST_SEARCH, MODE_PRIVATE);
+            Map<String, String> lastQuery = new HashMap<String, String>();
+            lastQuery.put(Constant.API_PARAMETER_QUERY,sharedPref.getString(Constant.API_PARAMETER_QUERY,null));
             presenter.refreshForecast(lastQuery);
           }
         }
