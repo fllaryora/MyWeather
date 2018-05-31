@@ -39,7 +39,6 @@ public class ShowEmptyFragment extends Fragment implements EmptyWeatherContract.
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     presenter = new ShowEmptyPresenter();
-    presenter.attachView(this);
     permissionsHelper = new PermissionsHelper(this);
     progressDialogSetup();
   }

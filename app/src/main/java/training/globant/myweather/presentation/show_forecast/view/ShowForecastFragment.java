@@ -30,15 +30,15 @@ import training.globant.myweather.presentation.show_forecast.model.CityUI;
 import training.globant.myweather.presentation.show_forecast.presenter.ShowForecastPresenter;
 
 /**
- * Represents a View in a model view presenter (MVP) pattern.
- * In this case is used as a view of {@link training.globant.myweather.presentation.show_forecast.model.ForecastItemUI}.
+ * Represents a View in a model view presenter (MVP) pattern. In this case is used as a view of
+ * {@link training.globant.myweather.presentation.show_forecast.model.ForecastItemUI}.
  *
  * @author Francisco Llaryora
  * @version 1.0
  * @since 1.0
  */
 
-public class ShowForecastFragment extends Fragment implements ShowForecastContract.View{
+public class ShowForecastFragment extends Fragment implements ShowForecastContract.View {
 
   private ShowForecastPresenter presenter;
   private PermissionsHelper permissionsHelper;
@@ -49,6 +49,7 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
   private PermissionHelperCallback helperCallback;
   private RecyclerView recyclerView;
   private ForecastAdapter forecastAdapter;
+  private CityUI uiModel;
 
   public static ShowForecastFragment newInstance() {
     return new ShowForecastFragment();
@@ -59,7 +60,6 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     presenter = new ShowForecastPresenter();
-    presenter.attachView(this);
     permissionsHelper = new PermissionsHelper(this);
     progressDialogSetup();
   }
@@ -76,8 +76,7 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
     createHelperPermissionCallBack();
     setUpSwipeToRefresh();
     if (savedInstanceState != null) {
-      CityUI uiModel = savedInstanceState.getParcelable(Constant.KEY_FORECAST);
-      presenter.restoreStateAndShowForecast(uiModel);
+      uiModel = savedInstanceState.getParcelable(Constant.KEY_FORECAST);
     }
     return view;
   }
@@ -86,8 +85,7 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
     if (savedInstanceState != null) {
-      CityUI uiModel = savedInstanceState.getParcelable(Constant.KEY_FORECAST);
-      presenter.restoreStateAndShowForecast(uiModel);
+      uiModel = savedInstanceState.getParcelable(Constant.KEY_FORECAST);
     }
   }
 
@@ -95,6 +93,7 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
   public void onResume() {
     super.onResume();
     presenter.attachView(this);
+    presenter.restoreStateAndShowForecast(uiModel);
     if (presenter.getUiModel() == null) {
       permissionsHelper.tryLocation(helperCallback);
     }
@@ -103,9 +102,11 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
   @Override
   public void onLocationChange() {
     progressDialog.show();
-    SharedPreferences sharedPref = getActivity().getSharedPreferences(Constant.KEY_LAST_SEARCH, MODE_PRIVATE);
+    SharedPreferences sharedPref = getActivity()
+        .getSharedPreferences(Constant.KEY_LAST_SEARCH, MODE_PRIVATE);
     Map<String, String> lastQuery = new HashMap<String, String>();
-    lastQuery.put(Constant.API_PARAMETER_QUERY,sharedPref.getString(Constant.API_PARAMETER_QUERY,null));
+    lastQuery.put(Constant.API_PARAMETER_QUERY,
+        sharedPref.getString(Constant.API_PARAMETER_QUERY, null));
     presenter.loadForecast(lastQuery);
   }
 
@@ -180,9 +181,11 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
         new SwipeRefreshLayout.OnRefreshListener() {
           @Override
           public void onRefresh() {
-            SharedPreferences sharedPref = getActivity().getSharedPreferences(Constant.KEY_LAST_SEARCH, MODE_PRIVATE);
+            SharedPreferences sharedPref = getActivity()
+                .getSharedPreferences(Constant.KEY_LAST_SEARCH, MODE_PRIVATE);
             Map<String, String> lastQuery = new HashMap<String, String>();
-            lastQuery.put(Constant.API_PARAMETER_QUERY,sharedPref.getString(Constant.API_PARAMETER_QUERY,null));
+            lastQuery.put(Constant.API_PARAMETER_QUERY,
+                sharedPref.getString(Constant.API_PARAMETER_QUERY, null));
             presenter.refreshForecast(lastQuery);
           }
         }
@@ -216,7 +219,8 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
     recyclerView.setLayoutManager(layoutManager);
     recyclerView.setItemAnimator(new DefaultItemAnimator());
     //Adding a divider between rows
-    DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+    DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(
+        recyclerView.getContext(),
         layoutManager.getOrientation());
     recyclerView.addItemDecoration(dividerItemDecoration);
 
@@ -234,12 +238,8 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
    */
   @Override
   public void showError(String error) {
-    View showWeatherView = getView();
-    if (showWeatherView != null) {
-      Snackbar
-          .make(showWeatherView, (error != null) ? error : getString(R.string.can_not_load_message),
-              Snackbar.LENGTH_LONG).show();
-    }
+    Snackbar.make(getView(), (error != null) ? error : getString(R.string.can_not_load_message),
+        Snackbar.LENGTH_LONG).show();
     progressDialog.dismiss();
     stopRefreshing();
   }

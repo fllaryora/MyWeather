@@ -20,8 +20,7 @@
       android:layout_height="wrap_content"
       android:layout_gravity="center_horizontal"
       android:textAlignment="center"
-      android:textSize="35sp"
-      android:visibility="gone"/>
+      android:textSize="35sp" />
     <android.support.v4.widget.SwipeRefreshLayout
       android:id="@+id/swiperefresh"
       android:layout_width="match_parent"

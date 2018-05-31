@@ -117,16 +117,16 @@ public class ShowForecastPresenter implements ShowForecastContract.Presenter, We
       return null;
     }
     int icon = IconMapper.fromInt(model.getSkyDescriptions().get(0).getId()).getIcon();
-    String temperatureInfo = getTemperatueFormatted(model.getTemperatureInfo().getTemperature());
-    String maxTemperatureInfo = getTemperatueFormatted(model.getTemperatureInfo().getMaximum());
-    String minTemperatureInfo = getTemperatueFormatted(model.getTemperatureInfo().getMinimum());
+    String temperatureInfo = getTemperatureFormatted(model.getTemperatureInfo().getTemperature());
+    String maxTemperatureInfo = getTemperatureFormatted(model.getTemperatureInfo().getMaximum());
+    String minTemperatureInfo = getTemperatureFormatted(model.getTemperatureInfo().getMinimum());
     String dayLabel = getDayOfWeekFormatted(model.getDateTime());
     String hourLabel = getHourFormatted(model.getDateTime());
     return new ForecastItemUI(dayLabel, hourLabel, temperatureInfo, maxTemperatureInfo,
         minTemperatureInfo, icon);
   }
 
-  private String getTemperatueFormatted(double temperature) {
+  private String getTemperatureFormatted(double temperature) {
     //https://stackoverflow.com/questions/14389349/android-get-current-locale-not-default
     DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.getDefault());
     symbols.setDecimalSeparator(Constant.DECIMAL_SEPARATOR);

@@ -13,6 +13,8 @@ import java.util.List;
 
 public class ForecastInfo {
 
+  //dont quit this SerializedName
+  @SerializedName("city")
   private City city;
 
   @SerializedName("cnt")

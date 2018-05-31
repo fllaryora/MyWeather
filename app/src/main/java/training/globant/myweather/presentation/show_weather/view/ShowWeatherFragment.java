@@ -49,6 +49,7 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
   private ProgressDialog progressDialog;
   private PermissionsHelper permissionsHelper;
   private PermissionHelperCallback helperCallback;
+  private WeatherUI uiModel;
 
   public static ShowWeatherFragment newInstance() {
     return new ShowWeatherFragment();
@@ -60,7 +61,6 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     presenter = new ShowWeatherPresenter();
-    presenter.attachView(this);
     permissionsHelper = new PermissionsHelper(this);
     progressDialogSetup();
   }
@@ -82,8 +82,7 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
     setHasOptionsMenu(true);
     setUpSwipeToRefresh();
     if (savedInstanceState != null) {
-      WeatherUI uiModel = savedInstanceState.getParcelable(Constant.KEY_WEATHER);
-      presenter.restoreStateAndShowWeather(uiModel);
+      uiModel = savedInstanceState.getParcelable(Constant.KEY_WEATHER);
     }
     return view;
   }
@@ -92,8 +91,7 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
     if (savedInstanceState != null) {
-      WeatherUI uiModel = savedInstanceState.getParcelable(Constant.KEY_WEATHER);
-      presenter.restoreStateAndShowWeather(uiModel);
+      uiModel = savedInstanceState.getParcelable(Constant.KEY_WEATHER);
     }
   }
 
@@ -101,6 +99,7 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
   public void onResume() {
     super.onResume();
     presenter.attachView(this);
+    presenter.restoreStateAndShowWeather(uiModel);
     if (presenter.getUiModel() == null) {
       permissionsHelper.tryLocation(helperCallback);
     }
@@ -241,12 +240,8 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
    */
   @Override
   public void showError(String error) {
-    View showWeatherView = getView();
-    if (showWeatherView != null) {
-      Snackbar
-          .make(showWeatherView, (error != null) ? error : getString(R.string.can_not_load_message),
+      Snackbar.make(getView(), (error != null) ? error : getString(R.string.can_not_load_message),
               Snackbar.LENGTH_LONG).show();
-    }
     progressDialog.dismiss();
     stopRefreshing();
   }
