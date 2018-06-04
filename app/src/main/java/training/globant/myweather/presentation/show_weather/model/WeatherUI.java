@@ -25,6 +25,7 @@ public class WeatherUI implements Parcelable {
   };
 
   private String cityLabel;
+  private String countryLabel;
   private String temperatureLabel;
   private String maxTemperatureLabel;
   private String minTemperatureLabel;
@@ -40,10 +41,12 @@ public class WeatherUI implements Parcelable {
    * @param temperatureLabel current temperature label
    * @param skyLabel description of the situation in the sky
    * @param icon R resource drawable icon
+   * @param countryLabel name of the country
    */
   public WeatherUI(String cityLabel, String maxTemperatureLabel, String minTemperatureLabel,
-      String temperatureLabel, String skyLabel, int icon) {
+      String temperatureLabel, String skyLabel, int icon, String countryLabel) {
     this.cityLabel = cityLabel;
+    this.countryLabel = countryLabel;
     this.maxTemperatureLabel = maxTemperatureLabel;
     this.minTemperatureLabel = minTemperatureLabel;
     this.temperatureLabel = temperatureLabel;
@@ -58,6 +61,7 @@ public class WeatherUI implements Parcelable {
    */
   protected WeatherUI(Parcel in) {
     cityLabel = in.readString();
+    countryLabel = in.readString();
     maxTemperatureLabel = in.readString();
     minTemperatureLabel = in.readString();
     temperatureLabel = in.readString();
@@ -72,6 +76,15 @@ public class WeatherUI implements Parcelable {
    */
   public String getCityLabel() {
     return cityLabel;
+  }
+
+  /**
+   * Gets the name of the country
+   *
+   * @return countryLabel
+   */
+  public String getCountryLabel() {
+    return countryLabel;
   }
 
   /**
@@ -140,6 +153,7 @@ public class WeatherUI implements Parcelable {
   @Override
   public void writeToParcel(Parcel parcel, int i) {
     parcel.writeString(cityLabel);
+    parcel.writeString(countryLabel);
     parcel.writeString(maxTemperatureLabel);
     parcel.writeString(minTemperatureLabel);
     parcel.writeString(temperatureLabel);

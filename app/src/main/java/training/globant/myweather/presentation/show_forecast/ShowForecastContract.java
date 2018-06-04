@@ -107,8 +107,9 @@ public interface ShowForecastContract {
      * The view onActivityCreated will try restore the old view model if it exists.
      *
      * @param uiModel view model
+     * @param isValid view model
      */
-    void restoreStateAndShowForecast(CityUI uiModel);
+    void restoreStateAndShowForecast(CityUI uiModel, boolean isValid);
 
     /**
      * Refresh the forecast using lastParameters

@@ -14,6 +14,11 @@ public class Constant {
   public static final String KEY_WEATHER = "KEY_WEATHER";
   public static final String KEY_FORECAST = "KEY_FORECAST";
 
+  public static final String KEY_WEATHER_MODEL_VALID = "KEY_WEATHER_MODEL_VALID";
+  public static final String KEY_FORECAST_MODEL_VALID = "KEY_FORECAST_MODEL_VALID";
+  public static final boolean INVALID = false;
+  public static final boolean VALID = true;
+
   public static final String API_PARAMETER_QUERY = "q";
   public static final String API_PARAMETER_LATITUDE = "lat";
   public static final String API_PARAMETER_LONGITUDE = "lon";

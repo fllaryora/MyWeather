@@ -11,7 +11,6 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import java.util.HashMap;
 import java.util.Map;
@@ -80,17 +79,18 @@ public class ShowWeatherActivity extends AppCompatActivity {
         parameters.put(Constant.API_PARAMETER_QUERY, textSubmitted);
         Editor editor = getSharedPreferences(Constant.KEY_LAST_SEARCH, MODE_PRIVATE).edit();
         editor.putString(Constant.API_PARAMETER_QUERY, textSubmitted);
+        //invalidate both models
+        editor.putBoolean(Constant.KEY_WEATHER_MODEL_VALID, Constant.INVALID);
+        editor.putBoolean(Constant.KEY_FORECAST_MODEL_VALID, Constant.INVALID);
         editor.commit();
-        for(int i = 0; i < mAdapter.getCount();i++){
-          Fragment  fragment = mAdapter.getItem(i);
-          if(fragment instanceof ShowForecastContract.View){
-            ((ShowForecastContract.View) fragment).onLocationChange();
+        for (Fragment fragment : getSupportFragmentManager().getFragments()){
+          if(fragment.isVisible()){
+            if (fragment instanceof ShowForecastContract.View) {
+              ((ShowForecastContract.View) fragment).onLocationChange();
+            } else if (fragment instanceof ShowWeatherContract.View) {
+              ((ShowWeatherContract.View) fragment).onLocationChange();
+            }
           }
-
-          if(fragment instanceof ShowWeatherContract.View){
-            ((ShowWeatherContract.View) fragment).onLocationChange();
-          }
-
         }
 
         mSearchItem.collapseActionView();

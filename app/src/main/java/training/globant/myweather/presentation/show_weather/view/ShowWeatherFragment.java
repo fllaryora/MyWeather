@@ -4,6 +4,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -50,6 +51,7 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
   private PermissionsHelper permissionsHelper;
   private PermissionHelperCallback helperCallback;
   private WeatherUI uiModel;
+  private boolean isVisible;
 
   public static ShowWeatherFragment newInstance() {
     return new ShowWeatherFragment();
@@ -96,22 +98,29 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
   }
 
   @Override
+  public void setUserVisibleHint(boolean isVisibleToUser) {
+    super.setUserVisibleHint(isVisibleToUser);
+    isVisible = isVisibleToUser;
+    // Make sure that fragment is currently visible
+    //avoid null pointer when is called too early in the life cycle
+    if (isVisible && isResumed()) {
+      loadScreen();
+    }
+
+  }
+
+  @Override
   public void onResume() {
     super.onResume();
-    presenter.attachView(this);
-    presenter.restoreStateAndShowWeather(uiModel);
-    if (presenter.getUiModel() == null) {
-      permissionsHelper.tryLocation(helperCallback);
-    }
+    loadScreen();
   }
 
   @Override
   public void onLocationChange() {
-    progressDialog.show();
-    SharedPreferences sharedPref = getActivity().getSharedPreferences(Constant.KEY_LAST_SEARCH, MODE_PRIVATE);
-    Map<String, String> lastQuery = new HashMap<String, String>();
-    lastQuery.put(Constant.API_PARAMETER_QUERY,sharedPref.getString(Constant.API_PARAMETER_QUERY,null));
-    presenter.loadWeather(lastQuery);
+    //avoid null pointer when is called too early in the life cycle
+    if (isResumed()) {
+      loadScreen();
+    }
   }
 
   @Override
@@ -140,6 +149,36 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
   }
 
   /***************** HELPER LIFE-CYCLE FUNCTIONS ************************/
+  private void loadScreen(){
+    if (!getUserVisibleHint()) {
+      return;
+    }
+    presenter.attachView(this);
+    presenter.restoreStateAndShowWeather(uiModel, isModelValid());
+    if (presenter.getUiModel() == null) {
+      permissionsHelper.tryLocation(helperCallback);
+    }
+  }
+  private void setModelAsValid(){
+    Editor editor = getActivity().getSharedPreferences(Constant.KEY_LAST_SEARCH, MODE_PRIVATE).edit();
+    editor.putBoolean(Constant.KEY_WEATHER_MODEL_VALID, Constant.VALID);
+    editor.commit();
+  }
+
+  private Map<String, String> getLastQuery(){
+    SharedPreferences sharedPref = getActivity()
+        .getSharedPreferences(Constant.KEY_LAST_SEARCH, MODE_PRIVATE);
+    Map<String, String> lastQuery = new HashMap<String, String>();
+    lastQuery.put(Constant.API_PARAMETER_QUERY,
+        sharedPref.getString(Constant.API_PARAMETER_QUERY, null));
+    return lastQuery;
+  }
+
+  public boolean isModelValid(){
+    SharedPreferences sharedPref = getActivity()
+        .getSharedPreferences(Constant.KEY_LAST_SEARCH, MODE_PRIVATE);
+    return sharedPref.getBoolean(Constant.KEY_WEATHER_MODEL_VALID, Constant.INVALID);
+  }
 
   private void createHelperPermissionCallBack() {
     helperCallback = new PermissionHelperCallback() {
@@ -153,7 +192,7 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
       @Override
       public void onResponse() {
         progressDialog.show();
-        presenter.loadWeather(null);
+        presenter.loadWeather(getLastQuery());
       }
 
       @Override
@@ -185,10 +224,7 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
         new SwipeRefreshLayout.OnRefreshListener() {
           @Override
           public void onRefresh() {
-            SharedPreferences sharedPref = getActivity().getSharedPreferences(Constant.KEY_LAST_SEARCH, MODE_PRIVATE);
-            Map<String, String> lastQuery = new HashMap<String, String>();
-            lastQuery.put(Constant.API_PARAMETER_QUERY,sharedPref.getString(Constant.API_PARAMETER_QUERY,null));
-            presenter.refreshWeather(lastQuery);
+            presenter.refreshWeather(getLastQuery());
           }
         }
     );
@@ -216,7 +252,8 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
     hintLabel.setVisibility(View.GONE);
     swipeRefreshLayout.setVisibility(View.VISIBLE);
 
-    city.setText(uiModel.getCityLabel());
+    city.setText(String.format(getString(R.string.city_country_format), uiModel.getCityLabel(),
+        uiModel.getCountryLabel()));
     String maxTemp = String
         .format(getString(R.string.temperature_template), uiModel.getMaxTemperatureLabel());
     String minTemp = String
@@ -229,6 +266,7 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
     sky.setText(uiModel.getSkyLabel());
     refreshImageView.setImageResource(uiModel.getIcon());
 
+    setModelAsValid();
     progressDialog.dismiss();
     stopRefreshing();
   }
@@ -240,8 +278,9 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
    */
   @Override
   public void showError(String error) {
-      Snackbar.make(getView(), (error != null) ? error : getString(R.string.can_not_load_message),
-              Snackbar.LENGTH_LONG).show();
+    Snackbar.make(getView(), (error != null) ? error : getString(R.string.can_not_load_message),
+        Snackbar.LENGTH_LONG).show();
+    setModelAsValid();
     progressDialog.dismiss();
     stopRefreshing();
   }

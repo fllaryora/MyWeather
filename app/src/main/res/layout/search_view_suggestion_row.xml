@@ -23,7 +23,7 @@
     android:layout_height="56dp"
     android:layout_alignParentBottom="true"
     android:layout_alignParentTop="true"
-    android:background="?attr/selectableItemBackground"
+    android:background="?android:attr/selectableItemBackground"
     android:scaleType="centerInside"
     android:visibility="gone" />
 

@@ -15,6 +15,9 @@ public class City {
   @SerializedName("name")
   private String cityName;
 
+  @SerializedName("country")
+  private String countryName;
+
   /**
    * No args constructor for use in serialization
    */
@@ -24,11 +27,17 @@ public class City {
   /**
    * @param cityName
    */
-  public City(String cityName) {
+  public City(String cityName, String countryName) {
     this.cityName = cityName;
+    this.countryName = countryName;
   }
 
   public String getCityName() {
     return cityName;
   }
+
+  public String getCountryName() {
+    return countryName;
+  }
+
 }

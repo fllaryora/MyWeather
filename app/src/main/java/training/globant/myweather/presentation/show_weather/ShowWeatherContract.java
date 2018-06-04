@@ -108,8 +108,9 @@ public interface ShowWeatherContract {
      * The view onActivityCreated will try restore the old view model if it exists.
      *
      * @param uiModel view model
+     * @param isValid view model
      */
-    void restoreStateAndShowWeather(WeatherUI uiModel);
+    void restoreStateAndShowWeather(WeatherUI uiModel, boolean isValid);
 
     /**
      * Refresh the weather using lastParameters

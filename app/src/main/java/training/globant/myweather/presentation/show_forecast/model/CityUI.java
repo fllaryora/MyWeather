@@ -26,15 +26,18 @@ public class CityUI implements Parcelable {
   };
 
   private String cityLabel;
+  private String countryLabel;
   private List<ForecastItemUI> forecastItemUIList;
 
   /**
    * @param cityLabel name of city
    * @param forecastItemUIList weather list, predictions
+   * @param countryLabel name of the country
    */
   public CityUI(String cityLabel,
-      List<ForecastItemUI> forecastItemUIList) {
+      List<ForecastItemUI> forecastItemUIList , String countryLabel) {
     this.cityLabel = cityLabel;
+    this.countryLabel = countryLabel;
     this.forecastItemUIList = forecastItemUIList;
   }
 
@@ -45,6 +48,7 @@ public class CityUI implements Parcelable {
    */
   protected CityUI(Parcel in) {
     cityLabel = in.readString();
+    countryLabel = in.readString();
     forecastItemUIList = in.createTypedArrayList(ForecastItemUI.CREATOR);
   }
 
@@ -55,6 +59,15 @@ public class CityUI implements Parcelable {
    */
   public String getCityLabel() {
     return cityLabel;
+  }
+
+  /**
+   * Gets the name of the country
+   *
+   * @return countryLabel
+   */
+  public String getCountryLabel() {
+    return countryLabel;
   }
 
   /**
@@ -87,6 +100,7 @@ public class CityUI implements Parcelable {
   @Override
   public void writeToParcel(Parcel parcel, int i) {
     parcel.writeString(cityLabel);
+    parcel.writeString(countryLabel);
     parcel.writeTypedList(forecastItemUIList);
   }
 }

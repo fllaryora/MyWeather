@@ -4,6 +4,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -50,6 +51,7 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
   private RecyclerView recyclerView;
   private ForecastAdapter forecastAdapter;
   private CityUI uiModel;
+  private boolean isVisible;
 
   public static ShowForecastFragment newInstance() {
     return new ShowForecastFragment();
@@ -90,24 +92,28 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
   }
 
   @Override
+  public void setUserVisibleHint(boolean isVisibleToUser) {
+    super.setUserVisibleHint(isVisibleToUser);
+    isVisible = isVisibleToUser;
+    // Make sure that fragment is currently visible
+    if (isVisible && isResumed()) {
+      loadScreen();
+    }
+
+  }
+
+  @Override
   public void onResume() {
     super.onResume();
-    presenter.attachView(this);
-    presenter.restoreStateAndShowForecast(uiModel);
-    if (presenter.getUiModel() == null) {
-      permissionsHelper.tryLocation(helperCallback);
-    }
+    loadScreen();
   }
 
   @Override
   public void onLocationChange() {
-    progressDialog.show();
-    SharedPreferences sharedPref = getActivity()
-        .getSharedPreferences(Constant.KEY_LAST_SEARCH, MODE_PRIVATE);
-    Map<String, String> lastQuery = new HashMap<String, String>();
-    lastQuery.put(Constant.API_PARAMETER_QUERY,
-        sharedPref.getString(Constant.API_PARAMETER_QUERY, null));
-    presenter.loadForecast(lastQuery);
+    //avoid null pointer when is called too early in the life cycle
+    if (isResumed()) {
+      loadScreen();
+    }
   }
 
   @Override
@@ -136,6 +142,37 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
   }
 
   /***************** HELPER LIFE-CYCLE FUNCTIONS ************************/
+  private void loadScreen(){
+    if (!getUserVisibleHint()) {
+      return;
+    }
+    presenter.attachView(this);
+    presenter.restoreStateAndShowForecast(uiModel, isModelValid());
+    if (presenter.getUiModel() == null) {
+      permissionsHelper.tryLocation(helperCallback);
+    }
+  }
+
+  private void setModelAsValid(){
+    Editor editor = getActivity().getSharedPreferences(Constant.KEY_LAST_SEARCH, MODE_PRIVATE).edit();
+    editor.putBoolean(Constant.KEY_FORECAST_MODEL_VALID, Constant.VALID);
+    editor.commit();
+  }
+
+  private Map<String, String> getLastQuery(){
+    SharedPreferences sharedPref = getActivity()
+        .getSharedPreferences(Constant.KEY_LAST_SEARCH, MODE_PRIVATE);
+    Map<String, String> lastQuery = new HashMap<String, String>();
+    lastQuery.put(Constant.API_PARAMETER_QUERY,
+        sharedPref.getString(Constant.API_PARAMETER_QUERY, null));
+    return lastQuery;
+  }
+
+  public boolean isModelValid(){
+    SharedPreferences sharedPref = getActivity()
+        .getSharedPreferences(Constant.KEY_LAST_SEARCH, MODE_PRIVATE);
+    return sharedPref.getBoolean(Constant.KEY_FORECAST_MODEL_VALID, Constant.INVALID);
+  }
 
   private void progressDialogSetup() {
     progressDialog = new ProgressDialog(getContext());
@@ -156,7 +193,7 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
       @Override
       public void onResponse() {
         progressDialog.show();
-        presenter.loadForecast(null);
+        presenter.loadForecast(getLastQuery());
       }
 
       @Override
@@ -181,12 +218,7 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
         new SwipeRefreshLayout.OnRefreshListener() {
           @Override
           public void onRefresh() {
-            SharedPreferences sharedPref = getActivity()
-                .getSharedPreferences(Constant.KEY_LAST_SEARCH, MODE_PRIVATE);
-            Map<String, String> lastQuery = new HashMap<String, String>();
-            lastQuery.put(Constant.API_PARAMETER_QUERY,
-                sharedPref.getString(Constant.API_PARAMETER_QUERY, null));
-            presenter.refreshForecast(lastQuery);
+            presenter.refreshForecast(getLastQuery());
           }
         }
     );
@@ -213,7 +245,8 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
     //TODO for the love of god bring to another fragment the message when I have time
     hintLabel.setVisibility(View.GONE);
     swipeRefreshLayout.setVisibility(View.VISIBLE);
-    city.setText(uiModel.getCityLabel());
+    city.setText(String.format(getString(R.string.city_country_format), uiModel.getCityLabel(),
+        uiModel.getCountryLabel()));
 
     LinearLayoutManager layoutManager = new LinearLayoutManager(this.getActivity());
     recyclerView.setLayoutManager(layoutManager);
@@ -227,6 +260,7 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
     forecastAdapter = new ForecastAdapter(this.getActivity(), uiModel.getForecastItemUIList());
     recyclerView.setAdapter(forecastAdapter);
 
+    setModelAsValid();
     progressDialog.dismiss();
     stopRefreshing();
   }
@@ -240,6 +274,7 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
   public void showError(String error) {
     Snackbar.make(getView(), (error != null) ? error : getString(R.string.can_not_load_message),
         Snackbar.LENGTH_LONG).show();
+    setModelAsValid();
     progressDialog.dismiss();
     stopRefreshing();
   }
