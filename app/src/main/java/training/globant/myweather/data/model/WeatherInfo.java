@@ -18,18 +18,22 @@ public class WeatherInfo {
   private List<SkyDescription> skyDescription;
   @SerializedName("main")
   private TemperatureInfo temperatureInfo;
+  @SerializedName("sys")
+  private CountryHolder country;
 
   public WeatherInfo(String name, List<SkyDescription> skyDescription,
-      TemperatureInfo temperatureInfo) {
+      TemperatureInfo temperatureInfo, CountryHolder country) {
     this.name = name;
     this.skyDescription = skyDescription;
     this.temperatureInfo = temperatureInfo;
+    this.country = country;
   }
 
   public WeatherInfo() {
     this.name = "";
     this.skyDescription = null;
     this.temperatureInfo = null;
+    this.country = null;
   }
 
   public String getName() {
@@ -42,6 +46,10 @@ public class WeatherInfo {
 
   public TemperatureInfo getTemperatureInfo() {
     return temperatureInfo;
+  }
+
+  public CountryHolder getCountry() {
+    return country;
   }
 
 }

@@ -1,9 +1,9 @@
-package training.globant.myweather.presentation.show_weather;
+package training.globant.myweather.presentation.show_forecast;
 
 import java.util.Map;
-import training.globant.myweather.data.model.WeatherInfo;
+import training.globant.myweather.data.model.ForecastInfo;
 import training.globant.myweather.device.sensors.location.PermissionsHelper;
-import training.globant.myweather.presentation.show_weather.model.WeatherUI;
+import training.globant.myweather.presentation.show_forecast.model.CityUI;
 
 /**
  * Represents a contract between the view and the presenter.
@@ -13,8 +13,7 @@ import training.globant.myweather.presentation.show_weather.model.WeatherUI;
  * @since 1.0
  */
 
-public interface ShowWeatherContract {
-
+public interface ShowForecastContract {
   interface View {
 
     /**
@@ -22,7 +21,7 @@ public interface ShowWeatherContract {
      *
      * @param uiModel is the view model
      */
-    void showWeather(WeatherUI uiModel);
+    void showForecast(CityUI uiModel);
 
     /**
      * Shows the error in view.
@@ -66,7 +65,7 @@ public interface ShowWeatherContract {
      *
      * @param view instance
      */
-    void attachView(ShowWeatherContract.View view);
+    void attachView(ShowForecastContract.View view);
 
     /**
      * Returns true if this presenter has the view attached.
@@ -81,11 +80,11 @@ public interface ShowWeatherContract {
     void dettachView();
 
     /**
-     * Loads the weather using parameters
+     * Loads the forecast using parameters
      *
      * @param parameters pair key-value data that describe a location
      */
-    void loadWeather(Map<String, String> parameters);
+    void loadForecast(Map<String, String> parameters);
 
     /**
      * Transforms the model into a view model instance.
@@ -93,7 +92,7 @@ public interface ShowWeatherContract {
      * @param model data model instance
      * @return view model instance
      */
-    WeatherUI transformModelToUiModel(WeatherInfo model);
+    CityUI transformModelToUiModel(ForecastInfo model);
 
     /**
      * Return the view model instance.
@@ -101,23 +100,23 @@ public interface ShowWeatherContract {
      *
      * @return view model instance
      */
-    WeatherUI getUiModel();
+    CityUI getUiModel();
 
     /**
-     * Restores the state and show weather model.
+     * Restores the state and show forecast model.
      * The view onActivityCreated will try restore the old view model if it exists.
      *
      * @param uiModel view model
      * @param isValid view model
      */
-    void restoreStateAndShowWeather(WeatherUI uiModel, boolean isValid);
+    void restoreStateAndShowForecast(CityUI uiModel, boolean isValid);
 
     /**
-     * Refresh the weather using lastParameters
+     * Refresh the forecast using lastParameters
      *
      * @param lastParameters pair key-value data that describe a location
      */
-    void refreshWeather(Map<String, String> lastParameters);
+    void refreshForecast(Map<String, String> lastParameters);
     //actions that now idk
   }
 }

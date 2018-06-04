@@ -1,5 +1,6 @@
 package training.globant.myweather.data;
 
+import training.globant.myweather.data.model.ForecastInfo;
 import training.globant.myweather.data.model.WeatherInfo;
 
 /**
@@ -18,6 +19,13 @@ public interface WeatherCallback {
    * @param weatherInfo data model of the weather
    */
   void onResponse(WeatherInfo weatherInfo);
+
+  /**
+   * Called when an asynchronous call completes successfully.
+   *
+   * @param forecastInfo data model of the forecast
+   */
+  void onResponse(ForecastInfo forecastInfo);
 
   /**
    * Called when an asynchronous call fails to complete normally.

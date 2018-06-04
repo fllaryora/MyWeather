@@ -9,5 +9,8 @@
   <string name="enable_gps_message">service to find current location.  Click OK to go to</string>
   <string name="ok">OK</string>
   <string name="must_implement_interface">%s must implement TextClicked</string>
+  <string name="tab_label_today">Today</string>
   <string name="hasnt_system_feature">This device doesn\'t have GPS</string>
+  <string name="please_wait">Please wait.</string>
+  <string name="loading">Loading...</string>
 </resources>

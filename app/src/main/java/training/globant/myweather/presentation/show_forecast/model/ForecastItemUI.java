@@ -1,90 +1,84 @@
-package training.globant.myweather.presentation.show_weather.model;
+package training.globant.myweather.presentation.show_forecast.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Class that represents the weather in the presentation layer.
+ * Class that represents the Forecast Item in the presentation layer.
  *
  * @author Francisco Llaryora
  * @version 1.0
  * @since 1.0
  */
-public class WeatherUI implements Parcelable {
 
-  public static final Creator<WeatherUI> CREATOR = new Creator<WeatherUI>() {
+public class ForecastItemUI implements Parcelable {
+
+  public static final Creator<ForecastItemUI> CREATOR = new Creator<ForecastItemUI>() {
     @Override
-    public WeatherUI createFromParcel(Parcel in) {
-      return new WeatherUI(in);
+    public ForecastItemUI createFromParcel(Parcel in) {
+      return new ForecastItemUI(in);
     }
 
     @Override
-    public WeatherUI[] newArray(int size) {
-      return new WeatherUI[size];
+    public ForecastItemUI[] newArray(int size) {
+      return new ForecastItemUI[size];
     }
   };
 
-  private String cityLabel;
-  private String countryLabel;
+  private String dayLabel;
+  private String hourLabel;
   private String temperatureLabel;
   private String maxTemperatureLabel;
   private String minTemperatureLabel;
-  private String skyLabel;
   private int icon;
 
   /**
-   * Construct WeatherUI
-   *
-   * @param cityLabel name of the city
-   * @param maxTemperatureLabel max temperature label
-   * @param minTemperatureLabel min temperature label
-   * @param temperatureLabel current temperature label
-   * @param skyLabel description of the situation in the sky
+   * @param dayLabel monday, thuesday, and so on
+   * @param hourLabel 08:00hs
+   * @param temperatureLabel current temp
+   * @param maxTemperatureLabel max temp
+   * @param minTemperatureLabel min temp
    * @param icon R resource drawable icon
-   * @param countryLabel name of the country
    */
-  public WeatherUI(String cityLabel, String maxTemperatureLabel, String minTemperatureLabel,
-      String temperatureLabel, String skyLabel, int icon, String countryLabel) {
-    this.cityLabel = cityLabel;
-    this.countryLabel = countryLabel;
+
+  public ForecastItemUI(String dayLabel, String hourLabel, String temperatureLabel,
+      String maxTemperatureLabel, String minTemperatureLabel, int icon) {
+    this.dayLabel = dayLabel;
+    this.hourLabel = hourLabel;
+    this.temperatureLabel = temperatureLabel;
     this.maxTemperatureLabel = maxTemperatureLabel;
     this.minTemperatureLabel = minTemperatureLabel;
-    this.temperatureLabel = temperatureLabel;
-    this.skyLabel = skyLabel;
     this.icon = icon;
   }
 
   /**
-   * Construct WeatherUI
+   * Construct ForecastItemUI
    *
-   * @param in WeatherUI but parceled
+   * @param in ForecastItemUI but parceled
    */
-  protected WeatherUI(Parcel in) {
-    cityLabel = in.readString();
-    countryLabel = in.readString();
+  protected ForecastItemUI(Parcel in) {
+    dayLabel = in.readString();
+    hourLabel = in.readString();
+    temperatureLabel = in.readString();
     maxTemperatureLabel = in.readString();
     minTemperatureLabel = in.readString();
-    temperatureLabel = in.readString();
-    skyLabel = in.readString();
     icon = in.readInt();
   }
 
   /**
-   * Gets the name of the city
+   * Gets the week day
    *
-   * @return cityLabel
+   * @return week day
    */
-  public String getCityLabel() {
-    return cityLabel;
+  public String getDayLabel() {
+    return dayLabel;
   }
 
   /**
-   * Gets the name of the country
-   *
-   * @return countryLabel
+   * Gets hours in 24 format
    */
-  public String getCountryLabel() {
-    return countryLabel;
+  public String getHourLabel() {
+    return hourLabel;
   }
 
   /**
@@ -94,15 +88,6 @@ public class WeatherUI implements Parcelable {
    */
   public String getTemperatureLabel() {
     return temperatureLabel;
-  }
-
-  /**
-   * Gets a description of the sky
-   *
-   * @return a description of the sky
-   */
-  public String getSkyLabel() {
-    return skyLabel;
   }
 
   /**
@@ -152,12 +137,11 @@ public class WeatherUI implements Parcelable {
    */
   @Override
   public void writeToParcel(Parcel parcel, int i) {
-    parcel.writeString(cityLabel);
-    parcel.writeString(countryLabel);
+    parcel.writeString(dayLabel);
+    parcel.writeString(hourLabel);
+    parcel.writeString(temperatureLabel);
     parcel.writeString(maxTemperatureLabel);
     parcel.writeString(minTemperatureLabel);
-    parcel.writeString(temperatureLabel);
-    parcel.writeString(skyLabel);
     parcel.writeInt(icon);
   }
 }

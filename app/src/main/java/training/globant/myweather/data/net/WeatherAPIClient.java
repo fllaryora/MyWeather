@@ -8,6 +8,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.Query;
 import retrofit2.http.QueryMap;
+import training.globant.myweather.data.model.ForecastInfo;
 import training.globant.myweather.data.model.WeatherInfo;
 import training.globant.myweather.data.utils.Constant;
 
@@ -56,17 +57,34 @@ public class WeatherAPIClient {
   public interface OpenWeatherMap {
 
     /**
-     * earches the weather by options
+     * Searches the weather by options
      * @param options is a map that could contain:
      * - q -query
      * - APPID -app id
      * - units - temperatureUnits
      * - lang- language of the description
+     * -lat - latitude
+     * -lon - longitude
      * @return a callable with WeatherInfo
      */
     @Headers("User-Agent: MyWeather-App")
     @GET("weather")
     Call<WeatherInfo> searchWeatherByOptions(@QueryMap(encoded = true) Map<String, String> options);
+
+    /**
+     * Searches the forecast  weather by options
+     * @param options is a map that could contain:
+     * - q -query
+     * - APPID -app id
+     * - units - temperatureUnits
+     * - lang- language of the description
+     * -lat - latitude
+     * -lon - longitude
+     * @return a callable with WeatherInfo
+     */
+    @Headers("User-Agent: MyWeather-App")
+    @GET("forecast")
+    Call<ForecastInfo> searchForecastByOptions(@QueryMap(encoded = true) Map<String, String> options);
   }
 
 }

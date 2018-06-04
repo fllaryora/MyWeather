@@ -12,6 +12,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="coordinatorLayoutStyle">@style/Widget.Design.CoordinatorLayout</item>
     </style>
 
     <style name="Toolbar" parent="ThemeOverlay.AppCompat.ActionBar">
@@ -52,10 +53,16 @@
         <item name="android:popupElevation">0dp</item>
     </style>
 
-    <style name="AppTheme.PopupOverlay" parent="AppTheme.PopupOverlay">
+    <style name="AppTheme.PopupOverlay">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="coordinatorLayoutStyle">@style/Widget.Design.CoordinatorLayout</item>
     </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="coordinatorLayoutStyle">@style/Widget.Design.CoordinatorLayout</item>
+    </style>
+
 </resources>
