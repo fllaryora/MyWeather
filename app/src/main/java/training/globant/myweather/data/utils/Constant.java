@@ -13,7 +13,7 @@ public class Constant {
   public static final String DB_NAME = "weather_database";
   public static final String DB_TABLE_WEATHER = "weather_table";
   public static final String DB_TABLE_FORECAST = "forecast_table";
-  public static final String DB_TABLE_QUERY = "query_table";
+  public static final String DB_TABLE_FORECAST_ITEM =  "forecast_item_table";
 
   public static final String KEY_LAST_SEARCH = "KEY_LAST_SEARCH";
   public static final String KEY_WEATHER = "KEY_WEATHER";
