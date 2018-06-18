@@ -38,4 +38,5 @@ public class Constant {
   public static final String HOURS_IN_24_FORMAT_PATTERN = "HH:mm";
   public static final String ERROR_MESSAGES_FORMAT = "%d %s";
   public static final int MIN_QUERY_LEN = 4;
+  public static final int FOUR_HOUR_AGO = 4 * 60 * 60 * 1000;
 }

@@ -61,7 +61,7 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    presenter = new ShowForecastPresenter();
+    presenter = new ShowForecastPresenter(getContext());
     permissionsHelper = new PermissionsHelper(this);
     progressDialogSetup();
   }
@@ -251,11 +251,6 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
     LinearLayoutManager layoutManager = new LinearLayoutManager(this.getActivity());
     recyclerView.setLayoutManager(layoutManager);
     recyclerView.setItemAnimator(new DefaultItemAnimator());
-    //Adding a divider between rows
-    DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(
-        recyclerView.getContext(),
-        layoutManager.getOrientation());
-    recyclerView.addItemDecoration(dividerItemDecoration);
 
     forecastAdapter = new ForecastAdapter(this.getActivity(), uiModel.getForecastItemUIList());
     recyclerView.setAdapter(forecastAdapter);

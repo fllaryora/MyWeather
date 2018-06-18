@@ -1,5 +1,6 @@
 package training.globant.myweather.presentation.show_forecast.presenter;
 
+import android.content.Context;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
@@ -31,8 +32,14 @@ import training.globant.myweather.presentation.show_weather.model.IconMapper;
  */
 
 public class ShowForecastPresenter implements ShowForecastContract.Presenter, WeatherCallback {
+
   private ShowForecastContract.View view;
   private CityUI uiModel;
+  private SearchForecastInteractor searchWeatherInteractor;
+
+  public ShowForecastPresenter(Context context){
+    searchWeatherInteractor = new SearchForecastInteractor(context);
+  }
 
   /**
    * Holds ShowWeatherContract.View view in a member
@@ -69,7 +76,6 @@ public class ShowForecastPresenter implements ShowForecastContract.Presenter, We
    */
   @Override
   public void loadForecast(Map<String, String> parameters) {
-    SearchForecastInteractor searchWeatherInteractor = new SearchForecastInteractor();
     if (!hasParametersAQuery(parameters)) {
       searchWeatherInteractor.executeGPS(view.getPermissionHelper(), this);
     } else {

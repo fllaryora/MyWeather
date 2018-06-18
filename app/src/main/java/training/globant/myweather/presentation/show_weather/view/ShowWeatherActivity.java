@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import java.util.HashMap;
 import java.util.Map;
 import training.globant.myweather.R;
+import training.globant.myweather.data.database.DatabaseProvider;
 import training.globant.myweather.data.utils.Constant;
 import training.globant.myweather.presentation.show_forecast.ShowForecastContract;
 import training.globant.myweather.presentation.show_forecast.view.ShowForecastFragment;
@@ -34,12 +35,14 @@ public class ShowWeatherActivity extends AppCompatActivity {
   private ViewPager viewPager;
   private TabsPagerAdapter mAdapter;
   private TabLayout tabLayout;
+  private DatabaseProvider databaseProvider;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_show_weather);
     setUpToolbar();
+    databaseProvider = new DatabaseProvider(getApplicationContext());
     viewPager = (ViewPager) findViewById(R.id.viewpager);
     setupViewPager(viewPager);
     tabLayout = (TabLayout) findViewById(R.id.tabs);

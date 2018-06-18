@@ -62,7 +62,7 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    presenter = new ShowWeatherPresenter();
+    presenter = new ShowWeatherPresenter(getContext());
     permissionsHelper = new PermissionsHelper(this);
     progressDialogSetup();
   }

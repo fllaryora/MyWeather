@@ -11,7 +11,7 @@ import training.globant.myweather.data.utils.Constant;
 @Entity(tableName = Constant.DB_TABLE_WEATHER)
 public class Weather {
 
-  @PrimaryKey
+  @PrimaryKey(autoGenerate = true)
   @NonNull
   @ColumnInfo(name = "id")
   private long id;
@@ -28,17 +28,17 @@ public class Weather {
 
   private String cityLabel;
   private String countryLabel;
-  private String temperatureLabel;
-  private String maxTemperatureLabel;
-  private String minTemperatureLabel;
+  private double temperatureLabel;
+  private double maxTemperatureLabel;
+  private double minTemperatureLabel;
   private String skyLabel;
   private int icon;
   //last updated
   private Date lastRefresh;
 
   public Weather(@NonNull long id, String textSubmited, String latitude, String longitude,
-      String cityLabel, String countryLabel, String temperatureLabel,
-      String maxTemperatureLabel, String minTemperatureLabel, String skyLabel, int icon,
+      String cityLabel, String countryLabel, double temperatureLabel,
+      double maxTemperatureLabel, double minTemperatureLabel, String skyLabel, int icon,
       Date lastRefresh) {
     this.id = id;
     this.textSubmited = textSubmited;
@@ -82,27 +82,27 @@ public class Weather {
     this.countryLabel = countryLabel;
   }
 
-  public String getTemperatureLabel() {
+  public double getTemperatureLabel() {
     return temperatureLabel;
   }
 
-  public void setTemperatureLabel(String temperatureLabel) {
+  public void setTemperatureLabel(double temperatureLabel) {
     this.temperatureLabel = temperatureLabel;
   }
 
-  public String getMaxTemperatureLabel() {
+  public double getMaxTemperatureLabel() {
     return maxTemperatureLabel;
   }
 
-  public void setMaxTemperatureLabel(String maxTemperatureLabel) {
+  public void setMaxTemperatureLabel(double maxTemperatureLabel) {
     this.maxTemperatureLabel = maxTemperatureLabel;
   }
 
-  public String getMinTemperatureLabel() {
+  public double getMinTemperatureLabel() {
     return minTemperatureLabel;
   }
 
-  public void setMinTemperatureLabel(String minTemperatureLabel) {
+  public void setMinTemperatureLabel(double minTemperatureLabel) {
     this.minTemperatureLabel = minTemperatureLabel;
   }
 

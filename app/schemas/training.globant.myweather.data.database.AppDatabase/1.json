@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "5c70fa1595b67cf787452a1099a5546c",
+    "identityHash": "978434fe77e0466583ad128e2c555c79",
     "entities": [
       {
         "tableName": "forecast_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `textSubmited` TEXT, `latitude` TEXT, `longitude` TEXT, `cityLabel` TEXT, `countryLabel` TEXT, `lastRefresh` INTEGER, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `textSubmited` TEXT, `latitude` TEXT, `longitude` TEXT, `cityLabel` TEXT, `countryLabel` TEXT, `lastRefresh` INTEGER)",
         "fields": [
           {
             "fieldPath": "id",
@@ -55,14 +55,14 @@
           "columnNames": [
             "id"
           ],
-          "autoGenerate": false
+          "autoGenerate": true
         },
         "indices": [],
         "foreignKeys": []
       },
       {
         "tableName": "forecast_item_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `forecastId` INTEGER NOT NULL, `dayLabel` TEXT, `hourLabel` TEXT, `temperatureLabel` TEXT, `maxTemperatureLabel` TEXT, `minTemperatureLabel` TEXT, `icon` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `forecastId` INTEGER NOT NULL, `dateTime` INTEGER NOT NULL, `temperatureLabel` REAL NOT NULL, `maxTemperatureLabel` REAL NOT NULL, `minTemperatureLabel` REAL NOT NULL, `icon` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -77,34 +77,28 @@
             "notNull": true
           },
           {
-            "fieldPath": "dayLabel",
-            "columnName": "dayLabel",
-            "affinity": "TEXT",
-            "notNull": false
-          },
-          {
-            "fieldPath": "hourLabel",
-            "columnName": "hourLabel",
-            "affinity": "TEXT",
-            "notNull": false
+            "fieldPath": "dateTime",
+            "columnName": "dateTime",
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "temperatureLabel",
             "columnName": "temperatureLabel",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "REAL",
+            "notNull": true
           },
           {
             "fieldPath": "maxTemperatureLabel",
             "columnName": "maxTemperatureLabel",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "REAL",
+            "notNull": true
           },
           {
             "fieldPath": "minTemperatureLabel",
             "columnName": "minTemperatureLabel",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "REAL",
+            "notNull": true
           },
           {
             "fieldPath": "icon",
@@ -117,14 +111,14 @@
           "columnNames": [
             "id"
           ],
-          "autoGenerate": false
+          "autoGenerate": true
         },
         "indices": [],
         "foreignKeys": []
       },
       {
         "tableName": "weather_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `textSubmited` TEXT, `latitude` TEXT, `longitude` TEXT, `cityLabel` TEXT, `countryLabel` TEXT, `temperatureLabel` TEXT, `maxTemperatureLabel` TEXT, `minTemperatureLabel` TEXT, `skyLabel` TEXT, `icon` INTEGER NOT NULL, `lastRefresh` INTEGER, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `textSubmited` TEXT, `latitude` TEXT, `longitude` TEXT, `cityLabel` TEXT, `countryLabel` TEXT, `temperatureLabel` REAL NOT NULL, `maxTemperatureLabel` REAL NOT NULL, `minTemperatureLabel` REAL NOT NULL, `skyLabel` TEXT, `icon` INTEGER NOT NULL, `lastRefresh` INTEGER)",
         "fields": [
           {
             "fieldPath": "id",
@@ -165,20 +159,20 @@
           {
             "fieldPath": "temperatureLabel",
             "columnName": "temperatureLabel",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "REAL",
+            "notNull": true
           },
           {
             "fieldPath": "maxTemperatureLabel",
             "columnName": "maxTemperatureLabel",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "REAL",
+            "notNull": true
           },
           {
             "fieldPath": "minTemperatureLabel",
             "columnName": "minTemperatureLabel",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "REAL",
+            "notNull": true
           },
           {
             "fieldPath": "skyLabel",
@@ -203,7 +197,7 @@
           "columnNames": [
             "id"
           ],
-          "autoGenerate": false
+          "autoGenerate": true
         },
         "indices": [],
         "foreignKeys": []
@@ -211,7 +205,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"5c70fa1595b67cf787452a1099a5546c\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"978434fe77e0466583ad128e2c555c79\")"
     ]
   }
 }

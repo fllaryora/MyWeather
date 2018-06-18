@@ -13,7 +13,7 @@ import training.globant.myweather.data.utils.Constant;
 @Entity(tableName = Constant.DB_TABLE_FORECAST)
 public class Forecast {
 
-  @PrimaryKey
+  @PrimaryKey(autoGenerate = true)
   @NonNull
   @ColumnInfo(name = "id")
   private long id;
@@ -37,15 +37,13 @@ public class Forecast {
   private Date lastRefresh;
 
   public Forecast(@NonNull long id, String textSubmited, String latitude, String longitude,
-      String cityLabel, String countryLabel,
-      List<ForecastItem> forecastItems, Date lastRefresh) {
+      String cityLabel, String countryLabel, Date lastRefresh) {
     this.id = id;
     this.textSubmited = textSubmited;
     this.latitude = latitude;
     this.longitude = longitude;
     this.cityLabel = cityLabel;
     this.countryLabel = countryLabel;
-    this.forecastItems = forecastItems;
     this.lastRefresh = lastRefresh;
   }
 

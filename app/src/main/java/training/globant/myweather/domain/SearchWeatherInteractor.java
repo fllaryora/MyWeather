@@ -1,5 +1,6 @@
 package training.globant.myweather.domain;
 
+import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
@@ -10,6 +11,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import training.globant.myweather.BuildConfig;
 import training.globant.myweather.data.WeatherCallback;
+import training.globant.myweather.data.database.DatabaseProvider;
+import training.globant.myweather.data.database.entities.Weather;
 import training.globant.myweather.data.model.ErrorInfo;
 import training.globant.myweather.data.model.WeatherInfo;
 import training.globant.myweather.data.net.ErrorHelper;
@@ -29,6 +32,11 @@ import training.globant.myweather.device.utils.DeviceConstant;
 
 public class SearchWeatherInteractor {
 
+  private DatabaseProvider databaseProvider;
+
+  public SearchWeatherInteractor(Context context){
+    databaseProvider = new DatabaseProvider(context);
+  }
   /**
    * Executes the current use case (SearchWeather).
    *
@@ -45,7 +53,8 @@ public class SearchWeatherInteractor {
       @Override
       public void onResponse(Call<WeatherInfo> call, Response<WeatherInfo> response) {
         if (response.isSuccessful()) {
-          //TODO cachear aca ???
+          //Caching
+          databaseProvider.insert(parameters, response.body());
           callback.onResponse(response.body());
         } else {
           // Error such as resource not found

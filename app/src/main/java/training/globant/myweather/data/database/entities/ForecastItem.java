@@ -10,27 +10,25 @@ import training.globant.myweather.data.utils.Constant;
 @Entity(tableName = Constant.DB_TABLE_FORECAST_ITEM)
 public class ForecastItem {
 
-  @PrimaryKey
+  @PrimaryKey(autoGenerate = true)
   @NonNull
   @ColumnInfo(name = "id")
   private long id;
 
   @ForeignKey(entity = Forecast.class, parentColumns = "id", childColumns = "forecastId")
-  private int forecastId;
+  private long forecastId;
 
-  private String dayLabel;
-  private String hourLabel;
-  private String temperatureLabel;
-  private String maxTemperatureLabel;
-  private String minTemperatureLabel;
+  private long dateTime;
+  private double temperatureLabel;
+  private double maxTemperatureLabel;
+  private double minTemperatureLabel;
   private int icon;
 
-  public ForecastItem(@NonNull long id, int forecastId, String dayLabel, String hourLabel,
-      String temperatureLabel, String maxTemperatureLabel, String minTemperatureLabel, int icon) {
+  public ForecastItem(@NonNull long id, int forecastId, long dateTime,
+      double temperatureLabel, double maxTemperatureLabel, double minTemperatureLabel, int icon) {
     this.id = id;
     this.forecastId = forecastId;
-    this.dayLabel = dayLabel;
-    this.hourLabel = hourLabel;
+    this.dateTime = dateTime;
     this.temperatureLabel = temperatureLabel;
     this.maxTemperatureLabel = maxTemperatureLabel;
     this.minTemperatureLabel = minTemperatureLabel;
@@ -49,51 +47,43 @@ public class ForecastItem {
     this.id = id;
   }
 
-  public int getForecastId() {
+  public long getForecastId() {
     return forecastId;
   }
 
-  public void setForecastId(int forecastId) {
+  public void setForecastId(long forecastId) {
     this.forecastId = forecastId;
   }
 
-  public String getDayLabel() {
-    return dayLabel;
+  public long getDateTime() {
+    return dateTime;
   }
 
-  public void setDayLabel(String dayLabel) {
-    this.dayLabel = dayLabel;
+  public void setDateTime(long dateTime) {
+    this.dateTime = dateTime;
   }
 
-  public String getHourLabel() {
-    return hourLabel;
-  }
-
-  public void setHourLabel(String hourLabel) {
-    this.hourLabel = hourLabel;
-  }
-
-  public String getTemperatureLabel() {
+  public double getTemperatureLabel() {
     return temperatureLabel;
   }
 
-  public void setTemperatureLabel(String temperatureLabel) {
+  public void setTemperatureLabel(double temperatureLabel) {
     this.temperatureLabel = temperatureLabel;
   }
 
-  public String getMaxTemperatureLabel() {
+  public double getMaxTemperatureLabel() {
     return maxTemperatureLabel;
   }
 
-  public void setMaxTemperatureLabel(String maxTemperatureLabel) {
+  public void setMaxTemperatureLabel(double maxTemperatureLabel) {
     this.maxTemperatureLabel = maxTemperatureLabel;
   }
 
-  public String getMinTemperatureLabel() {
+  public double getMinTemperatureLabel() {
     return minTemperatureLabel;
   }
 
-  public void setMinTemperatureLabel(String minTemperatureLabel) {
+  public void setMinTemperatureLabel(double minTemperatureLabel) {
     this.minTemperatureLabel = minTemperatureLabel;
   }
 
