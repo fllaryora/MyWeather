@@ -23,6 +23,7 @@ public class Constant {
   public static final String KEY_FORECAST_MODEL_VALID = "KEY_FORECAST_MODEL_VALID";
   public static final boolean INVALID = false;
   public static final boolean VALID = true;
+  public static final int OPERATION_SUCCESSFUL = 1;
 
   public static final String API_PARAMETER_QUERY = "q";
   public static final String API_PARAMETER_LATITUDE = "lat";

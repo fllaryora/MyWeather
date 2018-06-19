@@ -12,6 +12,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import training.globant.myweather.data.WeatherCallback;
+import training.globant.myweather.data.database.AppDatabase;
+import training.globant.myweather.data.database.DatabaseHandler;
 import training.globant.myweather.data.model.ForecastInfo;
 import training.globant.myweather.data.model.ForecastItem;
 import training.globant.myweather.data.model.WeatherInfo;
@@ -31,14 +33,17 @@ import training.globant.myweather.presentation.show_weather.model.IconMapper;
  * @since 1.0
  */
 
-public class ShowForecastPresenter implements ShowForecastContract.Presenter, WeatherCallback {
+public class ShowForecastPresenter implements ShowForecastContract.Presenter, WeatherCallback, DatabaseHandler.Callback {
 
   private ShowForecastContract.View view;
   private CityUI uiModel;
+  private DatabaseHandler databaseHandler;
   private SearchForecastInteractor searchWeatherInteractor;
 
-  public ShowForecastPresenter(Context context){
-    searchWeatherInteractor = new SearchForecastInteractor(context);
+  public ShowForecastPresenter(AppDatabase database){
+    searchWeatherInteractor = new SearchForecastInteractor();
+    databaseHandler = new DatabaseHandler(database, this);
+
   }
 
   /**
@@ -245,6 +250,11 @@ public class ShowForecastPresenter implements ShowForecastContract.Presenter, We
         view.stopRefreshing();
       }
     }
+  }
+
+  @Override
+  public void onDatabaseOperationFinished() {
+
   }
 
 }

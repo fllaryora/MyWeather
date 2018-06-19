@@ -6,6 +6,9 @@ import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 import java.util.Map;
 import training.globant.myweather.data.WeatherCallback;
+import training.globant.myweather.data.database.AppDatabase;
+import training.globant.myweather.data.database.DatabaseHandler;
+import training.globant.myweather.data.database.WeatherTransactions;
 import training.globant.myweather.data.model.ForecastInfo;
 import training.globant.myweather.data.model.WeatherInfo;
 import training.globant.myweather.data.utils.Constant;
@@ -23,14 +26,20 @@ import training.globant.myweather.presentation.show_weather.model.WeatherUI;
  * @since 1.0
  */
 
-public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, WeatherCallback {
+public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, WeatherCallback, DatabaseHandler.Callback {
 
   private ShowWeatherContract.View view;
   private WeatherUI uiModel;
   private SearchWeatherInteractor searchWeatherInteractor;
+  private DatabaseHandler databaseHandler;
+  private AppDatabase database;
+  private Map<String,String> lastParameters;
 
-  public ShowWeatherPresenter(Context context){
-    searchWeatherInteractor = new SearchWeatherInteractor(context);
+  public ShowWeatherPresenter(AppDatabase database){
+    searchWeatherInteractor = new SearchWeatherInteractor();
+    this.database = database;
+    databaseHandler = new DatabaseHandler(database, this);
+
   }
 
   /**
@@ -68,6 +77,7 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
    */
   @Override
   public void loadWeather(Map<String, String> parameters) {
+    lastParameters = parameters;
     if (!hasParametersAQuery(parameters)) {
       searchWeatherInteractor.executeGPS(view.getPermissionHelper(), this);
     } else {
@@ -83,6 +93,7 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
   }
 
   private boolean hasParametersAQuery(Map<String, String> parameters) {
+    lastParameters = parameters;
     if (parameters == null) {
       return false;
     }
@@ -171,7 +182,11 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
   public void onResponse(WeatherInfo weatherInfo) {
     if (isViewAttached()) {
       uiModel = transformModelToUiModel(weatherInfo);
-      view.showWeather(uiModel);
+
+      databaseHandler.execute(
+          new WeatherTransactions().insertWeather(database, lastParameters, weatherInfo )
+      );
+
     }
   }
 
@@ -210,4 +225,8 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
   }
 
 
+  @Override
+  public void onDatabaseOperationFinished() {
+    view.showWeather(uiModel);
+  }
 }

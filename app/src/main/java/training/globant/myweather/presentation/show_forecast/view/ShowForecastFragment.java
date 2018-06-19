@@ -23,6 +23,8 @@ import android.widget.Toast;
 import java.util.HashMap;
 import java.util.Map;
 import training.globant.myweather.R;
+import training.globant.myweather.data.database.AppDatabase;
+import training.globant.myweather.data.database.dao.ForecastDAO;
 import training.globant.myweather.data.utils.Constant;
 import training.globant.myweather.device.PermissionHelperCallback;
 import training.globant.myweather.device.sensors.location.PermissionsHelper;
@@ -48,6 +50,7 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
   private TextView hintLabel;
   private TextView city;
   private PermissionHelperCallback helperCallback;
+  private AppDatabase database;
   private RecyclerView recyclerView;
   private ForecastAdapter forecastAdapter;
   private CityUI uiModel;
@@ -61,8 +64,9 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    presenter = new ShowForecastPresenter(getContext());
     permissionsHelper = new PermissionsHelper(this);
+    this.database = AppDatabase.getAppDatabase(this.getContext());
+    presenter = new ShowForecastPresenter(database);
     progressDialogSetup();
   }
 
