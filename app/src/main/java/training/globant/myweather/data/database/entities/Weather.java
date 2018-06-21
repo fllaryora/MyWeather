@@ -2,7 +2,6 @@ package training.globant.myweather.data.database.entities;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 import java.util.Date;
@@ -28,17 +27,17 @@ public class Weather {
 
   private String cityLabel;
   private String countryLabel;
-  private double temperatureLabel;
-  private double maxTemperatureLabel;
-  private double minTemperatureLabel;
+  private double temperature;
+  private double maxTemperature;
+  private double minTemperature;
   private String skyLabel;
   private int icon;
   //last updated
   private Date lastRefresh;
 
   public Weather(@NonNull long id, String textSubmited, String latitude, String longitude,
-      String cityLabel, String countryLabel, double temperatureLabel,
-      double maxTemperatureLabel, double minTemperatureLabel, String skyLabel, int icon,
+      String cityLabel, String countryLabel, double temperature,
+      double maxTemperature, double minTemperature, String skyLabel, int icon,
       Date lastRefresh) {
     this.id = id;
     this.textSubmited = textSubmited;
@@ -46,9 +45,9 @@ public class Weather {
     this.longitude = longitude;
     this.cityLabel = cityLabel;
     this.countryLabel = countryLabel;
-    this.temperatureLabel = temperatureLabel;
-    this.maxTemperatureLabel = maxTemperatureLabel;
-    this.minTemperatureLabel = minTemperatureLabel;
+    this.temperature = temperature;
+    this.maxTemperature = maxTemperature;
+    this.minTemperature = minTemperature;
     this.skyLabel = skyLabel;
     this.icon = icon;
     this.lastRefresh = lastRefresh;
@@ -82,28 +81,28 @@ public class Weather {
     this.countryLabel = countryLabel;
   }
 
-  public double getTemperatureLabel() {
-    return temperatureLabel;
+  public double getTemperature() {
+    return temperature;
   }
 
-  public void setTemperatureLabel(double temperatureLabel) {
-    this.temperatureLabel = temperatureLabel;
+  public void setTemperature(double temperature) {
+    this.temperature = temperature;
   }
 
-  public double getMaxTemperatureLabel() {
-    return maxTemperatureLabel;
+  public double getMaxTemperature() {
+    return maxTemperature;
   }
 
-  public void setMaxTemperatureLabel(double maxTemperatureLabel) {
-    this.maxTemperatureLabel = maxTemperatureLabel;
+  public void setMaxTemperature(double maxTemperature) {
+    this.maxTemperature = maxTemperature;
   }
 
-  public double getMinTemperatureLabel() {
-    return minTemperatureLabel;
+  public double getMinTemperature() {
+    return minTemperature;
   }
 
-  public void setMinTemperatureLabel(double minTemperatureLabel) {
-    this.minTemperatureLabel = minTemperatureLabel;
+  public void setMinTemperature(double minTemperature) {
+    this.minTemperature = minTemperature;
   }
 
   public String getSkyLabel() {

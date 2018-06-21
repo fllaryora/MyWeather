@@ -15,7 +15,6 @@ import android.view.MenuItem;
 import java.util.HashMap;
 import java.util.Map;
 import training.globant.myweather.R;
-import training.globant.myweather.data.database.DatabaseTransformer;
 import training.globant.myweather.data.utils.Constant;
 import training.globant.myweather.presentation.show_forecast.ShowForecastContract;
 import training.globant.myweather.presentation.show_forecast.view.ShowForecastFragment;

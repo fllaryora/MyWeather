@@ -31,7 +31,7 @@ public class Forecast {
   private String countryLabel;
 
   @Ignore
-  private List<ForecastItem> forecastItems;
+  private List<ForecastItemDB> forecastItems;
 
   //last updated
   private Date lastRefresh;
@@ -75,12 +75,12 @@ public class Forecast {
     this.countryLabel = countryLabel;
   }
 
-  public List<ForecastItem> getForecastItems() {
+  public List<ForecastItemDB> getForecastItems() {
     return forecastItems;
   }
 
   public void setForecastItems(
-      List<ForecastItem> forecastItems) {
+      List<ForecastItemDB> forecastItems) {
     this.forecastItems = forecastItems;
   }
 

@@ -71,9 +71,9 @@ public class SearchWeatherInteractor {
   }
 
   /**
-   * Executes the current use case (SearchWeather) from locator.
+   * Executes GPS.
    *
-   * @param callback Called when an asynchronous rest api call completes.
+   * @param callback Called when an asynchronous GPS call completes.
    */
   public void executeGPS(PermissionsHelper permissionsHelper, final WeatherCallback callback) {
 
@@ -83,7 +83,7 @@ public class SearchWeatherInteractor {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(Constant.API_PARAMETER_LATITUDE, String.valueOf(location.getLatitude()));
         parameters.put(Constant.API_PARAMETER_LONGITUDE, String.valueOf(location.getLongitude()));
-        execute(parameters, callback);
+        callback.onReadyToRequest(parameters);
       }
 
       @Override

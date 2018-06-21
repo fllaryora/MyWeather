@@ -1,14 +1,16 @@
 package training.globant.myweather.presentation.show_weather.presenter;
 
-import android.content.Context;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
 import training.globant.myweather.data.WeatherCallback;
 import training.globant.myweather.data.database.AppDatabase;
 import training.globant.myweather.data.database.DatabaseHandler;
-import training.globant.myweather.data.database.WeatherTransactions;
+import training.globant.myweather.data.database.runnable.WeatherRunnable;
 import training.globant.myweather.data.model.ForecastInfo;
 import training.globant.myweather.data.model.WeatherInfo;
 import training.globant.myweather.data.utils.Constant;
@@ -30,14 +32,18 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
 
   private ShowWeatherContract.View view;
   private WeatherUI uiModel;
+  private final List<WeatherInfo> weatherInfoWrapper;
   private SearchWeatherInteractor searchWeatherInteractor;
   private DatabaseHandler databaseHandler;
   private AppDatabase database;
   private Map<String,String> lastParameters;
+  private WeatherRunnable weatherRunnable;
 
   public ShowWeatherPresenter(AppDatabase database){
     searchWeatherInteractor = new SearchWeatherInteractor();
+    weatherRunnable = new WeatherRunnable();
     this.database = database;
+    weatherInfoWrapper = new ArrayList<WeatherInfo>();
     databaseHandler = new DatabaseHandler(database, this);
 
   }
@@ -77,13 +83,12 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
    */
   @Override
   public void loadWeather(Map<String, String> parameters) {
-    lastParameters = parameters;
     if (!hasParametersAQuery(parameters)) {
       searchWeatherInteractor.executeGPS(view.getPermissionHelper(), this);
     } else {
       String query = parameters.get(Constant.API_PARAMETER_QUERY);
       if (isQueryValid(query)) {
-        searchWeatherInteractor.execute(parameters, this);
+        onReadyToRequest(parameters);
       } else {
         if (isViewAttached()) {
           view.showError(view.getInvalidQueryString());
@@ -92,16 +97,23 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
     }
   }
 
+  @Override
+  public void onReadyToRequest(Map<String, String> parameters) {
+    lastParameters = parameters;
+    weatherInfoWrapper.clear();
+    databaseHandler.execute(
+        weatherRunnable.getWeatherByParameters( database,
+     parameters, weatherInfoWrapper)
+    );
+  }
+
   private boolean hasParametersAQuery(Map<String, String> parameters) {
     lastParameters = parameters;
     if (parameters == null) {
       return false;
     }
     String query = parameters.get(Constant.API_PARAMETER_QUERY);
-    if (query == null) {
-      return false;
-    }
-    return true;
+    return query != null;
   }
 
   private boolean isQueryValid(String query) {
@@ -180,14 +192,11 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
    */
   @Override
   public void onResponse(WeatherInfo weatherInfo) {
-    if (isViewAttached()) {
-      uiModel = transformModelToUiModel(weatherInfo);
-
-      databaseHandler.execute(
-          new WeatherTransactions().insertWeather(database, lastParameters, weatherInfo )
-      );
-
-    }
+    weatherInfoWrapper.clear();
+    weatherInfoWrapper.add(weatherInfo);
+    databaseHandler.execute(
+        weatherRunnable.getMyInsertRunnable(database, lastParameters, weatherInfo)
+    );
   }
 
   @Override
@@ -216,7 +225,6 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
   public void refreshWeather(Map<String, String> lastParameters) {
     if (isViewAttached()) {
       if (lastParameters != null && !lastParameters.isEmpty()) {
-        //TODO ADD CONTROL CACHE TO BE SURE THAT WE HAVE A NETWORK RESPONSE
         loadWeather(lastParameters);
       } else {
         view.stopRefreshing();
@@ -227,6 +235,21 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
 
   @Override
   public void onDatabaseOperationFinished() {
-    view.showWeather(uiModel);
+    WeatherInfo lastWeatherInfo = null;
+    if(weatherInfoWrapper.size() > 0){
+      lastWeatherInfo = weatherInfoWrapper.get(0);
+    }
+    //if cache hit
+    if(lastWeatherInfo != null){
+      if (isViewAttached()) {
+        uiModel = transformModelToUiModel(lastWeatherInfo);
+        view.showWeather(uiModel);
+      }
+    } else {
+      //cache miss
+      searchWeatherInteractor.execute(lastParameters, this);
+    }
+
   }
+
 }

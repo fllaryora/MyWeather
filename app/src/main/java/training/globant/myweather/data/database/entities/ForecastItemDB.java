@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 import training.globant.myweather.data.utils.Constant;
 
 @Entity(tableName = Constant.DB_TABLE_FORECAST_ITEM)
-public class ForecastItem {
+public class ForecastItemDB {
 
   @PrimaryKey(autoGenerate = true)
   @NonNull
@@ -19,23 +19,23 @@ public class ForecastItem {
   private long forecastId;
 
   private long dateTime;
-  private double temperatureLabel;
-  private double maxTemperatureLabel;
-  private double minTemperatureLabel;
+  private double temperature;
+  private double maxTemperature;
+  private double minTemperature;
   private int icon;
 
-  public ForecastItem(@NonNull long id, int forecastId, long dateTime,
-      double temperatureLabel, double maxTemperatureLabel, double minTemperatureLabel, int icon) {
+  public ForecastItemDB(@NonNull long id, int forecastId, long dateTime,
+      double temperature, double maxTemperature, double minTemperature, int icon) {
     this.id = id;
     this.forecastId = forecastId;
     this.dateTime = dateTime;
-    this.temperatureLabel = temperatureLabel;
-    this.maxTemperatureLabel = maxTemperatureLabel;
-    this.minTemperatureLabel = minTemperatureLabel;
+    this.temperature = temperature;
+    this.maxTemperature = maxTemperature;
+    this.minTemperature = minTemperature;
     this.icon = icon;
   }
 
-  public ForecastItem() {
+  public ForecastItemDB() {
   }
 
   @NonNull
@@ -63,28 +63,28 @@ public class ForecastItem {
     this.dateTime = dateTime;
   }
 
-  public double getTemperatureLabel() {
-    return temperatureLabel;
+  public double getTemperature() {
+    return temperature;
   }
 
-  public void setTemperatureLabel(double temperatureLabel) {
-    this.temperatureLabel = temperatureLabel;
+  public void setTemperature(double temperature) {
+    this.temperature = temperature;
   }
 
-  public double getMaxTemperatureLabel() {
-    return maxTemperatureLabel;
+  public double getMaxTemperature() {
+    return maxTemperature;
   }
 
-  public void setMaxTemperatureLabel(double maxTemperatureLabel) {
-    this.maxTemperatureLabel = maxTemperatureLabel;
+  public void setMaxTemperature(double maxTemperature) {
+    this.maxTemperature = maxTemperature;
   }
 
-  public double getMinTemperatureLabel() {
-    return minTemperatureLabel;
+  public double getMinTemperature() {
+    return minTemperature;
   }
 
-  public void setMinTemperatureLabel(double minTemperatureLabel) {
-    this.minTemperatureLabel = minTemperatureLabel;
+  public void setMinTemperature(double minTemperature) {
+    this.minTemperature = minTemperature;
   }
 
   public int getIcon() {

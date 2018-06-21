@@ -1,6 +1,5 @@
 package training.globant.myweather.presentation.show_forecast.presenter;
 
-import android.content.Context;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
@@ -14,6 +13,7 @@ import java.util.TimeZone;
 import training.globant.myweather.data.WeatherCallback;
 import training.globant.myweather.data.database.AppDatabase;
 import training.globant.myweather.data.database.DatabaseHandler;
+import training.globant.myweather.data.database.runnable.ForecastRunnable;
 import training.globant.myweather.data.model.ForecastInfo;
 import training.globant.myweather.data.model.ForecastItem;
 import training.globant.myweather.data.model.WeatherInfo;
@@ -37,13 +37,20 @@ public class ShowForecastPresenter implements ShowForecastContract.Presenter, We
 
   private ShowForecastContract.View view;
   private CityUI uiModel;
+  private final List<ForecastInfo> forecastInfoWrapper;
   private DatabaseHandler databaseHandler;
-  private SearchForecastInteractor searchWeatherInteractor;
+  private AppDatabase database;
+  private SearchForecastInteractor searchForecastInteractor;
+  private Map<String,String> lastParameters;
+  private ForecastRunnable forecastRunnable;
 
   public ShowForecastPresenter(AppDatabase database){
-    searchWeatherInteractor = new SearchForecastInteractor();
+    searchForecastInteractor = new SearchForecastInteractor();
+    forecastRunnable = new ForecastRunnable();
     databaseHandler = new DatabaseHandler(database, this);
-
+    this.database = database;
+    forecastInfoWrapper = new ArrayList<ForecastInfo>();
+    databaseHandler = new DatabaseHandler(database, this);
   }
 
   /**
@@ -82,17 +89,27 @@ public class ShowForecastPresenter implements ShowForecastContract.Presenter, We
   @Override
   public void loadForecast(Map<String, String> parameters) {
     if (!hasParametersAQuery(parameters)) {
-      searchWeatherInteractor.executeGPS(view.getPermissionHelper(), this);
+      searchForecastInteractor.executeGPS(view.getPermissionHelper(), this);
     } else {
       String query = parameters.get(Constant.API_PARAMETER_QUERY);
       if (isQueryValid(query)) {
-        searchWeatherInteractor.execute(parameters, this);
+        onReadyToRequest(parameters);
       } else {
         if (isViewAttached()) {
           view.showError(view.getInvalidQueryString());
         }
       }
     }
+  }
+
+  @Override
+  public void onReadyToRequest(Map<String, String> parameters) {
+    lastParameters = parameters;
+    forecastInfoWrapper.clear();
+    databaseHandler.execute(
+        forecastRunnable.getWeatherByParameters( database,
+            parameters, forecastInfoWrapper)
+    );
   }
 
   private boolean hasParametersAQuery(Map<String, String> parameters) {
@@ -217,10 +234,11 @@ public class ShowForecastPresenter implements ShowForecastContract.Presenter, We
    */
   @Override
   public void onResponse(ForecastInfo forecastInfo) {
-    if (isViewAttached()) {
-      uiModel = transformModelToUiModel(forecastInfo);
-      view.showForecast(uiModel);
-    }
+    forecastInfoWrapper.clear();
+    forecastInfoWrapper.add(forecastInfo);
+    databaseHandler.execute(
+        forecastRunnable.getMyInsertRunnable(database, lastParameters, forecastInfo)
+    );
   }
 
   /**
@@ -244,7 +262,6 @@ public class ShowForecastPresenter implements ShowForecastContract.Presenter, We
   public void refreshForecast(Map<String, String> lastParameters) {
     if (isViewAttached()) {
       if (lastParameters != null && !lastParameters.isEmpty()) {
-        //TODO ADD CONTROL CACHE TO BE SURE THAT WE HAVE A NETWORK RESPONSE
         loadForecast(lastParameters);
       } else {
         view.stopRefreshing();
@@ -254,7 +271,20 @@ public class ShowForecastPresenter implements ShowForecastContract.Presenter, We
 
   @Override
   public void onDatabaseOperationFinished() {
-
+    ForecastInfo lastForecastInfo = null;
+    if(forecastInfoWrapper.size() > 0){
+      lastForecastInfo = forecastInfoWrapper.get(0);
+    }
+    //if cache hit
+    if(lastForecastInfo != null){
+      if (isViewAttached()) {
+        uiModel = transformModelToUiModel(lastForecastInfo);
+        view.showForecast(uiModel);
+      }
+    } else {
+      //cache miss
+      searchForecastInteractor.execute(lastParameters, this);
+    }
   }
 
 }

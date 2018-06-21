@@ -5,16 +5,15 @@ import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.arch.persistence.room.TypeConverters;
 import android.content.Context;
-import android.graphics.Bitmap.Config;
 import training.globant.myweather.data.database.converters.DateConverter;
 import training.globant.myweather.data.database.dao.ForecastDAO;
 import training.globant.myweather.data.database.dao.WeatherDAO;
 import training.globant.myweather.data.database.entities.Forecast;
-import training.globant.myweather.data.database.entities.ForecastItem;
+import training.globant.myweather.data.database.entities.ForecastItemDB;
 import training.globant.myweather.data.database.entities.Weather;
 import training.globant.myweather.data.utils.Constant;
 
-@Database(entities = {Forecast.class, ForecastItem.class, Weather.class}, version = 1)
+@Database(entities = {Forecast.class, ForecastItemDB.class, Weather.class}, version = 1)
 @TypeConverters(DateConverter.class)
 public abstract class AppDatabase extends RoomDatabase {
   private static AppDatabase INSTANCE;
