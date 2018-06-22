@@ -12,7 +12,6 @@ import training.globant.myweather.data.model.ForecastItem;
 import training.globant.myweather.data.model.SkyDescription;
 import training.globant.myweather.data.model.TemperatureInfo;
 import training.globant.myweather.data.utils.Constant;
-import training.globant.myweather.presentation.show_weather.model.IconMapper;
 
 public class ForecastTransformer {
 
@@ -31,7 +30,7 @@ public class ForecastTransformer {
 
   public ForecastItemDB getDataBaseForecastItemFromInfo( ForecastItem forecastItemInfo, long lastId) {
     ForecastItemDB forecastItem = new ForecastItemDB();
-    forecastItem.setId(IconMapper.fromInt(forecastItemInfo.getSkyDescriptions().get(0).getId()).getIcon());
+    forecastItem.setIcon(forecastItemInfo.getSkyDescriptions().get(0).getId());
     forecastItem.setTemperature(forecastItemInfo.getTemperatureInfo().getTemperature());
     forecastItem.setMaxTemperature(forecastItemInfo.getTemperatureInfo().getMaximum());
     forecastItem.setMinTemperature(forecastItemInfo.getTemperatureInfo().getMinimum());
