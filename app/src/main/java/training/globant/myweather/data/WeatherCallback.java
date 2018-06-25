@@ -41,4 +41,9 @@ public interface WeatherCallback {
    * @param error description
    */
   void onError(String error);
+
+  /**
+   * Called when no network is detected.
+   */
+  void onOffline();
 }

@@ -19,9 +19,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import java.util.HashMap;
 import java.util.Map;
+import retrofit2.Retrofit;
 import training.globant.myweather.R;
 import training.globant.myweather.data.database.AppDatabase;
 import training.globant.myweather.data.database.dao.WeatherDAO;
+import training.globant.myweather.data.net.WeatherAPIClient;
 import training.globant.myweather.data.utils.Constant;
 import training.globant.myweather.device.PermissionHelperCallback;
 import training.globant.myweather.device.sensors.location.PermissionsHelper;
@@ -68,7 +70,9 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
 
     permissionsHelper = new PermissionsHelper(this);
     this.database = AppDatabase.getAppDatabase(this.getContext());
-    presenter = new ShowWeatherPresenter(database);
+    WeatherAPIClient.OpenWeatherMap weatherClient =  WeatherAPIClient.provideWeatherAPIClient(this.getContext());
+    Retrofit retrofitClient =  WeatherAPIClient.provideRestClient(this.getContext());
+    presenter = new ShowWeatherPresenter(database,weatherClient, retrofitClient);
     progressDialogSetup();
   }
 

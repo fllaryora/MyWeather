@@ -7,12 +7,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import retrofit2.Retrofit;
 import training.globant.myweather.data.WeatherCallback;
 import training.globant.myweather.data.database.AppDatabase;
 import training.globant.myweather.data.database.DatabaseHandler;
-import training.globant.myweather.data.database.runnable.WeatherRunnable;
+import training.globant.myweather.data.database.entities.Weather;
+import training.globant.myweather.data.database.filters.WeatherFilter;
+import training.globant.myweather.data.database.transformer.WeatherTransformer;
 import training.globant.myweather.data.model.ForecastInfo;
 import training.globant.myweather.data.model.WeatherInfo;
+import training.globant.myweather.data.net.WeatherAPIClient;
 import training.globant.myweather.data.utils.Constant;
 import training.globant.myweather.domain.SearchWeatherInteractor;
 import training.globant.myweather.presentation.show_weather.ShowWeatherContract;
@@ -37,14 +41,16 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
   private DatabaseHandler databaseHandler;
   private AppDatabase database;
   private Map<String,String> lastParameters;
-  private WeatherRunnable weatherRunnable;
+  private WeatherTransformer transformer;
+  private WeatherFilter filter;
 
-  public ShowWeatherPresenter(AppDatabase database){
-    searchWeatherInteractor = new SearchWeatherInteractor();
-    weatherRunnable = new WeatherRunnable();
+  public ShowWeatherPresenter(AppDatabase database, WeatherAPIClient.OpenWeatherMap weatherClient, Retrofit retrofitClient){
     this.database = database;
+    this.searchWeatherInteractor = new SearchWeatherInteractor(weatherClient, retrofitClient);
     weatherInfoWrapper = new ArrayList<WeatherInfo>();
     databaseHandler = new DatabaseHandler(database, this);
+    transformer = new WeatherTransformer();
+    filter = new WeatherFilter();
 
   }
 
@@ -98,12 +104,39 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
   }
 
   @Override
-  public void onReadyToRequest(Map<String, String> parameters) {
+  public void onReadyToRequest(final Map<String, String> parameters) {
     lastParameters = parameters;
     weatherInfoWrapper.clear();
     databaseHandler.execute(
-        weatherRunnable.getWeatherByParameters( database,
-     parameters, weatherInfoWrapper)
+        new Runnable() {
+          @Override
+          public void run() {
+            WeatherInfo weatherInfo = null;
+            Weather weather = null;
+            weatherInfoWrapper.clear();
+
+            List<Weather> weatherList = database.getWeatherDAO().getWeathers();
+            //TODO RESEARCH if only livedata can return null list
+            //TODO i.e RESEARCH if this if is necesary
+            if (weatherList != null) {
+
+              weatherList = filter.filterByValidUntil(weatherList);
+              String query = parameters.get(Constant.API_PARAMETER_QUERY);
+              if (query != null){
+                weatherList = filter.filterByText(weatherList, query);
+              } else {
+                String latitude = parameters.get(Constant.API_PARAMETER_LATITUDE);
+                String longitude = parameters.get(Constant.API_PARAMETER_LONGITUDE);
+                weatherList = filter.filterByLatidudeAndLongitude(weatherList, latitude, longitude);
+              }
+              weather = filter.filterByLastRefresh(weatherList);
+              if(weather != null){
+                weatherInfo = transformer.getInfoWeatherFromDataBase(weather);
+                weatherInfoWrapper.add(weatherInfo);
+              }
+            }
+          }
+        }
     );
   }
 
@@ -191,11 +224,17 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
    * @param weatherInfo data model of the weather
    */
   @Override
-  public void onResponse(WeatherInfo weatherInfo) {
+  public void onResponse(final WeatherInfo weatherInfo) {
     weatherInfoWrapper.clear();
     weatherInfoWrapper.add(weatherInfo);
     databaseHandler.execute(
-        weatherRunnable.getMyInsertRunnable(database, lastParameters, weatherInfo)
+        new Runnable() {
+          @Override
+          public void run() {
+            Weather weatherEntity = transformer.getDataBaseWeatherFromInfo(lastParameters, weatherInfo);
+            database.getWeatherDAO().insert(weatherEntity);
+          }
+        }
     );
   }
 
@@ -214,6 +253,11 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
     if (isViewAttached()) {
       view.showError(error);
     }
+  }
+
+  @Override
+  public void onOffline() {
+
   }
 
   /**

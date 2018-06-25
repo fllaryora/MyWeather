@@ -6,7 +6,7 @@ import java.util.List;
 import training.globant.myweather.data.database.entities.Weather;
 import training.globant.myweather.data.utils.Constant;
 
-public class WeatheFilter {
+public class WeatherFilter {
 
   public List<Weather> filterByText(List<Weather> rowList, String text) {
     List<Weather> filteredList = new ArrayList<Weather>();
