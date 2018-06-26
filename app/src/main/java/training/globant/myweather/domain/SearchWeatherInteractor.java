@@ -90,7 +90,7 @@ public class SearchWeatherInteractor {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(Constant.API_PARAMETER_LATITUDE, String.valueOf(location.getLatitude()));
         parameters.put(Constant.API_PARAMETER_LONGITUDE, String.valueOf(location.getLongitude()));
-        callback.onReadyToRequest(parameters);
+        callback.onGeolocation(parameters);
       }
 
       @Override

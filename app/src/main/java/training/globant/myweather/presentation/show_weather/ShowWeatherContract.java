@@ -25,6 +25,11 @@ public interface ShowWeatherContract {
     void showWeather(WeatherUI uiModel);
 
     /**
+     * Shows the uiModel element in view when is offline.
+     */
+    void showOffline();
+
+    /**
      * Shows the error in view.
      *
      * @param error is the message/description of an error

@@ -26,7 +26,7 @@ public interface WeatherCallback {
    *
    * @param parameters with coordinates
    */
-  void onReadyToRequest(Map<String, String> parameters);
+  void onGeolocation(Map<String, String> parameters);
 
   /**
    * Called when an asynchronous call completes successfully.

@@ -100,7 +100,7 @@ public class ShowForecastPresenter implements ShowForecastContract.Presenter, We
     } else {
       String query = parameters.get(Constant.API_PARAMETER_QUERY);
       if (isQueryValid(query)) {
-        onReadyToRequest(parameters);
+        onGeolocation(parameters);
       } else {
         if (isViewAttached()) {
           view.showError(view.getInvalidQueryString());
@@ -109,45 +109,22 @@ public class ShowForecastPresenter implements ShowForecastContract.Presenter, We
     }
   }
 
-  @Override
-  public void onReadyToRequest(final Map<String, String> parameters) {
+  /**
+   * Called when parameters are ready to be localized by api
+   * @param parameters
+   */
+  private void doRequest(final Map<String, String> parameters) {
     lastParameters = parameters;
-    forecastInfoWrapper.clear();
-    databaseHandler.execute(
-        new Runnable() {
-          @Override
-          public void run() {
-            ForecastInfo forecastInfo = null;
-            Forecast forecast = null;
-            forecastInfoWrapper.clear();
+    searchForecastInteractor.execute(lastParameters, this);
+  }
 
-            List<Forecast> forecastList = database.getForecastDAO().getForecast();
-            //TODO RESEARCH if only livedata can return null list
-            //TODO i.e RESEARCH if this if is necesary
-            if (forecastList != null) {
-
-              forecastList = filter.filterByValidUntil(forecastList);
-              String query = parameters.get(Constant.API_PARAMETER_QUERY);
-              if (query != null){
-                forecastList = filter.filterByText(forecastList, query);
-              } else {
-                String latitude = parameters.get(Constant.API_PARAMETER_LATITUDE);
-                String longitude = parameters.get(Constant.API_PARAMETER_LONGITUDE);
-                forecastList = filter.filterByLatidudeAndLongitude(forecastList, latitude, longitude);
-              }
-              forecast = filter.filterByLastRefresh(forecastList);
-              if(forecast != null){
-
-                List<ForecastItemDB> forecastItemList =
-                    database.getForecastDAO().getForecastItems(forecast.getId());
-
-                forecastInfo = transformer.getInfoForecastFromDataBase(forecast, forecastItemList);
-                forecastInfoWrapper.add(forecastInfo);
-              }
-            }
-          }
-        }
-    );
+  /**
+   * actions taken After being geo-localized
+   * @param parameters with coordinates
+   */
+  @Override
+  public void onGeolocation(final Map<String, String> parameters) {
+    doRequest(parameters);
   }
 
   private boolean hasParametersAQuery(Map<String, String> parameters) {
@@ -303,8 +280,16 @@ public class ShowForecastPresenter implements ShowForecastContract.Presenter, We
     }
   }
 
+  /**
+   * actions after detect offline mode
+   */
   @Override
   public void onOffline() {
+
+    if (isViewAttached()) {
+      view.showOffline();
+    }
+    getForecastAsync();
 
   }
 
@@ -326,20 +311,56 @@ public class ShowForecastPresenter implements ShowForecastContract.Presenter, We
 
   @Override
   public void onDatabaseOperationFinished() {
-    ForecastInfo lastForecastInfo = null;
     if(forecastInfoWrapper.size() > 0){
-      lastForecastInfo = forecastInfoWrapper.get(0);
-    }
-    //if cache hit
-    if(lastForecastInfo != null){
-      if (isViewAttached()) {
-        uiModel = transformModelToUiModel(lastForecastInfo);
-        view.showForecast(uiModel);
+      ForecastInfo lastForecastInfo = forecastInfoWrapper.get(0);
+      //if cache hit
+      if(lastForecastInfo != null){
+        if (isViewAttached()) {
+          uiModel = transformModelToUiModel(lastForecastInfo);
+          view.showForecast(uiModel);
+        }
       }
-    } else {
-      //cache miss
-      searchForecastInteractor.execute(lastParameters, this);
     }
+
   }
+
+  //******************** ROOM FUNCTIONS ********************
+  private void getForecastAsync() {
+
+    databaseHandler.execute(
+        new Runnable() {
+          @Override
+          public void run() {
+            forecastInfoWrapper.clear();
+
+            List<Forecast> forecastList = database.getForecastDAO().getForecast();
+            //TODO RESEARCH if only livedata can return null list
+            //TODO i.e RESEARCH if this if is necesary
+            if (forecastList != null) {
+
+              forecastList = filter.filterByValidUntil(forecastList);
+              String query = lastParameters.get(Constant.API_PARAMETER_QUERY);
+              if (query != null){
+                forecastList = filter.filterByText(forecastList, query);
+              } else {
+                String latitude = lastParameters.get(Constant.API_PARAMETER_LATITUDE);
+                String longitude = lastParameters.get(Constant.API_PARAMETER_LONGITUDE);
+                forecastList = filter.filterByLatidudeAndLongitude(forecastList, latitude, longitude);
+              }
+              Forecast forecast = filter.filterByLastRefresh(forecastList);
+              if(forecast != null){
+
+                List<ForecastItemDB> forecastItemList =
+                    database.getForecastDAO().getForecastItems(forecast.getId());
+
+                ForecastInfo forecastInfo = transformer.getInfoForecastFromDataBase(forecast, forecastItemList);
+                forecastInfoWrapper.add(forecastInfo);
+              }
+            }
+          }
+        }
+    );
+  }
+
 
 }

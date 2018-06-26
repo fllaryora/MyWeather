@@ -269,6 +269,20 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
   }
 
   /**
+   * Shows offline message in the view
+   */
+  @Override
+  public void showOffline() {
+    Snackbar.make(getView(), getString(R.string.offline_message),
+        Snackbar.LENGTH_LONG).show();
+    hintLabel.setVisibility(View.VISIBLE);
+    swipeRefreshLayout.setVisibility(View.GONE);
+    progressDialog.dismiss();
+    stopRefreshing();
+
+  }
+
+  /**
    * Shows error in the view
    *
    * @param error is the message/description of an error

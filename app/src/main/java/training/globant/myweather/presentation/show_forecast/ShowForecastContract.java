@@ -32,6 +32,11 @@ public interface ShowForecastContract {
     void showError(String error);
 
     /**
+     * Shows the uiModel element in view when is offline.
+     */
+    void showOffline();
+
+    /**
      * Stops the Refreshing action of  SwipeRefreshLayout
      */
     void stopRefreshing();
