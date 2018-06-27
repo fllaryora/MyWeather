@@ -24,8 +24,7 @@ public class ErrorHelper {
    * @param response message with wrong data type
    * @return error data model instance
    */
-  static public ErrorInfo parseError(Response<?> response) {
-    Retrofit retrofit = WeatherAPIClient.provideRestClient();
+  static public ErrorInfo parseError(Response<?> response, Retrofit retrofit) {
     Converter<ResponseBody, ErrorInfo> converter =
         retrofit.responseBodyConverter(ErrorInfo.class, new Annotation[0]);
 

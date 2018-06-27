@@ -10,6 +10,11 @@ package training.globant.myweather.data.utils;
 
 public class Constant {
 
+  public static final String DB_NAME = "weather_database";
+  public static final String DB_TABLE_WEATHER = "weather_table";
+  public static final String DB_TABLE_FORECAST = "forecast_table";
+  public static final String DB_TABLE_FORECAST_ITEM =  "forecast_item_table";
+
   public static final String KEY_LAST_SEARCH = "KEY_LAST_SEARCH";
   public static final String KEY_WEATHER = "KEY_WEATHER";
   public static final String KEY_FORECAST = "KEY_FORECAST";
@@ -18,6 +23,7 @@ public class Constant {
   public static final String KEY_FORECAST_MODEL_VALID = "KEY_FORECAST_MODEL_VALID";
   public static final boolean INVALID = false;
   public static final boolean VALID = true;
+  public static final int OPERATION_SUCCESSFUL = 1;
 
   public static final String API_PARAMETER_QUERY = "q";
   public static final String API_PARAMETER_LATITUDE = "lat";
@@ -33,4 +39,5 @@ public class Constant {
   public static final String HOURS_IN_24_FORMAT_PATTERN = "HH:mm";
   public static final String ERROR_MESSAGES_FORMAT = "%d %s";
   public static final int MIN_QUERY_LEN = 4;
+  public static final int FOUR_HOUR_AGO = 4 * 60 * 60 * 1000;
 }

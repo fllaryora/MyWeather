@@ -22,7 +22,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import java.util.HashMap;
 import java.util.Map;
+import retrofit2.Retrofit;
 import training.globant.myweather.R;
+import training.globant.myweather.data.database.AppDatabase;
+import training.globant.myweather.data.database.dao.ForecastDAO;
+import training.globant.myweather.data.net.WeatherAPIClient;
 import training.globant.myweather.data.utils.Constant;
 import training.globant.myweather.device.PermissionHelperCallback;
 import training.globant.myweather.device.sensors.location.PermissionsHelper;
@@ -48,6 +52,7 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
   private TextView hintLabel;
   private TextView city;
   private PermissionHelperCallback helperCallback;
+  private AppDatabase database;
   private RecyclerView recyclerView;
   private ForecastAdapter forecastAdapter;
   private CityUI uiModel;
@@ -61,8 +66,11 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    presenter = new ShowForecastPresenter();
     permissionsHelper = new PermissionsHelper(this);
+    WeatherAPIClient.OpenWeatherMap weatherClient =  WeatherAPIClient.provideWeatherAPIClient(this.getContext());
+    Retrofit retrofitClient =  WeatherAPIClient.provideRestClient(this.getContext());
+    this.database = AppDatabase.getAppDatabase(this.getContext());
+    presenter = new ShowForecastPresenter(database, weatherClient, retrofitClient);
     progressDialogSetup();
   }
 
@@ -251,11 +259,6 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
     LinearLayoutManager layoutManager = new LinearLayoutManager(this.getActivity());
     recyclerView.setLayoutManager(layoutManager);
     recyclerView.setItemAnimator(new DefaultItemAnimator());
-    //Adding a divider between rows
-    DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(
-        recyclerView.getContext(),
-        layoutManager.getOrientation());
-    recyclerView.addItemDecoration(dividerItemDecoration);
 
     forecastAdapter = new ForecastAdapter(this.getActivity(), uiModel.getForecastItemUIList());
     recyclerView.setAdapter(forecastAdapter);
@@ -263,6 +266,20 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
     setModelAsValid();
     progressDialog.dismiss();
     stopRefreshing();
+  }
+
+  /**
+   * Shows offline message in the view
+   */
+  @Override
+  public void showOffline() {
+    Snackbar.make(getView(), getString(R.string.offline_message),
+        Snackbar.LENGTH_LONG).show();
+    hintLabel.setVisibility(View.VISIBLE);
+    swipeRefreshLayout.setVisibility(View.GONE);
+    progressDialog.dismiss();
+    stopRefreshing();
+
   }
 
   /**

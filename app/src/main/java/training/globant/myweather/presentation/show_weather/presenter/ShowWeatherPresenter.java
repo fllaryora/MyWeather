@@ -2,11 +2,21 @@ package training.globant.myweather.presentation.show_weather.presenter;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import retrofit2.Retrofit;
 import training.globant.myweather.data.WeatherCallback;
+import training.globant.myweather.data.database.AppDatabase;
+import training.globant.myweather.data.database.DatabaseHandler;
+import training.globant.myweather.data.database.entities.Weather;
+import training.globant.myweather.data.database.filters.WeatherFilter;
+import training.globant.myweather.data.database.transformer.WeatherTransformer;
 import training.globant.myweather.data.model.ForecastInfo;
 import training.globant.myweather.data.model.WeatherInfo;
+import training.globant.myweather.data.net.WeatherAPIClient;
 import training.globant.myweather.data.utils.Constant;
 import training.globant.myweather.domain.SearchWeatherInteractor;
 import training.globant.myweather.presentation.show_weather.ShowWeatherContract;
@@ -22,10 +32,26 @@ import training.globant.myweather.presentation.show_weather.model.WeatherUI;
  * @since 1.0
  */
 
-public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, WeatherCallback {
+public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, WeatherCallback, DatabaseHandler.Callback {
 
   private ShowWeatherContract.View view;
   private WeatherUI uiModel;
+  private final List<WeatherInfo> weatherInfoWrapper;
+  private SearchWeatherInteractor searchWeatherInteractor;
+  private DatabaseHandler databaseHandler;
+  private AppDatabase database;
+  private Map<String,String> lastParameters;
+  private WeatherTransformer transformer;
+  private WeatherFilter filter;
+
+  public ShowWeatherPresenter(AppDatabase database, WeatherAPIClient.OpenWeatherMap weatherClient, Retrofit retrofitClient){
+    this.database = database;
+    this.searchWeatherInteractor = new SearchWeatherInteractor(weatherClient, retrofitClient);
+    weatherInfoWrapper = new ArrayList<WeatherInfo>();
+    databaseHandler = new DatabaseHandler(database, this);
+    transformer = new WeatherTransformer();
+    filter = new WeatherFilter();
+  }
 
   /**
    * Holds ShowWeatherContract.View view in a member
@@ -62,13 +88,12 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
    */
   @Override
   public void loadWeather(Map<String, String> parameters) {
-    SearchWeatherInteractor searchWeatherInteractor = new SearchWeatherInteractor();
     if (!hasParametersAQuery(parameters)) {
       searchWeatherInteractor.executeGPS(view.getPermissionHelper(), this);
     } else {
       String query = parameters.get(Constant.API_PARAMETER_QUERY);
       if (isQueryValid(query)) {
-        searchWeatherInteractor.execute(parameters, this);
+        doRequest(parameters);
       } else {
         if (isViewAttached()) {
           view.showError(view.getInvalidQueryString());
@@ -77,15 +102,31 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
     }
   }
 
+  /**
+   * Called when parameters are ready to be localized by api
+   * @param parameters
+   */
+  private void doRequest(final Map<String, String> parameters) {
+    lastParameters = parameters;
+    searchWeatherInteractor.execute(lastParameters, this);
+  }
+
+  /**
+   * actions taken After being geo-localized
+   * @param parameters with coordinates
+   */
+  @Override
+  public void onGeolocation(final Map<String, String> parameters) {
+    doRequest(parameters);
+  }
+
   private boolean hasParametersAQuery(Map<String, String> parameters) {
+    lastParameters = parameters;
     if (parameters == null) {
       return false;
     }
     String query = parameters.get(Constant.API_PARAMETER_QUERY);
-    if (query == null) {
-      return false;
-    }
-    return true;
+    return query != null;
   }
 
   private boolean isQueryValid(String query) {
@@ -163,16 +204,24 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
    * @param weatherInfo data model of the weather
    */
   @Override
-  public void onResponse(WeatherInfo weatherInfo) {
-    if (isViewAttached()) {
-      uiModel = transformModelToUiModel(weatherInfo);
-      view.showWeather(uiModel);
-    }
+  public void onResponse(final WeatherInfo weatherInfo) {
+    weatherInfoWrapper.clear();
+    weatherInfoWrapper.add(weatherInfo);
+    databaseHandler.execute(
+        new Runnable() {
+          @Override
+          public void run() {
+            Weather weatherEntity = transformer.getDataBaseWeatherFromInfo(lastParameters, weatherInfo);
+            database.getWeatherDAO().insert(weatherEntity);
+          }
+        }
+    );
   }
+
 
   @Override
   public void onResponse(ForecastInfo forecastInfo) {
-
+      //never used
   }
 
   /**
@@ -188,6 +237,17 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
   }
 
   /**
+   * actions after detect offline mode
+   */
+  @Override
+  public void onOffline() {
+    if (isViewAttached()) {
+      view.showOffline();
+    }
+    getWeatherAsync();
+  }
+
+  /**
    * Refresh the weather loading the weather again using lastParameters
    *
    * @param lastParameters pair key-value data that describe a location
@@ -196,7 +256,6 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
   public void refreshWeather(Map<String, String> lastParameters) {
     if (isViewAttached()) {
       if (lastParameters != null && !lastParameters.isEmpty()) {
-        //TODO ADD CONTROL CACHE TO BE SURE THAT WE HAVE A NETWORK RESPONSE
         loadWeather(lastParameters);
       } else {
         view.stopRefreshing();
@@ -204,5 +263,54 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
     }
   }
 
+
+  @Override
+  public void onDatabaseOperationFinished() {
+
+    if(weatherInfoWrapper.size() > 0){
+      WeatherInfo lastWeatherInfo = weatherInfoWrapper.get(0);
+      //if cache hit
+      if(lastWeatherInfo != null){
+        if (isViewAttached()) {
+          uiModel = transformModelToUiModel(lastWeatherInfo);
+          view.showWeather(uiModel);
+        }
+      }
+    }
+
+  }
+
+  //******************** ROOM FUNCTIONS ********************
+
+  private void getWeatherAsync() {
+
+    databaseHandler.execute(
+        new Runnable() {
+          @Override
+          public void run() {
+            weatherInfoWrapper.clear();
+            List<Weather> weatherList = database.getWeatherDAO().getWeathers();
+            //TODO RESEARCH if only livedata can return null list
+            //TODO i.e RESEARCH if this if is necesary
+            if (weatherList != null) {
+              weatherList = filter.filterByValidUntil(weatherList);
+              String query = lastParameters.get(Constant.API_PARAMETER_QUERY);
+              if (query != null){
+                weatherList = filter.filterByText(weatherList, query);
+              } else {
+                String latitude = lastParameters.get(Constant.API_PARAMETER_LATITUDE);
+                String longitude = lastParameters.get(Constant.API_PARAMETER_LONGITUDE);
+                weatherList = filter.filterByLatidudeAndLongitude(weatherList, latitude, longitude);
+              }
+              Weather weather = filter.filterByLastRefresh(weatherList);
+              if(weather != null){
+                WeatherInfo weatherInfo = transformer.getInfoWeatherFromDataBase(weather);
+                weatherInfoWrapper.add(weatherInfo);
+              }
+            }
+          }
+        }
+    );
+  }
 
 }

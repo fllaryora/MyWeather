@@ -1,110 +1,175 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
-  android:layout_height="140dp"
-  android:padding="10dp"
-  android:orientation="horizontal">
-  <LinearLayout
-    android:id="@+id/timeDayContainer"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginEnd="10dp"
-    android:layout_alignParentStart="true"
-    android:layout_centerVertical="true"
-    android:layout_gravity="center_vertical"
-    android:orientation="vertical">
-    <TextView
-      android:id="@+id/dayLabel"
-      android:textStyle="bold"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="center"
-      android:text="Lunes"
-      android:textAlignment="center"
-      android:textSize="25sp" />
-    <TextView
-      android:id="@+id/hourLabel"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="center"
-      android:text="08:00"
-      android:textAlignment="center"
-      android:textSize="20sp" />
-  </LinearLayout>
+  android:layout_height="wrap_content"
+  android:layout_margin="8dp"
+  app:cardCornerRadius="6dp"
+  app:cardElevation="6dp"
+  app:cardBackgroundColor="#6bd68c">
 
-  <ImageView
-    android:id="@+id/refreshImageView"
+  <android.support.constraint.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_centerVertical="true"
-    android:layout_gravity="center_horizontal"
-    android:layout_toEndOf="@+id/timeDayContainer"
-    android:layout_toStartOf="@+id/temperatureLabel"
-    android:scaleType="centerCrop"
-    android:src="@drawable/wi_day_haze" />
-  <TextView
-    android:id="@+id/temperatureLabel"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginStart="10dp"
-    android:layout_centerVertical="true"
-    android:layout_gravity="center_vertical"
-    android:layout_toStartOf="@+id/temperatureContainer"
-    android:text="20 *C"
-    android:textSize="25sp" />
+    android:layout_margin="10dp"
+    >
 
-  <LinearLayout
-    android:id="@+id/temperatureContainer"
-    android:layout_width="110dp"
-    android:layout_height="wrap_content"
-    android:layout_marginStart="10dp"
-    android:layout_alignParentEnd="true"
-    android:layout_centerVertical="true"
-    android:layout_gravity="center_vertical"
-    android:orientation="vertical">
-    <RelativeLayout
-      android:id="@+id/temperatureMinContainer"
+    <android.support.constraint.ConstraintLayout
+      android:id="@+id/timeDayContainer"
       android:layout_width="wrap_content"
-      android:layout_height="wrap_content">
+      android:layout_height="wrap_content"
+      android:layout_centerVertical="true"
+      android:layout_gravity="center_vertical"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toStartOf="@+id/icontempContainer"
+      app:layout_constraintHorizontal_bias="0.5"
+      app:layout_constraintHorizontal_chainStyle="spread_inside"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent">
+
       <TextView
-        android:id="@+id/minLabel"
+        android:id="@+id/dayLabel"
         android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="5dp"
-        android:layout_alignParentStart="true"
-        android:text="@string/min_temperature"
-        android:textSize="20sp" />
+        android:layout_marginBottom="27dp"
+        android:text="Lunes"
+        android:textAlignment="center"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
       <TextView
-        android:id="@+id/minTemperatureLabel"
+        android:id="@+id/hourLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
+        android:text="08:00"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dayLabel" />
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+      android:id="@+id/icontempContainer"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_alignParentEnd="true"
+      android:layout_centerVertical="true"
+      android:layout_gravity="center_vertical"
+      app:layout_constraintHorizontal_weight="1"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toStartOf="@+id/temperatureContainer"
+      app:layout_constraintHorizontal_bias="0.5"
+      app:layout_constraintStart_toStartOf="@+id/timeDayContainer"
+      app:layout_constraintTop_toTopOf="parent">
+
+      <ImageView
+        android:id="@+id/refreshImageView"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/wi_day_haze"
+        app:layout_constraintBottom_toTopOf="@+id/temperatureLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+      <TextView
+        android:id="@+id/temperatureLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="20 *C"
-        android:textSize="20sp" />
-    </RelativeLayout>
-    <RelativeLayout
-      android:id="@+id/temperatureMaxContainer"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/refreshImageView" />
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+      android:id="@+id/temperatureContainer"
       android:layout_width="wrap_content"
-      android:layout_height="wrap_content">
-      <TextView
-        android:id="@+id/maxLabel"
-        android:textStyle="bold"
+      android:layout_height="wrap_content"
+      android:layout_centerVertical="true"
+      android:layout_gravity="center_vertical"
+      android:orientation="vertical"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="0.5"
+      app:layout_constraintHorizontal_chainStyle="packed"
+      app:layout_constraintStart_toEndOf="@id/icontempContainer"
+      app:layout_constraintTop_toTopOf="parent">
+
+      <android.support.constraint.ConstraintLayout
+        android:id="@+id/temperatureMinContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="5dp"
-        android:layout_alignParentStart="true"
-        android:text="@string/max_temperature"
-        android:textSize="20sp" />
-      <TextView
-        android:id="@+id/maxTemperatureLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <TextView
+          android:id="@+id/minLabel"
+          android:textStyle="bold"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/min_temperature"
+          android:textSize="20sp"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintEnd_toStartOf="@+id/minTemperatureLabel"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+          android:id="@+id/minTemperatureLabel"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="20 *C"
+          android:textAlignment="textEnd"
+          android:textSize="20sp"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toEndOf="@id/minLabel"
+          app:layout_constraintTop_toTopOf="parent" />
+      </android.support.constraint.ConstraintLayout>
+
+      <android.support.constraint.ConstraintLayout
+        android:id="@+id/temperatureMaxContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:text="20 *C"
-        android:textSize="20sp" />
-    </RelativeLayout>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/temperatureMinContainer">
+        <TextView
+          android:id="@+id/maxLabel"
+          android:textStyle="bold"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/max_temperature"
+          android:textSize="20sp"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintEnd_toStartOf="@+id/maxTemperatureLabel"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent" />
 
-  </LinearLayout>
+        <TextView
+          android:id="@+id/maxTemperatureLabel"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="20 *C"
+          android:textAlignment="textEnd"
+          android:textSize="20sp"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toEndOf="@id/maxLabel"
+          app:layout_constraintTop_toTopOf="parent" />
+      </android.support.constraint.ConstraintLayout>
+    </android.support.constraint.ConstraintLayout>
 
-</RelativeLayout>
+  </android.support.constraint.ConstraintLayout>
+</android.support.v7.widget.CardView>

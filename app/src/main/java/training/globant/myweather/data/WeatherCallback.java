@@ -1,5 +1,6 @@
 package training.globant.myweather.data;
 
+import java.util.Map;
 import training.globant.myweather.data.model.ForecastInfo;
 import training.globant.myweather.data.model.WeatherInfo;
 
@@ -21,6 +22,13 @@ public interface WeatherCallback {
   void onResponse(WeatherInfo weatherInfo);
 
   /**
+   * Called when an asynchronous call  completes successfully.
+   *
+   * @param parameters with coordinates
+   */
+  void onGeolocation(Map<String, String> parameters);
+
+  /**
    * Called when an asynchronous call completes successfully.
    *
    * @param forecastInfo data model of the forecast
@@ -33,4 +41,9 @@ public interface WeatherCallback {
    * @param error description
    */
   void onError(String error);
+
+  /**
+   * Called when no network is detected.
+   */
+  void onOffline();
 }

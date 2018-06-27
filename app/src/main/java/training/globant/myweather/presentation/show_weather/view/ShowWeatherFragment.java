@@ -19,7 +19,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import java.util.HashMap;
 import java.util.Map;
+import retrofit2.Retrofit;
 import training.globant.myweather.R;
+import training.globant.myweather.data.database.AppDatabase;
+import training.globant.myweather.data.database.dao.WeatherDAO;
+import training.globant.myweather.data.net.WeatherAPIClient;
 import training.globant.myweather.data.utils.Constant;
 import training.globant.myweather.device.PermissionHelperCallback;
 import training.globant.myweather.device.sensors.location.PermissionsHelper;
@@ -50,6 +54,7 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
   private ProgressDialog progressDialog;
   private PermissionsHelper permissionsHelper;
   private PermissionHelperCallback helperCallback;
+  private AppDatabase database;
   private WeatherUI uiModel;
   private boolean isVisible;
 
@@ -62,8 +67,12 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    presenter = new ShowWeatherPresenter();
+
     permissionsHelper = new PermissionsHelper(this);
+    this.database = AppDatabase.getAppDatabase(this.getContext());
+    WeatherAPIClient.OpenWeatherMap weatherClient =  WeatherAPIClient.provideWeatherAPIClient(this.getContext());
+    Retrofit retrofitClient =  WeatherAPIClient.provideRestClient(this.getContext());
+    presenter = new ShowWeatherPresenter(database,weatherClient, retrofitClient);
     progressDialogSetup();
   }
 
@@ -269,6 +278,21 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
     setModelAsValid();
     progressDialog.dismiss();
     stopRefreshing();
+  }
+
+  /**
+   * Shows offline message in the view
+   */
+  @Override
+  public void showOffline() {
+
+    Snackbar.make(getView(), getString(R.string.offline_message),
+        Snackbar.LENGTH_LONG).show();
+      hintLabel.setVisibility(View.VISIBLE);
+      swipeRefreshLayout.setVisibility(View.GONE);
+      progressDialog.dismiss();
+      stopRefreshing();
+
   }
 
   /**
