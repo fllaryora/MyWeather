@@ -11,15 +11,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import training.globant.myweather.data.WeatherCallback;
-import training.globant.myweather.data.database.DatabaseHandler;
 import training.globant.myweather.data.model.CountryHolder;
 import training.globant.myweather.data.model.SkyDescription;
 import training.globant.myweather.data.model.TemperatureInfo;
@@ -32,10 +25,9 @@ import training.globant.myweather.presentation.show_weather.model.IconMapper;
 import training.globant.myweather.presentation.show_weather.model.TemperatureFormatter;
 import training.globant.myweather.presentation.show_weather.model.WeatherUI;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Matchers.anyMap;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+
 
 /**
  * Unit tests for {@link ShowWeatherPresenter}.
@@ -55,17 +47,12 @@ public class ShowWeatherPresenterTest {
   private static final String CUSTOM_QUERY = "Córdoba,AR";
 
   /**
-   * This mocks are private members of searchWeatherInteractor
-   */
-  @Mock
-  private WeatherAPIClient.OpenWeatherMap weatherClient;
-  /**
    * This mocks are private members of presenter
    */
   @Mock
   private ShowWeatherContract.View view;
 
-  @InjectMocks
+  @Mock
   private SearchWeatherInteractor searchWeatherInteractor;
 
   private static WeatherInfo model;
@@ -111,11 +98,10 @@ public class ShowWeatherPresenterTest {
     CountryHolder country = new CountryHolder(COUNTRY);
     model = new WeatherInfo(CITY,  skyDescriptionList,  temperatureInfo,  country);
 
-
     presenter.loadWeather(parameters);
     // Callback is captured and invoked
     //TODO execute IS NOT CAPTURED and the call is made
-    verify(searchWeatherInteractor).execute(parameters, weatherCallbackArgumentCaptor.capture());
+    verify(searchWeatherInteractor).execute(anyMap(), weatherCallbackArgumentCaptor.capture());
     weatherCallbackArgumentCaptor.getValue().onResponse(model);
 
     // Then

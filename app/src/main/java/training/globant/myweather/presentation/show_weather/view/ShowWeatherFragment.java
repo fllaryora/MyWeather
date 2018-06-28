@@ -27,6 +27,7 @@ import training.globant.myweather.data.net.WeatherAPIClient;
 import training.globant.myweather.data.utils.Constant;
 import training.globant.myweather.device.PermissionHelperCallback;
 import training.globant.myweather.device.sensors.location.PermissionsHelper;
+import training.globant.myweather.domain.SearchWeatherInteractor;
 import training.globant.myweather.presentation.show_weather.ShowWeatherContract;
 import training.globant.myweather.presentation.show_weather.model.WeatherUI;
 import training.globant.myweather.presentation.show_weather.presenter.ShowWeatherPresenter;
@@ -54,6 +55,7 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
   private ProgressDialog progressDialog;
   private PermissionsHelper permissionsHelper;
   private PermissionHelperCallback helperCallback;
+  private SearchWeatherInteractor searchWeatherInteractor;
   private AppDatabase database;
   private WeatherUI uiModel;
   private boolean isVisible;
@@ -72,7 +74,8 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
     this.database = AppDatabase.getAppDatabase(this.getContext());
     WeatherAPIClient.OpenWeatherMap weatherClient =  WeatherAPIClient.provideWeatherAPIClient(this.getContext());
     Retrofit retrofitClient =  WeatherAPIClient.provideRestClient(this.getContext());
-    presenter = new ShowWeatherPresenter(database,weatherClient, retrofitClient);
+    this.searchWeatherInteractor = new SearchWeatherInteractor(weatherClient, retrofitClient);
+    presenter = new ShowWeatherPresenter(database, searchWeatherInteractor);
     progressDialogSetup();
   }
 

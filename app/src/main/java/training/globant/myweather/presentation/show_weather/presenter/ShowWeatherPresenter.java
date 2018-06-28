@@ -42,10 +42,9 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
   private WeatherTransformer transformer;
   private WeatherFilter filter;
 
-  public ShowWeatherPresenter(AppDatabase database, WeatherAPIClient.OpenWeatherMap weatherClient,
-      Retrofit retrofitClient) {
+  public ShowWeatherPresenter(AppDatabase database, SearchWeatherInteractor searchWeatherInteractor) {
     this.database = database;
-    this.searchWeatherInteractor = new SearchWeatherInteractor(weatherClient, retrofitClient);
+    this.searchWeatherInteractor = searchWeatherInteractor;
     weatherInfoWrapper = new ArrayList<WeatherInfo>();
     databaseHandler = new DatabaseHandler(database, this);
     transformer = new WeatherTransformer();
