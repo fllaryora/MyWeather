@@ -1,7 +1,5 @@
 package training.globant.myweather.presentation.show_forecast.presenter;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -28,6 +26,7 @@ import training.globant.myweather.presentation.show_forecast.ShowForecastContrac
 import training.globant.myweather.presentation.show_forecast.model.CityUI;
 import training.globant.myweather.presentation.show_forecast.model.ForecastItemUI;
 import training.globant.myweather.presentation.show_weather.model.IconMapper;
+import training.globant.myweather.presentation.show_weather.model.TemperatureFormatter;
 
 /**
  * {@link ShowForecastContract.Presenter} that controls communication between views and view models
@@ -38,19 +37,21 @@ import training.globant.myweather.presentation.show_weather.model.IconMapper;
  * @since 1.0
  */
 
-public class ShowForecastPresenter implements ShowForecastContract.Presenter, WeatherCallback, DatabaseHandler.Callback {
+public class ShowForecastPresenter implements ShowForecastContract.Presenter, WeatherCallback,
+    DatabaseHandler.Callback {
 
+  private final List<ForecastInfo> forecastInfoWrapper;
   private ShowForecastContract.View view;
   private CityUI uiModel;
-  private final List<ForecastInfo> forecastInfoWrapper;
   private DatabaseHandler databaseHandler;
   private AppDatabase database;
   private SearchForecastInteractor searchForecastInteractor;
-  private Map<String,String> lastParameters;
+  private Map<String, String> lastParameters;
   private ForecastTransformer transformer;
   private ForecastFilter filter;
 
-  public ShowForecastPresenter(AppDatabase database, WeatherAPIClient.OpenWeatherMap weatherClient, Retrofit retrofitClient){
+  public ShowForecastPresenter(AppDatabase database, WeatherAPIClient.OpenWeatherMap weatherClient,
+      Retrofit retrofitClient) {
     this.searchForecastInteractor = new SearchForecastInteractor(weatherClient, retrofitClient);
     databaseHandler = new DatabaseHandler(database, this);
     this.database = database;
@@ -111,7 +112,6 @@ public class ShowForecastPresenter implements ShowForecastContract.Presenter, We
 
   /**
    * Called when parameters are ready to be localized by api
-   * @param parameters
    */
   private void doRequest(final Map<String, String> parameters) {
     lastParameters = parameters;
@@ -120,6 +120,7 @@ public class ShowForecastPresenter implements ShowForecastContract.Presenter, We
 
   /**
    * actions taken After being geo-localized
+   *
    * @param parameters with coordinates
    */
   @Override
@@ -164,7 +165,7 @@ public class ShowForecastPresenter implements ShowForecastContract.Presenter, We
     for (ForecastItem forecastItem : description) {
       forecastListUI.add(transformModelToUiModel(forecastItem));
     }
-    return new CityUI(cityName, forecastListUI , countryName);
+    return new CityUI(cityName, forecastListUI, countryName);
   }
 
   public ForecastItemUI transformModelToUiModel(ForecastItem model) {
@@ -172,21 +173,16 @@ public class ShowForecastPresenter implements ShowForecastContract.Presenter, We
       return null;
     }
     int icon = IconMapper.fromInt(model.getSkyDescriptions().get(0).getId()).getIcon();
-    String temperatureInfo = getTemperatureFormatted(model.getTemperatureInfo().getTemperature());
-    String maxTemperatureInfo = getTemperatureFormatted(model.getTemperatureInfo().getMaximum());
-    String minTemperatureInfo = getTemperatureFormatted(model.getTemperatureInfo().getMinimum());
+    String temperatureInfo = TemperatureFormatter
+        .getTemperatureFormatted(model.getTemperatureInfo().getTemperature());
+    String maxTemperatureInfo = TemperatureFormatter
+        .getTemperatureFormatted(model.getTemperatureInfo().getMaximum());
+    String minTemperatureInfo = TemperatureFormatter
+        .getTemperatureFormatted(model.getTemperatureInfo().getMinimum());
     String dayLabel = getDayOfWeekFormatted(model.getDateTime());
     String hourLabel = getHourFormatted(model.getDateTime());
     return new ForecastItemUI(dayLabel, hourLabel, temperatureInfo, maxTemperatureInfo,
         minTemperatureInfo, icon);
-  }
-
-  private String getTemperatureFormatted(double temperature) {
-    //https://stackoverflow.com/questions/14389349/android-get-current-locale-not-default
-    DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.getDefault());
-    symbols.setDecimalSeparator(Constant.DECIMAL_SEPARATOR);
-    DecimalFormat formatter = new DecimalFormat(Constant.DECIMAL_FORMAT_PATTERN, symbols);
-    return formatter.format(temperature);
   }
 
   private String getDayOfWeekFormatted(long UTCDateTime) {
@@ -225,7 +221,7 @@ public class ShowForecastPresenter implements ShowForecastContract.Presenter, We
    */
   @Override
   public void restoreStateAndShowForecast(CityUI uiModel, boolean isValid) {
-    if(!isValid){
+    if (!isValid) {
       uiModel = null;
       this.uiModel = null;
     }
@@ -258,7 +254,7 @@ public class ShowForecastPresenter implements ShowForecastContract.Presenter, We
             long lastId = database.getForecastDAO().insert(
                 transformer.getDataBaseForecastFromInfo(lastParameters, forecastInfo)
             );
-            for(ForecastItem item: forecastInfo.getList()){
+            for (ForecastItem item : forecastInfo.getList()) {
               database.getForecastDAO().insertItem(
                   transformer.getDataBaseForecastItemFromInfo(item, lastId)
               );
@@ -311,10 +307,10 @@ public class ShowForecastPresenter implements ShowForecastContract.Presenter, We
 
   @Override
   public void onDatabaseOperationFinished() {
-    if(forecastInfoWrapper.size() > 0){
+    if (forecastInfoWrapper.size() > 0) {
       ForecastInfo lastForecastInfo = forecastInfoWrapper.get(0);
       //if cache hit
-      if(lastForecastInfo != null){
+      if (lastForecastInfo != null) {
         if (isViewAttached()) {
           uiModel = transformModelToUiModel(lastForecastInfo);
           view.showForecast(uiModel);
@@ -340,20 +336,22 @@ public class ShowForecastPresenter implements ShowForecastContract.Presenter, We
 
               forecastList = filter.filterByValidUntil(forecastList);
               String query = lastParameters.get(Constant.API_PARAMETER_QUERY);
-              if (query != null){
+              if (query != null) {
                 forecastList = filter.filterByText(forecastList, query);
               } else {
                 String latitude = lastParameters.get(Constant.API_PARAMETER_LATITUDE);
                 String longitude = lastParameters.get(Constant.API_PARAMETER_LONGITUDE);
-                forecastList = filter.filterByLatidudeAndLongitude(forecastList, latitude, longitude);
+                forecastList = filter
+                    .filterByLatidudeAndLongitude(forecastList, latitude, longitude);
               }
               Forecast forecast = filter.filterByLastRefresh(forecastList);
-              if(forecast != null){
+              if (forecast != null) {
 
                 List<ForecastItemDB> forecastItemList =
                     database.getForecastDAO().getForecastItems(forecast.getId());
 
-                ForecastInfo forecastInfo = transformer.getInfoForecastFromDataBase(forecast, forecastItemList);
+                ForecastInfo forecastInfo = transformer
+                    .getInfoForecastFromDataBase(forecast, forecastItemList);
                 forecastInfoWrapper.add(forecastInfo);
               }
             }

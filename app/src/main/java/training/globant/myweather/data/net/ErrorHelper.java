@@ -25,18 +25,16 @@ public class ErrorHelper {
    * @return error data model instance
    */
   static public ErrorInfo parseError(Response<?> response, Retrofit retrofit) {
-    Converter<ResponseBody, ErrorInfo> converter =
-        retrofit.responseBodyConverter(ErrorInfo.class, new Annotation[0]);
-
-    ErrorInfo errorResponse;
-    try {
-      if (response.errorBody() != null) {
-        errorResponse = converter.convert(response.errorBody());
-      } else {
-        errorResponse = new ErrorInfo();
+    ErrorInfo errorResponse = new ErrorInfo();
+    if (retrofit != null) {
+      Converter<ResponseBody, ErrorInfo> converter =
+          retrofit.responseBodyConverter(ErrorInfo.class, new Annotation[0]);
+      try {
+        if (response.errorBody() != null) {
+          errorResponse = converter.convert(response.errorBody());
+        }
+      } catch (IOException ignore) {
       }
-    } catch (IOException e) {
-      return new ErrorInfo();
     }
     return errorResponse;
   }

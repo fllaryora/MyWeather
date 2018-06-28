@@ -1,12 +1,8 @@
 package training.globant.myweather.presentation.show_weather.presenter;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-
 import retrofit2.Retrofit;
 import training.globant.myweather.data.WeatherCallback;
 import training.globant.myweather.data.database.AppDatabase;
@@ -21,6 +17,7 @@ import training.globant.myweather.data.utils.Constant;
 import training.globant.myweather.domain.SearchWeatherInteractor;
 import training.globant.myweather.presentation.show_weather.ShowWeatherContract;
 import training.globant.myweather.presentation.show_weather.model.IconMapper;
+import training.globant.myweather.presentation.show_weather.model.TemperatureFormatter;
 import training.globant.myweather.presentation.show_weather.model.WeatherUI;
 
 /**
@@ -32,19 +29,21 @@ import training.globant.myweather.presentation.show_weather.model.WeatherUI;
  * @since 1.0
  */
 
-public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, WeatherCallback, DatabaseHandler.Callback {
+public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, WeatherCallback,
+    DatabaseHandler.Callback {
 
+  private final List<WeatherInfo> weatherInfoWrapper;
   private ShowWeatherContract.View view;
   private WeatherUI uiModel;
-  private final List<WeatherInfo> weatherInfoWrapper;
   private SearchWeatherInteractor searchWeatherInteractor;
   private DatabaseHandler databaseHandler;
   private AppDatabase database;
-  private Map<String,String> lastParameters;
+  private Map<String, String> lastParameters;
   private WeatherTransformer transformer;
   private WeatherFilter filter;
 
-  public ShowWeatherPresenter(AppDatabase database, WeatherAPIClient.OpenWeatherMap weatherClient, Retrofit retrofitClient){
+  public ShowWeatherPresenter(AppDatabase database, WeatherAPIClient.OpenWeatherMap weatherClient,
+      Retrofit retrofitClient) {
     this.database = database;
     this.searchWeatherInteractor = new SearchWeatherInteractor(weatherClient, retrofitClient);
     weatherInfoWrapper = new ArrayList<WeatherInfo>();
@@ -104,7 +103,6 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
 
   /**
    * Called when parameters are ready to be localized by api
-   * @param parameters
    */
   private void doRequest(final Map<String, String> parameters) {
     lastParameters = parameters;
@@ -113,6 +111,7 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
 
   /**
    * actions taken After being geo-localized
+   *
    * @param parameters with coordinates
    */
   @Override
@@ -151,9 +150,12 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
     String cityName = model.getName();
     String countryName = model.getCountry().getName();
     String description = model.getSkyDescription().get(0).getDescription();
-    String temperatureInfo = getTemperatureFormatted(model.getTemperatureInfo().getTemperature());
-    String maxTemperatureInfo = getTemperatureFormatted(model.getTemperatureInfo().getMaximum());
-    String minTemperatureInfo = getTemperatureFormatted(model.getTemperatureInfo().getMinimum());
+    String temperatureInfo = TemperatureFormatter
+        .getTemperatureFormatted(model.getTemperatureInfo().getTemperature());
+    String maxTemperatureInfo = TemperatureFormatter
+        .getTemperatureFormatted(model.getTemperatureInfo().getMaximum());
+    String minTemperatureInfo = TemperatureFormatter
+        .getTemperatureFormatted(model.getTemperatureInfo().getMinimum());
     int icon = IconMapper.fromInt(model.getSkyDescription().get(0).getId()).getIcon();
 
     return new WeatherUI(cityName, maxTemperatureInfo, minTemperatureInfo, temperatureInfo,
@@ -178,7 +180,7 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
    */
   @Override
   public void restoreStateAndShowWeather(WeatherUI uiModel, boolean isValid) {
-    if(!isValid){
+    if (!isValid) {
       uiModel = null;
       this.uiModel = null;
     }
@@ -188,14 +190,6 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
         view.showWeather(uiModel);
       }
     }
-  }
-
-  private String getTemperatureFormatted(double temperature) {
-    //https://stackoverflow.com/questions/14389349/android-get-current-locale-not-default
-    DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.getDefault());
-    symbols.setDecimalSeparator(Constant.DECIMAL_SEPARATOR);
-    DecimalFormat formatter = new DecimalFormat(Constant.DECIMAL_FORMAT_PATTERN, symbols);
-    return formatter.format(temperature);
   }
 
   /**
@@ -211,7 +205,8 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
         new Runnable() {
           @Override
           public void run() {
-            Weather weatherEntity = transformer.getDataBaseWeatherFromInfo(lastParameters, weatherInfo);
+            Weather weatherEntity = transformer
+                .getDataBaseWeatherFromInfo(lastParameters, weatherInfo);
             database.getWeatherDAO().insert(weatherEntity);
           }
         }
@@ -221,7 +216,7 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
 
   @Override
   public void onResponse(ForecastInfo forecastInfo) {
-      //never used
+    //never used
   }
 
   /**
@@ -267,10 +262,10 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
   @Override
   public void onDatabaseOperationFinished() {
 
-    if(weatherInfoWrapper.size() > 0){
+    if (weatherInfoWrapper.size() > 0) {
       WeatherInfo lastWeatherInfo = weatherInfoWrapper.get(0);
       //if cache hit
-      if(lastWeatherInfo != null){
+      if (lastWeatherInfo != null) {
         if (isViewAttached()) {
           uiModel = transformModelToUiModel(lastWeatherInfo);
           view.showWeather(uiModel);
@@ -295,7 +290,7 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
             if (weatherList != null) {
               weatherList = filter.filterByValidUntil(weatherList);
               String query = lastParameters.get(Constant.API_PARAMETER_QUERY);
-              if (query != null){
+              if (query != null) {
                 weatherList = filter.filterByText(weatherList, query);
               } else {
                 String latitude = lastParameters.get(Constant.API_PARAMETER_LATITUDE);
@@ -303,7 +298,7 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
                 weatherList = filter.filterByLatidudeAndLongitude(weatherList, latitude, longitude);
               }
               Weather weather = filter.filterByLastRefresh(weatherList);
-              if(weather != null){
+              if (weather != null) {
                 WeatherInfo weatherInfo = transformer.getInfoWeatherFromDataBase(weather);
                 weatherInfoWrapper.add(weatherInfo);
               }
