@@ -25,11 +25,13 @@ import java.util.Map;
 import retrofit2.Retrofit;
 import training.globant.myweather.R;
 import training.globant.myweather.data.database.AppDatabase;
+import training.globant.myweather.data.database.DatabaseHandler;
 import training.globant.myweather.data.database.dao.ForecastDAO;
 import training.globant.myweather.data.net.WeatherAPIClient;
 import training.globant.myweather.data.utils.Constant;
 import training.globant.myweather.device.PermissionHelperCallback;
 import training.globant.myweather.device.sensors.location.PermissionsHelper;
+import training.globant.myweather.domain.SearchForecastInteractor;
 import training.globant.myweather.presentation.show_forecast.ShowForecastContract;
 import training.globant.myweather.presentation.show_forecast.model.CityUI;
 import training.globant.myweather.presentation.show_forecast.presenter.ShowForecastPresenter;
@@ -52,7 +54,9 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
   private TextView hintLabel;
   private TextView city;
   private PermissionHelperCallback helperCallback;
+  private SearchForecastInteractor searchForecastInteractor;
   private AppDatabase database;
+  private DatabaseHandler databaseHandler;
   private RecyclerView recyclerView;
   private ForecastAdapter forecastAdapter;
   private CityUI uiModel;
@@ -69,8 +73,10 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
     permissionsHelper = new PermissionsHelper(this);
     WeatherAPIClient.OpenWeatherMap weatherClient =  WeatherAPIClient.provideWeatherAPIClient(this.getContext());
     Retrofit retrofitClient =  WeatherAPIClient.provideRestClient(this.getContext());
+    this.searchForecastInteractor = new SearchForecastInteractor(weatherClient, retrofitClient);
     this.database = AppDatabase.getAppDatabase(this.getContext());
-    presenter = new ShowForecastPresenter(database, weatherClient, retrofitClient);
+    presenter = new ShowForecastPresenter(searchForecastInteractor);
+    databaseHandler = new DatabaseHandler(database, presenter);
     progressDialogSetup();
   }
 
@@ -304,6 +310,16 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
   @Override
   public PermissionsHelper getPermissionHelper() {
     return permissionsHelper;
+  }
+
+  /**
+   * Returns DatabaseHandler
+   *
+   * @return DatabaseHandler
+   */
+  @Override
+  public DatabaseHandler getDatabaseHandler() {
+    return databaseHandler;
   }
 
   /********************* String Resources *********************/

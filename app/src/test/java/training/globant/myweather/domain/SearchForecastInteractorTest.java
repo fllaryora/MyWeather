@@ -24,16 +24,17 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import training.globant.myweather.data.WeatherCallback;
-import training.globant.myweather.data.model.CountryHolder;
+import training.globant.myweather.data.model.City;
 import training.globant.myweather.data.model.ErrorInfo;
+import training.globant.myweather.data.model.ForecastInfo;
+import training.globant.myweather.data.model.ForecastItem;
 import training.globant.myweather.data.model.SkyDescription;
 import training.globant.myweather.data.model.TemperatureInfo;
-import training.globant.myweather.data.model.WeatherInfo;
 import training.globant.myweather.data.net.NoConnectivityException;
 import training.globant.myweather.data.net.WeatherAPIClient;
 import training.globant.myweather.data.utils.Constant;
 
-public class SearchWeatherInteractorTest {
+public class SearchForecastInteractorTest {
 
   private static final String COUNTRY = "AR";
   private static final double TEMPERATURE = 15.5;
@@ -44,14 +45,12 @@ public class SearchWeatherInteractorTest {
   private static final String CITY = "Córdoba";
   private static final String CUSTOM_QUERY = "Córdoba,AR";
 
-  private static WeatherInfo model;
-
+  private ForecastInfo model;
   @Mock
   private WeatherAPIClient.OpenWeatherMap weatherClient;
 
-
   @InjectMocks
-  private SearchWeatherInteractor searchWeatherInteractor;
+  private SearchForecastInteractor searchForecastInteractor;
 
   @Before
   public void setUp() throws Exception{
@@ -59,7 +58,6 @@ public class SearchWeatherInteractorTest {
     // inject the mocks in the test the initMocks method needs to be called.
     MockitoAnnotations.initMocks(this);
   }
-
 
   @Test
   public void execute_shouldCallOnResponse() {
@@ -72,24 +70,26 @@ public class SearchWeatherInteractorTest {
     SkyDescription skyDescription = new SkyDescription(SKY_ICON_ID, "", SKY_DESCRIPTION);
     skyDescriptionList.add(skyDescription);
     TemperatureInfo temperatureInfo = new TemperatureInfo(TEMPERATURE, MINIMUM, MAXIMUM);
-    CountryHolder country = new CountryHolder(COUNTRY);
-    model = new WeatherInfo(CITY,  skyDescriptionList,  temperatureInfo,  country);
+    List<ForecastItem > list = new ArrayList<>();
+    list.add(new ForecastItem(System.currentTimeMillis(), temperatureInfo,  skyDescriptionList));
+    City city = new City(CITY, COUNTRY);
+    model = new ForecastInfo( city, list.size(),  list);
+
     //Given Call
-    final Call<WeatherInfo> mockedCall = Mockito.mock(Call.class);
+    final Call<ForecastInfo> mockedCall = Mockito.mock(Call.class);
     WeatherCallback callback = Mockito.mock(WeatherCallback.class);
     // When
     Mockito.doAnswer(new Answer() {
       @Override
       public Void answer(InvocationOnMock invocation) throws Throwable {
-        Callback<WeatherInfo> callback = invocation.getArgumentAt(0, Callback.class);
+        Callback<ForecastInfo> callback = invocation.getArgumentAt(0, Callback.class);
         callback.onResponse(mockedCall, Response.success(model));
         return null;
       }
     }).when(mockedCall).enqueue(any(Callback.class));
 
-    when(weatherClient.searchWeatherByOptions(parameters)).thenReturn(mockedCall);
-
-    searchWeatherInteractor.execute(parameters,callback);
+    when(weatherClient.searchForecastByOptions(parameters)).thenReturn(mockedCall);
+    searchForecastInteractor.execute(parameters,callback);
 
     // Then
     verify(callback).onResponse(model);
@@ -102,21 +102,21 @@ public class SearchWeatherInteractorTest {
     parameters.put(Constant.API_PARAMETER_QUERY, CUSTOM_QUERY);
 
     //Given Call
-    final Call<WeatherInfo> mockedCall = Mockito.mock(Call.class);
+    final Call<ForecastInfo> mockedCall = Mockito.mock(Call.class);
     WeatherCallback callback = Mockito.mock(WeatherCallback.class);
     // When
     Mockito.doAnswer(new Answer() {
       @Override
       public Void answer(InvocationOnMock invocation) throws Throwable {
-        Callback<WeatherInfo> callback = invocation.getArgumentAt(0, Callback.class);
+        Callback<ForecastInfo> callback = invocation.getArgumentAt(0, Callback.class);
         callback.onFailure(mockedCall, new NoConnectivityException());
 
         return null;
       }
     }).when(mockedCall).enqueue(any(Callback.class));
 
-    when(weatherClient.searchWeatherByOptions(parameters)).thenReturn(mockedCall);
-    searchWeatherInteractor.execute(parameters,callback);
+    when(weatherClient.searchForecastByOptions(parameters)).thenReturn(mockedCall);
+    searchForecastInteractor.execute(parameters,callback);
     // Then
     verify(callback).onOffline();
   }
@@ -129,23 +129,24 @@ public class SearchWeatherInteractorTest {
     final ErrorInfo error = new ErrorInfo("Error",787);
 
     //Given Call
-    final Call<WeatherInfo> mockedCall = Mockito.mock(Call.class);
+    final Call<ForecastInfo> mockedCall = Mockito.mock(Call.class);
     WeatherCallback callback = Mockito.mock(WeatherCallback.class);
     // When
 
     Mockito.doAnswer(new Answer() {
       @Override
       public Void answer(InvocationOnMock invocation) throws Throwable {
-        Callback<WeatherInfo> callback = invocation.getArgumentAt(0, Callback.class);
+        Callback<ForecastInfo> callback = invocation.getArgumentAt(0, Callback.class);
 
         String json = new Gson().toJson(error);
-        callback.onResponse(mockedCall, Response.<WeatherInfo>error(404,ResponseBody.create(MediaType.parse("application/json") ,json)));
+        callback.onResponse(mockedCall, Response.<ForecastInfo>error(404,
+            ResponseBody.create(MediaType.parse("application/json") ,json)));
         return null;
       }
     }).when(mockedCall).enqueue(any(Callback.class));
 
-    when(weatherClient.searchWeatherByOptions(parameters)).thenReturn(mockedCall);
-    searchWeatherInteractor.execute(parameters,callback);
+    when(weatherClient.searchForecastByOptions(parameters)).thenReturn(mockedCall);
+    searchForecastInteractor.execute(parameters,callback);
 
     // Then
     verify(callback).onError(anyString());

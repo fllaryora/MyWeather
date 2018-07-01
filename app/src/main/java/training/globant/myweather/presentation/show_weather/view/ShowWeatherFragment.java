@@ -22,6 +22,7 @@ import java.util.Map;
 import retrofit2.Retrofit;
 import training.globant.myweather.R;
 import training.globant.myweather.data.database.AppDatabase;
+import training.globant.myweather.data.database.DatabaseHandler;
 import training.globant.myweather.data.database.dao.WeatherDAO;
 import training.globant.myweather.data.net.WeatherAPIClient;
 import training.globant.myweather.data.utils.Constant;
@@ -57,6 +58,7 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
   private PermissionHelperCallback helperCallback;
   private SearchWeatherInteractor searchWeatherInteractor;
   private AppDatabase database;
+  private DatabaseHandler databaseHandler;
   private WeatherUI uiModel;
   private boolean isVisible;
 
@@ -75,7 +77,8 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
     WeatherAPIClient.OpenWeatherMap weatherClient =  WeatherAPIClient.provideWeatherAPIClient(this.getContext());
     Retrofit retrofitClient =  WeatherAPIClient.provideRestClient(this.getContext());
     this.searchWeatherInteractor = new SearchWeatherInteractor(weatherClient, retrofitClient);
-    presenter = new ShowWeatherPresenter(database, searchWeatherInteractor);
+    presenter = new ShowWeatherPresenter(searchWeatherInteractor);
+    databaseHandler = new DatabaseHandler(database, presenter);
     progressDialogSetup();
   }
 
@@ -320,6 +323,16 @@ public class ShowWeatherFragment extends Fragment implements ShowWeatherContract
   @Override
   public PermissionsHelper getPermissionHelper() {
     return permissionsHelper;
+  }
+
+  /**
+   * Returns DatabaseHandler
+   *
+   * @return DatabaseHandler
+   */
+  @Override
+  public DatabaseHandler getDatabaseHandler() {
+    return databaseHandler;
   }
 
   /********************* String Resources *********************/

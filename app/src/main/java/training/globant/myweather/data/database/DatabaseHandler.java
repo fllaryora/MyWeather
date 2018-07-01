@@ -48,4 +48,9 @@ public class DatabaseHandler implements Handler.Callback{
     }
     return false;
   }
+
+  public AppDatabase getDatabase() {
+    return database;
+  }
+
 }

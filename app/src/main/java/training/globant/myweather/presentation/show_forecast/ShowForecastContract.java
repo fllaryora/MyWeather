@@ -1,6 +1,7 @@
 package training.globant.myweather.presentation.show_forecast;
 
 import java.util.Map;
+import training.globant.myweather.data.database.DatabaseHandler;
 import training.globant.myweather.data.model.ForecastInfo;
 import training.globant.myweather.device.sensors.location.PermissionsHelper;
 import training.globant.myweather.presentation.show_forecast.model.CityUI;
@@ -46,6 +47,12 @@ public interface ShowForecastContract {
      * @return PermissionsHelper
      */
     PermissionsHelper getPermissionHelper();
+
+    /**
+     * Returns DatabaseHandler
+     * @return DatabaseHandler
+     */
+    DatabaseHandler getDatabaseHandler();
 
     /**
      * Loads the weather using parameters

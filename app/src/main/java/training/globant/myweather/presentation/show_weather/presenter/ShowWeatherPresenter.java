@@ -34,17 +34,13 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
   private ShowWeatherContract.View view;
   private WeatherUI uiModel;
   private SearchWeatherInteractor searchWeatherInteractor;
-  private DatabaseHandler databaseHandler;
-  private AppDatabase database;
   private Map<String, String> lastParameters;
   private WeatherTransformer transformer;
   private WeatherFilter filter;
 
-  public ShowWeatherPresenter(AppDatabase database, SearchWeatherInteractor searchWeatherInteractor) {
-    this.database = database;
+  public ShowWeatherPresenter(SearchWeatherInteractor searchWeatherInteractor) {
     this.searchWeatherInteractor = searchWeatherInteractor;
     weatherInfoWrapper = new ArrayList<WeatherInfo>();
-    databaseHandler = new DatabaseHandler(database, this);
     transformer = new WeatherTransformer();
     filter = new WeatherFilter();
   }
@@ -198,16 +194,17 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
   public void onResponse(final WeatherInfo weatherInfo) {
     weatherInfoWrapper.clear();
     weatherInfoWrapper.add(weatherInfo);
-    databaseHandler.execute(
-        new Runnable() {
-          @Override
-          public void run() {
-            Weather weatherEntity = transformer
-                .getDataBaseWeatherFromInfo(lastParameters, weatherInfo);
-            database.getWeatherDAO().insert(weatherEntity);
-          }
+    if(isViewAttached()){
+      final DatabaseHandler databaseHandler = view.getDatabaseHandler();
+      databaseHandler.execute(new Runnable() {
+        @Override
+        public void run() {
+          Weather weatherEntity = transformer
+              .getDataBaseWeatherFromInfo(lastParameters, weatherInfo);
+          databaseHandler.getDatabase().getWeatherDAO().insert(weatherEntity);
         }
-    );
+      });
+    }
   }
 
 
@@ -276,33 +273,37 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
 
   private void getWeatherAsync() {
 
-    databaseHandler.execute(
-        new Runnable() {
-          @Override
-          public void run() {
-            weatherInfoWrapper.clear();
-            List<Weather> weatherList = database.getWeatherDAO().getWeathers();
-            //TODO RESEARCH if only livedata can return null list
-            //TODO i.e RESEARCH if this if is necesary
-            if (weatherList != null) {
-              weatherList = filter.filterByValidUntil(weatherList);
-              String query = lastParameters.get(Constant.API_PARAMETER_QUERY);
-              if (query != null) {
-                weatherList = filter.filterByText(weatherList, query);
-              } else {
-                String latitude = lastParameters.get(Constant.API_PARAMETER_LATITUDE);
-                String longitude = lastParameters.get(Constant.API_PARAMETER_LONGITUDE);
-                weatherList = filter.filterByLatidudeAndLongitude(weatherList, latitude, longitude);
-              }
-              Weather weather = filter.filterByLastRefresh(weatherList);
-              if (weather != null) {
-                WeatherInfo weatherInfo = transformer.getInfoWeatherFromDataBase(weather);
-                weatherInfoWrapper.add(weatherInfo);
-              }
+    if(isViewAttached()){
+
+      final DatabaseHandler databaseHandler = view.getDatabaseHandler();
+      databaseHandler.execute(new Runnable() {
+        @Override
+        public void run() {
+          weatherInfoWrapper.clear();
+          List<Weather> weatherList = databaseHandler.getDatabase().getWeatherDAO().getWeathers();
+          //TODO RESEARCH if only livedata can return null list
+          //TODO i.e RESEARCH if this if is necesary
+          if (weatherList != null) {
+            weatherList = filter.filterByValidUntil(weatherList);
+            String query = lastParameters.get(Constant.API_PARAMETER_QUERY);
+            if (query != null) {
+              weatherList = filter.filterByText(weatherList, query);
+            } else {
+              String latitude = lastParameters.get(Constant.API_PARAMETER_LATITUDE);
+              String longitude = lastParameters.get(Constant.API_PARAMETER_LONGITUDE);
+              weatherList = filter.filterByLatidudeAndLongitude(weatherList, latitude, longitude);
+            }
+            Weather weather = filter.filterByLastRefresh(weatherList);
+            if (weather != null) {
+              WeatherInfo weatherInfo = transformer.getInfoWeatherFromDataBase(weather);
+              weatherInfoWrapper.add(weatherInfo);
             }
           }
         }
-    );
+      });
+
+    }//end if view attached
+
   }
 
 }

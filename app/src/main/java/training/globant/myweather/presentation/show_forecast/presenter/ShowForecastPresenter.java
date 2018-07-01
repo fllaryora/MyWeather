@@ -1,16 +1,9 @@
 package training.globant.myweather.presentation.show_forecast.presenter;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
-import retrofit2.Retrofit;
 import training.globant.myweather.data.WeatherCallback;
-import training.globant.myweather.data.database.AppDatabase;
 import training.globant.myweather.data.database.DatabaseHandler;
 import training.globant.myweather.data.database.entities.Forecast;
 import training.globant.myweather.data.database.entities.ForecastItemDB;
@@ -19,11 +12,11 @@ import training.globant.myweather.data.database.transformer.ForecastTransformer;
 import training.globant.myweather.data.model.ForecastInfo;
 import training.globant.myweather.data.model.ForecastItem;
 import training.globant.myweather.data.model.WeatherInfo;
-import training.globant.myweather.data.net.WeatherAPIClient;
 import training.globant.myweather.data.utils.Constant;
 import training.globant.myweather.domain.SearchForecastInteractor;
 import training.globant.myweather.presentation.show_forecast.ShowForecastContract;
 import training.globant.myweather.presentation.show_forecast.model.CityUI;
+import training.globant.myweather.presentation.show_forecast.model.DateFormatter;
 import training.globant.myweather.presentation.show_forecast.model.ForecastItemUI;
 import training.globant.myweather.presentation.show_weather.model.IconMapper;
 import training.globant.myweather.presentation.show_weather.model.TemperatureFormatter;
@@ -43,20 +36,14 @@ public class ShowForecastPresenter implements ShowForecastContract.Presenter, We
   private final List<ForecastInfo> forecastInfoWrapper;
   private ShowForecastContract.View view;
   private CityUI uiModel;
-  private DatabaseHandler databaseHandler;
-  private AppDatabase database;
   private SearchForecastInteractor searchForecastInteractor;
   private Map<String, String> lastParameters;
   private ForecastTransformer transformer;
   private ForecastFilter filter;
 
-  public ShowForecastPresenter(AppDatabase database, WeatherAPIClient.OpenWeatherMap weatherClient,
-      Retrofit retrofitClient) {
-    this.searchForecastInteractor = new SearchForecastInteractor(weatherClient, retrofitClient);
-    databaseHandler = new DatabaseHandler(database, this);
-    this.database = database;
+  public ShowForecastPresenter(SearchForecastInteractor searchForecastInteractor) {
     forecastInfoWrapper = new ArrayList<ForecastInfo>();
-    databaseHandler = new DatabaseHandler(database, this);
+    this.searchForecastInteractor = searchForecastInteractor;
     transformer = new ForecastTransformer();
     filter = new ForecastFilter();
   }
@@ -179,28 +166,10 @@ public class ShowForecastPresenter implements ShowForecastContract.Presenter, We
         .getTemperatureFormatted(model.getTemperatureInfo().getMaximum());
     String minTemperatureInfo = TemperatureFormatter
         .getTemperatureFormatted(model.getTemperatureInfo().getMinimum());
-    String dayLabel = getDayOfWeekFormatted(model.getDateTime());
-    String hourLabel = getHourFormatted(model.getDateTime());
+    String dayLabel = DateFormatter.getDayOfWeekFormatted(model.getDateTime());
+    String hourLabel = DateFormatter.getHourFormatted(model.getDateTime());
     return new ForecastItemUI(dayLabel, hourLabel, temperatureInfo, maxTemperatureInfo,
         minTemperatureInfo, icon);
-  }
-
-  private String getDayOfWeekFormatted(long UTCDateTime) {
-    Calendar cal = Calendar.getInstance();
-    TimeZone tz = cal.getTimeZone();
-    SimpleDateFormat formatter = new SimpleDateFormat(Constant.DAY_OF_WEEK_FORMAT_PATTERN,
-        Locale.getDefault());
-    formatter.setTimeZone(tz);
-    return formatter.format(new Date(UTCDateTime * 1000));
-  }
-
-  private String getHourFormatted(long UTCDateTime) {
-    Calendar cal = Calendar.getInstance();
-    TimeZone tz = cal.getTimeZone();
-    SimpleDateFormat formatter = new SimpleDateFormat(Constant.HOURS_IN_24_FORMAT_PATTERN,
-        Locale.getDefault());
-    formatter.setTimeZone(tz);
-    return formatter.format(new Date(UTCDateTime * 1000));
   }
 
   /**
@@ -247,21 +216,23 @@ public class ShowForecastPresenter implements ShowForecastContract.Presenter, We
   public void onResponse(final ForecastInfo forecastInfo) {
     forecastInfoWrapper.clear();
     forecastInfoWrapper.add(forecastInfo);
-    databaseHandler.execute(
-        new Runnable() {
-          @Override
-          public void run() {
-            long lastId = database.getForecastDAO().insert(
-                transformer.getDataBaseForecastFromInfo(lastParameters, forecastInfo)
+    if(isViewAttached()) {
+      final DatabaseHandler databaseHandler = view.getDatabaseHandler();
+      databaseHandler.execute(new Runnable() {
+        @Override
+        public void run() {
+          long lastId = databaseHandler.getDatabase().getForecastDAO().insert(
+              transformer.getDataBaseForecastFromInfo(lastParameters, forecastInfo)
+          );
+          for (ForecastItem item : forecastInfo.getList()) {
+            databaseHandler.getDatabase().getForecastDAO().insertItem(
+                transformer.getDataBaseForecastItemFromInfo(item, lastId)
             );
-            for (ForecastItem item : forecastInfo.getList()) {
-              database.getForecastDAO().insertItem(
-                  transformer.getDataBaseForecastItemFromInfo(item, lastId)
-              );
-            }
           }
         }
-    );
+      });
+    }
+
   }
 
   /**
@@ -322,42 +293,44 @@ public class ShowForecastPresenter implements ShowForecastContract.Presenter, We
 
   //******************** ROOM FUNCTIONS ********************
   private void getForecastAsync() {
+    if(isViewAttached()){
+      final DatabaseHandler databaseHandler = view.getDatabaseHandler();
+      databaseHandler.execute(new Runnable() {
+        @Override
+        public void run() {
+          forecastInfoWrapper.clear();
 
-    databaseHandler.execute(
-        new Runnable() {
-          @Override
-          public void run() {
-            forecastInfoWrapper.clear();
+          List<Forecast> forecastList = databaseHandler.getDatabase().getForecastDAO().getForecast();
+          //TODO RESEARCH if only livedata can return null list
+          //TODO i.e RESEARCH if this if is necesary
+          if (forecastList != null) {
 
-            List<Forecast> forecastList = database.getForecastDAO().getForecast();
-            //TODO RESEARCH if only livedata can return null list
-            //TODO i.e RESEARCH if this if is necesary
-            if (forecastList != null) {
+            forecastList = filter.filterByValidUntil(forecastList);
+            String query = lastParameters.get(Constant.API_PARAMETER_QUERY);
+            if (query != null) {
+              forecastList = filter.filterByText(forecastList, query);
+            } else {
+              String latitude = lastParameters.get(Constant.API_PARAMETER_LATITUDE);
+              String longitude = lastParameters.get(Constant.API_PARAMETER_LONGITUDE);
+              forecastList = filter
+                  .filterByLatidudeAndLongitude(forecastList, latitude, longitude);
+            }
+            Forecast forecast = filter.filterByLastRefresh(forecastList);
+            if (forecast != null) {
 
-              forecastList = filter.filterByValidUntil(forecastList);
-              String query = lastParameters.get(Constant.API_PARAMETER_QUERY);
-              if (query != null) {
-                forecastList = filter.filterByText(forecastList, query);
-              } else {
-                String latitude = lastParameters.get(Constant.API_PARAMETER_LATITUDE);
-                String longitude = lastParameters.get(Constant.API_PARAMETER_LONGITUDE);
-                forecastList = filter
-                    .filterByLatidudeAndLongitude(forecastList, latitude, longitude);
-              }
-              Forecast forecast = filter.filterByLastRefresh(forecastList);
-              if (forecast != null) {
+              List<ForecastItemDB> forecastItemList =
+                  databaseHandler.getDatabase().getForecastDAO().getForecastItems(forecast.getId());
 
-                List<ForecastItemDB> forecastItemList =
-                    database.getForecastDAO().getForecastItems(forecast.getId());
-
-                ForecastInfo forecastInfo = transformer
-                    .getInfoForecastFromDataBase(forecast, forecastItemList);
-                forecastInfoWrapper.add(forecastInfo);
-              }
+              ForecastInfo forecastInfo = transformer
+                  .getInfoForecastFromDataBase(forecast, forecastItemList);
+              forecastInfoWrapper.add(forecastInfo);
             }
           }
+
         }
-    );
+      });
+    }
+
   }
 
 
