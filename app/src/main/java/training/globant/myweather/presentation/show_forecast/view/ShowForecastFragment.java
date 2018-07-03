@@ -12,7 +12,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -26,7 +25,6 @@ import retrofit2.Retrofit;
 import training.globant.myweather.R;
 import training.globant.myweather.data.database.AppDatabase;
 import training.globant.myweather.data.database.DatabaseHandler;
-import training.globant.myweather.data.database.dao.ForecastDAO;
 import training.globant.myweather.data.net.WeatherAPIClient;
 import training.globant.myweather.data.utils.Constant;
 import training.globant.myweather.device.PermissionHelperCallback;
@@ -56,7 +54,6 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
   private PermissionHelperCallback helperCallback;
   private SearchForecastInteractor searchForecastInteractor;
   private AppDatabase database;
-  private DatabaseHandler databaseHandler;
   private RecyclerView recyclerView;
   private ForecastAdapter forecastAdapter;
   private CityUI uiModel;
@@ -75,8 +72,7 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
     Retrofit retrofitClient =  WeatherAPIClient.provideRestClient(this.getContext());
     this.searchForecastInteractor = new SearchForecastInteractor(weatherClient, retrofitClient);
     this.database = AppDatabase.getAppDatabase(this.getContext());
-    presenter = new ShowForecastPresenter(searchForecastInteractor);
-    databaseHandler = new DatabaseHandler(database, presenter);
+    presenter = new ShowForecastPresenter(database,searchForecastInteractor);
     progressDialogSetup();
   }
 
@@ -310,16 +306,6 @@ public class ShowForecastFragment extends Fragment implements ShowForecastContra
   @Override
   public PermissionsHelper getPermissionHelper() {
     return permissionsHelper;
-  }
-
-  /**
-   * Returns DatabaseHandler
-   *
-   * @return DatabaseHandler
-   */
-  @Override
-  public DatabaseHandler getDatabaseHandler() {
-    return databaseHandler;
   }
 
   /********************* String Resources *********************/

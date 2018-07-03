@@ -49,12 +49,6 @@ public interface ShowForecastContract {
     PermissionsHelper getPermissionHelper();
 
     /**
-     * Returns DatabaseHandler
-     * @return DatabaseHandler
-     */
-    DatabaseHandler getDatabaseHandler();
-
-    /**
      * Loads the weather using parameters
      */
     void onLocationChange();

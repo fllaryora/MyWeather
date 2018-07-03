@@ -35,10 +35,13 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
   private WeatherUI uiModel;
   private SearchWeatherInteractor searchWeatherInteractor;
   private Map<String, String> lastParameters;
+  private DatabaseHandler databaseHandler;
   private WeatherTransformer transformer;
   private WeatherFilter filter;
 
-  public ShowWeatherPresenter(SearchWeatherInteractor searchWeatherInteractor) {
+  public ShowWeatherPresenter(AppDatabase database,
+      SearchWeatherInteractor searchWeatherInteractor) {
+    databaseHandler = new DatabaseHandler(database, this);
     this.searchWeatherInteractor = searchWeatherInteractor;
     weatherInfoWrapper = new ArrayList<WeatherInfo>();
     transformer = new WeatherTransformer();
@@ -195,7 +198,6 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
     weatherInfoWrapper.clear();
     weatherInfoWrapper.add(weatherInfo);
     if(isViewAttached()){
-      final DatabaseHandler databaseHandler = view.getDatabaseHandler();
       databaseHandler.execute(new Runnable() {
         @Override
         public void run() {
@@ -275,7 +277,6 @@ public class ShowWeatherPresenter implements ShowWeatherContract.Presenter, Weat
 
     if(isViewAttached()){
 
-      final DatabaseHandler databaseHandler = view.getDatabaseHandler();
       databaseHandler.execute(new Runnable() {
         @Override
         public void run() {

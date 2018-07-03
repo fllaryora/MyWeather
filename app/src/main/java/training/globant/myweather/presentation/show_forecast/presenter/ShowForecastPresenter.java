@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import training.globant.myweather.data.WeatherCallback;
+import training.globant.myweather.data.database.AppDatabase;
 import training.globant.myweather.data.database.DatabaseHandler;
 import training.globant.myweather.data.database.entities.Forecast;
 import training.globant.myweather.data.database.entities.ForecastItemDB;
@@ -38,10 +39,13 @@ public class ShowForecastPresenter implements ShowForecastContract.Presenter, We
   private CityUI uiModel;
   private SearchForecastInteractor searchForecastInteractor;
   private Map<String, String> lastParameters;
+  private DatabaseHandler databaseHandler;
   private ForecastTransformer transformer;
   private ForecastFilter filter;
 
-  public ShowForecastPresenter(SearchForecastInteractor searchForecastInteractor) {
+  public ShowForecastPresenter(AppDatabase database,
+      SearchForecastInteractor searchForecastInteractor) {
+    databaseHandler = new DatabaseHandler(database, this);
     forecastInfoWrapper = new ArrayList<ForecastInfo>();
     this.searchForecastInteractor = searchForecastInteractor;
     transformer = new ForecastTransformer();
@@ -217,7 +221,6 @@ public class ShowForecastPresenter implements ShowForecastContract.Presenter, We
     forecastInfoWrapper.clear();
     forecastInfoWrapper.add(forecastInfo);
     if(isViewAttached()) {
-      final DatabaseHandler databaseHandler = view.getDatabaseHandler();
       databaseHandler.execute(new Runnable() {
         @Override
         public void run() {
@@ -294,7 +297,6 @@ public class ShowForecastPresenter implements ShowForecastContract.Presenter, We
   //******************** ROOM FUNCTIONS ********************
   private void getForecastAsync() {
     if(isViewAttached()){
-      final DatabaseHandler databaseHandler = view.getDatabaseHandler();
       databaseHandler.execute(new Runnable() {
         @Override
         public void run() {
